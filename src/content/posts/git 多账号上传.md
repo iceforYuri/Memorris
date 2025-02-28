@@ -1,6 +1,6 @@
 ---
 title: git 多账号上传
-published:
+published: 2000-01-01
 discription: git 使用再添一员
 categories: git
 tags: [指南]
@@ -159,6 +159,23 @@ git remote set-url origin git@yuri:second-username/repository.git
 ```
 
 ### 更新仓库
+
+首先还是需要一次重新添加将更改过的文件加入本地仓库
+
+```
+git add <_file_name1> <_file_name2> ... #将文件添加到暂存区
+git add <_dir_name>                     #将文件夹添加到暂存区
+git add --all                           #将所有的改动过的文件提交到缓存区
+git add .                               #将目录下的所有文件添加到暂存区
+```
+
+然后提交一次
+
+```
+git commit -m "日志信息" 
+git commit <_file_name1> <_file_name2> ... -m "日志信息"    #提交暂存区内的部分文件
+git commit -a   #无需执行git add,直接提交
+```
 
 本来一句 `git push origin main `可以在连接远程仓库之后直接推送上传，但如果本来的仓库不是空的，可能会造成一些版本冲突：
 
