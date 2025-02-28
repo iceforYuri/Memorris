@@ -1,7 +1,7 @@
 ---
 title: machine learning吴恩达
 published: 2024-05-01
-categories: 机器学习
+categories: '机器学习'
 tags: [指南]
 ---
 # 一
