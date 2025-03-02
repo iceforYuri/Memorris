@@ -2,8 +2,8 @@
 title: c++ 多态
 published: 2025-03-01
 discription: 
-categories: C++面向对象
-tags: [指南]
+category: 指南
+tags: [C++面向对象]
 ---
 *People say love can be developed, but in the end the only person they love is themselves, that's why you choose to love someone who can please you the most.*——*Nana*
 

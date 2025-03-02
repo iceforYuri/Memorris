@@ -2,8 +2,8 @@
 title: git 多账号上传
 published: 2025-01-01
 discription: git 使用再添一员
-categories: git
-tags: [指南]
+category: 指南
+tags: [git]
 ---
 上一次搞了好久，这一次决定从根本上解决问题
 

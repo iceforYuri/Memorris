@@ -2,8 +2,8 @@
 title: c++ 类访问修饰符
 published: 2025-03-01
 discription: 构造函数与析构函数是C++中的重要概念，本文将详细介绍构造函数与析构函数的概念、作用、调用时机、特点、注意事项等内容。
-categories: C++面向对象
-tags: [指南]
+category: 指南
+tags: [C++面向对象]
 ---
 *Because of the existence of love - sacrifice is born. As well as hate. Then one comprehends... one knows PAIN.*——*Naruto*
 
