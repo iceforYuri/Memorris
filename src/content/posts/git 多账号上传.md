@@ -1,6 +1,6 @@
 ---
 title: git 多账号上传
-published: 2000-01-01
+published: 2025-01-01
 discription: git 使用再添一员
 categories: git
 tags: [指南]
@@ -57,7 +57,6 @@ ls -la
 
 但其实在文件夹下就可以看到新创建的文件
 
-
 ### **添加 SSH 密钥到 SSH 代理**
 
 确保 SSH 代理正在运行：
@@ -85,10 +84,9 @@ ssh-add id_rsa
 ### 将公钥 (`id_rsa_second.pub`) 添加到 GitHub
 
 1. 登录你的 **第二个 GitHub 账户**
-1. 进入 **Settings -> SSH and GPG keys**
-1. 点击 **New SSH key**
-1. 粘贴 `id_rsa_second.pub` 的内容，并保存
-
+2. 进入 **Settings -> SSH and GPG keys**
+3. 点击 **New SSH key**
+4. 粘贴 `id_rsa_second.pub` 的内容，并保存
 
 ### **配置 `.ssh/config` 以区分多个账户**
 
@@ -135,7 +133,6 @@ ssh -T git@github-second #第二个 GitHub 账户
 ```
 
 其中github-second正是在config中设置的用户名，也只有这一个用户名可以更改用来区分
-
 
 ### **克隆或修改远程仓库**
 
