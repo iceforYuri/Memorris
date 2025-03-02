@@ -136,6 +136,12 @@ ssh -T git@github-second #第二个 GitHub 账户
 
 ### **克隆或修改远程仓库**
 
+普通添加仓库
+
+```
+git remote add <_name> <_url>
+```
+
 克隆属于第二个 GitHub 账户的仓库
 
 ```
@@ -151,8 +157,13 @@ git remote set-url origin git@github-second:second-username/repository.git
 就像我现在使用的第二个用户名yuri
 
 ```
-git remote set-url origin git@yuri:second-username/repository.git
+git remote set-url origin git@yuri:iceforYuri/astro.git
+```
 
+删除仓库使用
+
+```
+git remote remove <_name>
 ```
 
 ### 更新仓库
