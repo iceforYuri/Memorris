@@ -2,7 +2,7 @@
 title: c++ 文件和流
 published: 2025-03-02
 discription: 
-categories: 指南
+category: 指南
 tags: [C++高级]
 ---
 *Agh, it penetrates my brain!*——*Yu Yu Hakusho*

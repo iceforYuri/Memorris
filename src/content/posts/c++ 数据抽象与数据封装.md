@@ -2,7 +2,7 @@
 title: c++ 数据抽象与数据封装
 published: 2025-03-02
 discription: 数据抽象是指仅向用户展示必要的信息，隐藏实现细节。通过使用类和抽象数据类型，可以将数据和对数据的操作封装在一起，只提供特定的接口让用户与数据进行交互，而用户不需要了解内部的具体实现方式。
-categories: 指南
+category: 指南
 tags: [C++面向对象]
 ---
 *The more you want something, the harder it is to wait for it.*——*Naruto*
@@ -36,7 +36,7 @@ C++ 接口是使用**抽象类**来实现的，抽象类与数据抽象互不混
 
 如果类中**至少有一个函数被声明为纯虚函数，则这个类就是抽象类**。纯虚函数是通过在声明中使用 "= 0" 来指定
 
-```
+```cpp
 class Box
 {
    public:
