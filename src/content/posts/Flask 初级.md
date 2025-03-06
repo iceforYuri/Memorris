@@ -72,7 +72,6 @@ myproject/
 └── run.py                  # 应用入口
 ```
 
-
 如果在 [`__init__.py`](vscode-file://vscode-app/c:/Users/XXY/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html) 中使用 `app = Flask(__name__)`，则：
 
 * 应用的根路径将是 `/project/app/`
@@ -86,7 +85,6 @@ myproject/
 ```
 from flask import Flask, request, Response
 ```
-
 
 #### 请求对象的主要属性和方法
 
@@ -158,7 +156,6 @@ return json.dumps(request_info) , 200, {'Content-Type': 'application/json'}
 return jsonify(data)
 ```
 
-
 #### 使用Response 对象
 
 首先需要从flask中导入response对象：
@@ -211,7 +208,6 @@ Flask支持将url中的部分内容当作动态参数传递给调用的视图函
 @app.route('/user/<string:user_name>')  # 只匹配字符串
 ```
 
-
 当我们访问路径 `/user/123456` 时，会调用第一个路由
 
 当我们访问路径 `/user/username` 时，会调用第二个路由
@@ -225,7 +221,7 @@ Flask支持将url中的部分内容当作动态参数传递给调用的视图函
 <p>年龄: {{ age }}</p>
 ```
 
-因此我们可以通过普通的传参将输入的目录转换成内部字符串
+因此我们可以通过普通的传参将输入的URL目录转换成内部字符串
 
 ```python
 @app.route('/user/<string:user_name>')  # 只匹配字符串
@@ -233,13 +229,11 @@ def show_user_name(user_name):
     return f'User name is {user_name}'
 ```
 
-
 ## 蓝图
 
 蓝图（Blueprint）是 Flask 提供的一种组织更大型 Flask 应用的方式，允许你将应用按照功能划分为多个组件或者模块。蓝图可以被视为是应用的子应用，但不是真正独立的应用，它们依赖于应用实例来进行注册。
 
 上面的传入部分有基本的蓝图项目结构，之后也会复述，这里不再细讲
-
 
 ## Flask中的静态文件
 
