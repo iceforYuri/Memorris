@@ -130,6 +130,7 @@ Host github-second
 ```
 ssh -T git@github.com #第一个 GitHub 账户
 ssh -T git@github-second #第二个 GitHub 账户
+ssh -T git@yuri #我设置的
 ```
 
 其中github-second正是在config中设置的用户名，也只有这一个用户名可以更改用来区分
@@ -140,6 +141,7 @@ ssh -T git@github-second #第二个 GitHub 账户
 
 ```
 git remote add <_name> <_url>
+git remote add origin git@yuri:iceforYuri/blog.git
 ```
 
 克隆属于第二个 GitHub 账户的仓库
@@ -158,6 +160,12 @@ git remote set-url origin git@github-second:second-username/repository.git
 
 ```
 git remote set-url origin git@yuri:iceforYuri/astro.git
+```
+
+检查仓库情况
+
+```
+git remote -v
 ```
 
 删除仓库使用
