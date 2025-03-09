@@ -30,9 +30,11 @@ export async function getSortedPosts(): Promise<
   return sorted
 }
 
+// 更新 Tag 类型定义
 export type Tag = {
   name: string
   count: number
+  urlSafeName: string // 新增字段
 }
 
 export async function getTagList(): Promise<Tag[]> {
@@ -41,6 +43,9 @@ export async function getTagList(): Promise<Tag[]> {
   })
 
   const countMap: { [key: string]: number } = {}
+  // 存储原始标签名与规范化标签名之间的映射
+  const originalNameMap: { [key: string]: string } = {}
+  
   allBlogPosts.map((post: { data: { tags: string[] } }) => {
     post.data.tags.map((tag: string) => {
       if (!countMap[tag]) countMap[tag] = 0
@@ -53,7 +58,12 @@ export async function getTagList(): Promise<Tag[]> {
     return a.toLowerCase().localeCompare(b.toLowerCase())
   })
 
-  return keys.map(key => ({ name: key, count: countMap[key] }))
+  // 返回带有原始名称和安全 URL 名称的标签列表
+  return keys.map(key => ({ 
+    name: key, // 原始标签名称（用于显示）
+    count: countMap[key],
+    urlSafeName: encodeURIComponent(key) // 添加 URL 安全的名称（用于 URL 生成）
+  }))
 }
 
 export type Category = {
