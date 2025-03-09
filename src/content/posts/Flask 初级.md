@@ -2,7 +2,7 @@
 title: Flask 初级
 published: 2025-03-02
 discription: python下的web框架
-categories: 指南
+category: 指南
 tags: [Flask]
 ---
 *Power isn't determined by your size, but the size of your heart and dreams!*——*One Piece*
@@ -285,8 +285,6 @@ from flask import url_for
 css_url = url_for('static', filename='css/style.css')
 ```
 
-
-
 # Flask 视图函数
 
 1. **定义视图函数** ：视图函数是处理请求并返回响应的核心功能。
@@ -296,8 +294,6 @@ css_url = url_for('static', filename='css/style.css')
 5. **处理错误** ：视图函数内处理异常或使用 Flask 的错误处理机制。
 6. **视图函数的装饰器** ：使用 `@app.before_request`、`@app.after_request` 等装饰器处理请求前后逻辑。
 7. **视图函数返回的状态码** ：可以指定 HTTP 状态码来表示请求的处理结果。
-
-
 
 # Flask 模板渲染
 

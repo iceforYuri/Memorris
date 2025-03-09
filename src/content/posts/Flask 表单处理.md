@@ -2,7 +2,7 @@
 title: Flask 表单处理
 published: 2025-03-06
 discription: 处理表单数据涉及到接收、验证和处理用户提交的表单
-categories: 指南
+category: 指南
 tags: [Flask]
 ---
 *Raise your head, Wabisuke.*——*Bleach*
@@ -65,7 +65,6 @@ def submit():
     email = request.form.get('email')#这里填入参数对应html中的name属性
     return redirect(url_for('/'))	#重定向到首页
 ```
-
 
 ## 文件上传
 

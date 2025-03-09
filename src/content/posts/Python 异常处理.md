@@ -2,7 +2,7 @@
 title: Python 异常处理
 published: 2025-03-02
 discription: 
-categories: 指南
+category: 指南
 tags: [Python]
 ---
 *There’s no such thing as fair or unfair in battle. There is only victory or in your case, defeat.*——*Dragon Ball Z*

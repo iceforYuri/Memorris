@@ -1,5 +1,5 @@
 ---
-title: c++ 多态
+title: c++ 多态(重写)
 published: 2025-03-01
 discription: 
 category: 指南
@@ -46,7 +46,22 @@ public:
 };
 ```
 
-不过需要注意的是，当析构函数被虚化后，继承类的析构将要递归析构
+其中有一个重点是，对virtual声明的函数在子类中需要override声明，但是在同一个类中依旧可以再一次重载：
+
+```cpp
+double area() override
+    {
+        return M_PI * radius * radius;
+    }
+    double area(int r) const
+    {
+        return M_PI * r * r;
+    }
+```
+
+其中重写的函数部分声明也需要与继承类中的一致（不能一个const一个不const）
+
+不过需要注意的是，**当析构函数被虚化后，继承类的析构将要递归析构**
 
 ```
 animalPtr = new Dog();
