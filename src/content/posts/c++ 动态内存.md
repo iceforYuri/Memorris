@@ -3,7 +3,7 @@ title: c++ 动态内存
 published: 2025-03-03
 discription: 程序运行时根据需要动态分配和释放的内存空间。
 categoriy: 指南
-tags: [C++高级]
+tags: [C++]
 ---
 *Humming and the nightly news share a very tight connection indeed.*——*Soul Eater*
 
