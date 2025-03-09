@@ -3,7 +3,7 @@ title: c++ 构造函数与析构函数
 published: 2025-03-01
 discription: 构造函数与析构函数是C++中的重要概念，本文将详细介绍构造函数与析构函数的概念、作用、调用时机、特点、注意事项等内容。
 category: 指南
-tags: [C++面向对象]
+tags: [C++ object orientation]
 ---
 *To live is to undertake a journey - no, to undertake a journey is to live. To face the wind or to follow it, all journeys lead to the gates of death... The light in which all journeys are taken is deceptive - not hopeful, but sorrowful. And the struggle never ends. Everywhere on the earth is fleeting life. We are blown by the wind. The words we write in the sand disappear and finally, when we are swallowed by the sea we do not hear the waves. The humblest of creatures must face these dreadful barriers. No-not barriers, but challenges rather...*——*The Heroic Legend of Arslan*
 

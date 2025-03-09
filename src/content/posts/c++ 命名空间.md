@@ -2,8 +2,8 @@
 title: c++ 命名空间
 published: 2025-03-04
 discription: 作为附加信息来区分不同库中相同名称的函数、类、变量等。
-categories: 指南
-tags: [C++高级]
+category: 指南
+tags: [C++ advanced]
 ---
 *It's not like I'm pessimistic or anything... I'm just moving forward without looking back.*——*Sekai Ichi Hatsukoi - World's Greatest First Love*
 
