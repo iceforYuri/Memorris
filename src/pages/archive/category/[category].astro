@@ -1,24 +1,33 @@
 ---
-import { getCategoryList } from '@utils/content-utils'
-import MainGridLayout from '@layouts/MainGridLayout.astro'
-import ArchivePanel from '@components/ArchivePanel.astro'
-import { i18n } from '@i18n/translation'
-import I18nKey from '@i18n/i18nKey'
+import ArchivePanel from "@components/ArchivePanel.astro";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedPosts, getCategoryList } from "@utils/content-utils";
 
 export async function getStaticPaths() {
-  const categories = await getCategoryList()
-  return categories.map(category => {
-    return {
-      params: {
-        category: category.name,
-      },
-    }
-  })
+  const categories = await getCategoryList();
+
+  // 为每个分类生成路径
+  return categories.map((category) => ({
+    params: {
+      // URL 中使用编码后的分类名
+      category: category.urlSafeName,
+    },
+    // 存储原始分类名，供页面组件使用
+    props: {
+      originalCategory: category.name,
+    },
+  }));
 }
 
-const category = Astro.params.category as string
+// 接收原始分类名
+const { originalCategory } = Astro.props;
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)} description={i18n(I18nKey.archive)}>
-    <ArchivePanel categories={[category]}></ArchivePanel>
+<MainGridLayout
+  title={`${originalCategory} - ${i18n(I18nKey.categories)}`}
+  description={`${i18n(I18nKey.categories)}: ${originalCategory}`}
+>
+  <ArchivePanel categories={[originalCategory]} />
 </MainGridLayout>

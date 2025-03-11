@@ -2,7 +2,7 @@
 title: c++ 异常处理
 published: 2025-03-03
 discription: 当程序在执行过程中发生错误或意外情况时，可以通过异常处理机制来捕获这些异常，并进行相应的处理，以避免程序崩溃或产生不可预期的结果。
-categories: 指南
+category: 指南
 tags: [C++高级]
 ---
 *First you must decide, then you must follow through. I believe that’s the only way you can get anything accomplished.*——*Mobile Suit Gundam SEED*

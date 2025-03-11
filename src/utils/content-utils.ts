@@ -66,9 +66,11 @@ export async function getTagList(): Promise<Tag[]> {
   }))
 }
 
+// 更新 Category 类型
 export type Category = {
   name: string
   count: number
+  urlSafeName: string  // 添加 URL 安全名称字段
 }
 
 export async function getCategoryList(): Promise<Category[]> {
@@ -76,6 +78,8 @@ export async function getCategoryList(): Promise<Category[]> {
     return import.meta.env.PROD ? data.draft !== true : true
   })
   const count: { [key: string]: number } = {}
+  
+  // 处理文章分类
   allBlogPosts.map((post: { data: { category: string | number } }) => {
     if (!post.data.category) {
       const ucKey = i18n(I18nKey.uncategorized)
@@ -87,13 +91,15 @@ export async function getCategoryList(): Promise<Category[]> {
       : 1
   })
 
+  // 排序分类
   const lst = Object.keys(count).sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase())
   })
 
-  const ret: Category[] = []
-  for (const c of lst) {
-    ret.push({ name: c, count: count[c] })
-  }
-  return ret
+  // 返回带有 URL 安全名称的分类列表
+  return lst.map(category => ({ 
+    name: category,
+    count: count[category],
+    urlSafeName: encodeURIComponent(category)  // 添加 URL 安全名称
+  }));
 }

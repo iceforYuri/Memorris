@@ -1,0 +1,20 @@
+---
+// filepath: src/pages/archive/category/index.astro
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { i18n } from "@i18n/translation";
+import I18nKey from "@i18n/i18nKey";
+import Categories from "@components/widget/Categories.astro";
+
+const title = i18n(I18nKey.categories);
+---
+
+<MainGridLayout title={title} description={title}>
+  <div
+    class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+  >
+    <div class="card-base z-10 px-9 py-6 relative w-full">
+      <h1 class="text-2xl font-bold mb-6">{title}</h1>
+      <Categories class="w-full" />
+    </div>
+  </div>
+</MainGridLayout>
