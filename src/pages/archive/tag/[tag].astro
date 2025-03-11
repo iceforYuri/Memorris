@@ -1,9 +1,11 @@
 ---
+// filepath: src/pages/archive/tag/[tag].astro
 import ArchivePanel from "@components/ArchivePanel.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
+import Markdown from "@components/misc/Markdown.astro";
 
 export async function getStaticPaths() {
   const posts = await getSortedPosts();
@@ -31,14 +33,22 @@ export async function getStaticPaths() {
 
 // 接收原始标签名
 const { originalTag } = Astro.props;
-// 编码后的标签名（URL 中的参数）
-const encodedTag = Astro.params.tag as string;
 ---
 
 <MainGridLayout
-  title={i18n(I18nKey.archive)}
-  description={i18n(I18nKey.archive)}
+  title={`${originalTag} - ${i18n(I18nKey.tags)}`}
+  description={`${i18n(I18nKey.tags)}: ${originalTag}`}
 >
-  <!-- 使用原始标签名而不是编码后的标签名 -->
-  <ArchivePanel tags={[originalTag]} />
+  <div
+    class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+  >
+    <div class="card-base z-10 px-9 py-6 relative w-full">
+      <!-- 使用 Markdown 组件渲染标题 -->
+      <Markdown class="mb-6">
+        # {originalTag}
+      </Markdown>
+
+      <ArchivePanel tags={[originalTag]} />
+    </div>
+  </div>
 </MainGridLayout>
