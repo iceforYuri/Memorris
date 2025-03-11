@@ -4,7 +4,6 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { i18n } from "@i18n/translation";
 import I18nKey from "@i18n/i18nKey";
 import Tags from "@components/widget/Tags.astro";
-import Markdown from "@components/misc/Markdown.astro"; // 添加 Markdown 组件导入
 
 const title = i18n(I18nKey.tags);
 ---
@@ -14,10 +13,7 @@ const title = i18n(I18nKey.tags);
     class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
   >
     <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 使用 Markdown 组件替代原来的 h1 标签 -->
-      <Markdown class="mb-6">
-        # {title}
-      </Markdown>
+      <h1 class="text-2xl font-bold mb-6">{title}</h1>
       <Tags class="w-full" />
     </div>
   </div>
