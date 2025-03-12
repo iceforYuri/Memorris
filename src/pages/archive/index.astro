@@ -1,11 +1,28 @@
 ---
-import MainGridLayout from '@layouts/MainGridLayout.astro'
-import ArchivePanel from '@components/ArchivePanel.astro'
-import { i18n } from '@i18n/translation'
-import I18nKey from '@i18n/i18nKey'
+// filepath: src/pages/archive/category/index.astro
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { i18n } from "@i18n/translation";
+import I18nKey from "@i18n/i18nKey";
+import Categories from "@components/widget/Categories.astro";
+import { getEntry } from "astro:content";
+import Markdown from "@components/misc/Markdown.astro";
+
+const title = i18n(I18nKey.categories);
+// 加载 categories 内容文件
+const categoriesPost = await getEntry("spec", "categories");
+const { Content } = await categoriesPost.render();
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel></ArchivePanel>
+<MainGridLayout title={title} description={title}>
+  <div
+    class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+  >
+    <div class="card-base z-10 px-9 py-6 relative w-full">
+      <!-- 使用内容文件中的标题和描述，替换原来的 h1 标签 -->
+      <Markdown class="mb-6">
+        <Content />
+      </Markdown>
+      <Categories class="w-full" />
+    </div>
+  </div>
 </MainGridLayout>
-
