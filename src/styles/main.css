@@ -155,3 +155,27 @@
 .collapsed {
     height: var(--collapsedHeight);
 }
+
+/* 修改 TOC 相关的变量 */
+:root {
+    --toc-width: 18rem;
+    /* 之前可能是 14rem 或 16rem */
+}
+
+/* TOC 相关样式 */
+.toc-group {
+    margin-bottom: 0.5rem;
+}
+
+.parent-heading {
+    font-weight: 500;
+}
+
+.child-heading {
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.child-heading:hover {
+    opacity: 1;
+}
