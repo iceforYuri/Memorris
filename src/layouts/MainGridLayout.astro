@@ -107,21 +107,25 @@ const showToc = isPost && siteConfig.toc.enable;
                     </div>
                 </div>
             </main>
-
-            <!-- 4. 修改TOC结构，去掉多余嵌套和条件判断 -->
-            {showToc && 
-                <div id="toc-wrapper" class:list={[
-                    "col-start-3 col-end-4 sticky top-14 max-w-[17.5rem] hidden lg:block transition onload-animation",
-                    {"toc-hide": siteConfig.banner.enable}
-                ]}>
-                <div id="toc-inner-wrapper" class="w-full h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                    <div id="toc" class="w-full h-full transition-swup-fade">
-                        <div class="h-8 w-full"></div>
-                        <TOC headings={headings}></TOC>
-                        <div class="h-8 w-full"></div>
-                    </div>
+            <!-- 文章页在第三栏显示TOC -->
+            {isPost && siteConfig.toc.enable && 
+                <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
+        <!-- TOC component -->
+        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition] w-[var(--toc-width)] flex items-center",
+            {"toc-hide": siteConfig.banner.enable}]}
+        >
+            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
+                <div id="toc" class="w-full h-full transition-swup-fade ">
+                    <div class="h-8 w-full"></div>
+                    <TOC headings={headings}></TOC>
+                    <div class="h-8 w-full"></div>
                 </div>
             </div>
+        </div>}
+
+        <!-- #toc needs to exist for Swup to work normally -->
+        {!siteConfig.toc.enable && <div id="toc"></div>}
+    </div>
             }
 
             <div class="footer col-span-2 onload-animation block lg:hidden">
@@ -132,20 +136,4 @@ const showToc = isPost && siteConfig.toc.enable;
         <BackToTop></BackToTop>
     </div>
 </div>
-
-<!-- 5. 简化逻辑，确保toc元素存在以保证Swup正常工作 -->
-{!showToc && <div id="toc"></div>}
 </Layout>
-
-<style>
-:root {
-  --toc-width: 17.5rem;
-}
-
-/* 确保隐藏效果 */
-#toc-wrapper.toc-hide {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-</style>
