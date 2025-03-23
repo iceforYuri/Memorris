@@ -21,7 +21,7 @@ interface Props {
   isPost?: boolean;
 }
 
-const { title, banner, description, lang, setOGTypeArticle, headings = [], isPost: explicitIsPost = false } = Astro.props
+const { title, banner, description, lang, setOGTypeArticle, headings = [], isPost: propsIsPost = false} = Astro.props
 const hasBannerCredit =
   siteConfig.banner.enable && siteConfig.banner.credit.enable
 const hasBannerLink = !!siteConfig.banner.credit.url
@@ -30,7 +30,7 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
 
 const currentPath = Astro.url.pathname;
 const isPostPage = currentPath.startsWith('/posts/') || currentPath.includes('/posts/');
-const isPost = explicitIsPost !== undefined ? explicitIsPost : isPostPage;
+const isPost = isPostPage;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
