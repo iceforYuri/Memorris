@@ -105,7 +105,7 @@ const isPost = isPostPage;
 
             <!-- 文章页在第三栏显示TOC -->
             {isPost && siteConfig.toc.enable && 
-                <div class="relative max-w-[var(--page-width)] mx-auto">
+                <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
         <!-- TOC component -->
         {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition] w-[var(--toc-width)] flex items-center",
             {"toc-hide": siteConfig.banner.enable}]}
