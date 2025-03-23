@@ -103,16 +103,18 @@ const isPost = isPostPage;
                 </div>
             </main>
 
-            <!-- 文章页在第三栏显示TOC -->
+            <!-- 文章页在第三栏显示TOC，保留TOC下滑显示逻辑 -->
             {isPost && siteConfig.toc.enable && 
-                <div id="toc-in-grid" class:list={[
-                    "col-start-3 col-end-4 max-w-[17.5rem] onload-animation",
-                    {"toc-hide": siteConfig.banner.enable} // 保留toc-hide类
+                <div id="toc-wrapper" class:list={[
+                    "col-start-3 col-end-4 max-w-[17.5rem] onload-animation transition",
+                    {"toc-hide": siteConfig.banner.enable} // 保留toc-hide类，以保持下滑显示功能
                 ]}>
-                    <div class="sticky top-14 w-full h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                        <div class="h-8 w-full"></div>
-                        <TOC headings={headings}></TOC>
-                        <div class="h-8 w-full"></div>
+                    <div id="toc-inner-wrapper" class="sticky top-14 w-full h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
+                        <div id="toc" class="w-full h-full transition-swup-fade">
+                            <div class="h-8 w-full"></div>
+                            <TOC headings={headings}></TOC>
+                            <div class="h-8 w-full"></div>
+                        </div>
                     </div>
                 </div>
             }
