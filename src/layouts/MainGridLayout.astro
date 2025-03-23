@@ -91,7 +91,7 @@ const isPost = isPostPage;
                 // 非文章页使用原有布局
                 {"col-span-2 lg:col-span-1": !isPost},
                 // 文章页使用中间位置
-                {"col-start-2 col-end-3": isPost}
+                {"col-start-2 col-end-3 max-w-[70rem] mx-auto": isPost}
             ]}>
                 <div id="content-wrapper" class="onload-animation">
                     <!-- the overflow-hidden here prevent long text break the layout-->
