@@ -21,16 +21,16 @@ interface Props {
   isPost?: boolean;
 }
 
-const { title, banner, description, lang, setOGTypeArticle, headings = [] ,isPost: propsIsPost} = Astro.props
+const { title, banner, description, lang, setOGTypeArticle, headings = [], isPost: propsIsPost = false} = Astro.props
 const hasBannerCredit =
   siteConfig.banner.enable && siteConfig.banner.credit.enable
 const hasBannerLink = !!siteConfig.banner.credit.url
 
 const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)` : "5.5rem"
-// 添加这里，自动检测是否为文章页
+
 const currentPath = Astro.url.pathname;
 const isPostPage = currentPath.startsWith('/posts/') || currentPath.includes('/posts/');
-const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为true
+const isPost = isPostPage;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -53,12 +53,11 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
 
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style=`top: ${mainPanelTop}`>
-    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <!-- 修改网格布局，根据isPost条件应用不同布局 -->
+        <!-- 网格布局，根据isPost条件应用不同布局 -->
         <div id="main-grid" class:list={[
             "transition duration-700 w-full left-0 right-0 grid grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-0 md:px-4",
-            // 非文章页是两栏布局
+            // 正常页面是两栏布局
             {"grid-cols-[17.5rem_auto]": !isPost},
             // 文章页是三栏布局
             {"grid-cols-[17.5rem_minmax(auto,_45rem)_17.5rem]": isPost}
@@ -68,10 +67,10 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
                                    class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
                                    "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
             >
-                <!-- ...内容保持不变... -->
+                <!-- ...credit代码保持不变... -->
             </a>}
 
-            <!-- 修改SideBar类，根据isPost条件应用不同位置 -->
+            <!-- 侧边栏布局根据页面类型调整 -->
             <SideBar class:list={[
                 "mb-4 onload-animation",
                 // 非文章页布局
@@ -80,7 +79,7 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
                 {"col-start-1 col-end-2 max-w-[17.5rem]": isPost}
             ]} headings={headings}></SideBar>
 
-            <!-- 修改主内容区位置 -->
+            <!-- 主内容区布局根据页面类型调整 -->
             <main id="swup-container" class:list={[
                 "transition-swup-fade overflow-hidden",
                 // 非文章页布局
@@ -89,7 +88,6 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
                 {"col-start-2 col-end-3": isPost}
             ]}>
                 <div id="content-wrapper" class="onload-animation">
-                    <!-- ...内容保持不变... -->
                     <slot></slot>
                     <div class="footer col-span-2 onload-animation hidden lg:block">
                         <Footer></Footer>
@@ -97,12 +95,9 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
                 </div>
             </main>
 
-            <!-- 新增：文章页的内嵌TOC -->
+            <!-- 文章页时，在第三栏显示TOC -->
             {isPost && siteConfig.toc.enable && 
-                <div id="toc-in-grid" class:list={[
-                    "col-start-3 col-end-4 max-w-[17.5rem] onload-animation transition", 
-                    {"toc-hide": siteConfig.banner.enable} // 保留toc-hide类，以保持下滑显示功能
-                ]}>
+                <div id="toc-in-grid" class="col-start-3 col-end-4 max-w-[17.5rem] onload-animation">
                     <div class="sticky top-14 w-full h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                         <div class="h-8 w-full"></div>
                         <TOC headings={headings}></TOC>
@@ -120,15 +115,14 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
     </div>
 </div>
 
-<!-- 修改：仅在非文章页显示原有TOC结构 -->
-{!isPost && siteConfig.toc.enable && 
+
+<!-- The things that should be under the banner, only the TOC for now -->
 <div class="absolute w-full z-0 hidden 2xl:block">
     <div class="relative max-w-[var(--page-width)] mx-auto">
         <!-- TOC component -->
-        <div id="toc-wrapper" class:list={[
-            "hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] flex items-center",
-            {"toc-hide": siteConfig.banner.enable} // 保留toc-hide类，以保持下滑显示功能
-        ]}>
+        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] flex items-center",
+            {"toc-hide": siteConfig.banner.enable}]}
+        >
             <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                 <div id="toc" class="w-full h-full transition-swup-fade ">
                     <div class="h-8 w-full"></div>
@@ -136,24 +130,10 @@ const isPost = isPostPage || propsIsPost; // 如果是文章页，则设置为tr
                     <div class="h-8 w-full"></div>
                 </div>
             </div>
-        </div>
+        </div>}
+
+        <!-- #toc needs to exist for Swup to work normally -->
+        {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
-}
-
-<!-- #toc需要存在以使Swup正常工作 -->
-{!siteConfig.toc.enable && <div id="toc"></div>}
 </Layout>
-<style>
-:root {
-  --sidebar-width: 17.5rem;
-  --toc-width: 17.5rem; /* 使TOC宽度与侧边栏一致 */
-}
-
-/* 确保toc-hide类与原来的CSS规则一致，应用于新的内嵌TOC */
-#toc-in-grid.toc-hide {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-</style>
