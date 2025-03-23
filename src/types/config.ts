@@ -22,7 +22,7 @@ export type SiteConfig = {
   }
   toc: {
     enable: boolean
-    depth: 1 | 2 | 3 | 4 | 5
+    depth: 1 | 2 | 3 | 4 | 5 | 6
   }
 
   favicon: Favicon[]
