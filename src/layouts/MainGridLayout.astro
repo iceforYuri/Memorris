@@ -21,7 +21,6 @@ interface Props {
   isPost?: boolean;
 }
 
-// 1. 修正这里，使用传入的propsIsPost
 const { title, banner, description, lang, setOGTypeArticle, headings = [], isPost: propsIsPost = false} = Astro.props
 const hasBannerCredit =
   siteConfig.banner.enable && siteConfig.banner.credit.enable
@@ -31,11 +30,7 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
 
 const currentPath = Astro.url.pathname;
 const isPostPage = currentPath.startsWith('/posts/') || currentPath.includes('/posts/');
-// 2. 优先使用传入的isPost参数，否则使用URL判断
-const isPost = propsIsPost || isPostPage;
-
-// 3. 提前计算条件以减少模板中的重复计算
-const showToc = isPost && siteConfig.toc.enable;
+const isPost = isPostPage;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -107,26 +102,27 @@ const showToc = isPost && siteConfig.toc.enable;
                     </div>
                 </div>
             </main>
+
             <!-- 文章页在第三栏显示TOC -->
-{isPost && siteConfig.toc.enable && 
-    <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
+            {isPost && siteConfig.toc.enable && 
+                <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
         <!-- TOC component -->
-        <div id="toc-wrapper" class:list={["hidden lg:block transition w-[var(--toc-width)] flex items-center",
+        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition] w-[var(--toc-width)] flex items-center",
             {"toc-hide": siteConfig.banner.enable}]}
         >
-            <div id="toc-inner-wrapper" class="sticky top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
+            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                 <div id="toc" class="w-full h-full transition-swup-fade ">
                     <div class="h-8 w-full"></div>
                     <TOC headings={headings}></TOC>
                     <div class="h-8 w-full"></div>
                 </div>
             </div>
-        </div>
+        </div>}
 
         <!-- #toc needs to exist for Swup to work normally -->
         {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
-}
+            }
 
             <div class="footer col-span-2 onload-animation block lg:hidden">
                 <Footer></Footer>
