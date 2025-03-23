@@ -53,41 +53,49 @@ const isPost = isPostPage;
 
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style=`top: ${mainPanelTop}`>
+    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <!-- 网格布局，根据isPost条件应用不同布局 -->
+        <!-- 修改这里，根据isPost条件应用不同布局 -->
         <div id="main-grid" class:list={[
             "transition duration-700 w-full left-0 right-0 grid grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-0 md:px-4",
-            // 正常页面是两栏布局
+            // 非文章页使用原有两栏布局
             {"grid-cols-[17.5rem_auto]": !isPost},
-            // 文章页是三栏布局
+            // 文章页使用三栏对称布局
             {"grid-cols-[17.5rem_minmax(auto,_45rem)_17.5rem]": isPost}
         ]}>
-            <!-- Banner image credit 保持不变 -->
+            <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
                                    class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
                                    "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
             >
-                <!-- ...credit代码保持不变... -->
+                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
+                <div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
+                <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
+                    {"group-hover:opacity-100": hasBannerLink}]}
+                      name="fa6-solid:arrow-up-right-from-square">
+                </Icon>
             </a>}
 
-            <!-- 侧边栏布局根据页面类型调整 -->
+            <!-- 修改SideBar位置 -->
             <SideBar class:list={[
                 "mb-4 onload-animation",
-                // 非文章页布局
+                // 非文章页使用原有布局
                 {"row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem]": !isPost},
-                // 文章页布局
+                // 文章页使用左侧固定位置
                 {"col-start-1 col-end-2 max-w-[17.5rem]": isPost}
             ]} headings={headings}></SideBar>
 
-            <!-- 主内容区布局根据页面类型调整 -->
+            <!-- 修改main位置 -->
             <main id="swup-container" class:list={[
-                "transition-swup-fade overflow-hidden",
-                // 非文章页布局
+                "transition-swup-fade overflow-hidden", 
+                // 非文章页使用原有布局
                 {"col-span-2 lg:col-span-1": !isPost},
-                // 文章页布局
+                // 文章页使用中间位置
                 {"col-start-2 col-end-3": isPost}
             ]}>
                 <div id="content-wrapper" class="onload-animation">
+                    <!-- the overflow-hidden here prevent long text break the layout-->
+                    <!-- make id different from windows.swup global property -->
                     <slot></slot>
                     <div class="footer col-span-2 onload-animation hidden lg:block">
                         <Footer></Footer>
@@ -95,9 +103,12 @@ const isPost = isPostPage;
                 </div>
             </main>
 
-            <!-- 文章页时，在第三栏显示TOC -->
+            <!-- 文章页在第三栏显示TOC -->
             {isPost && siteConfig.toc.enable && 
-                <div id="toc-in-grid" class="col-start-3 col-end-4 max-w-[17.5rem] onload-animation">
+                <div id="toc-in-grid" class:list={[
+                    "col-start-3 col-end-4 max-w-[17.5rem] onload-animation",
+                    {"toc-hide": siteConfig.banner.enable} // 保留toc-hide类
+                ]}>
                     <div class="sticky top-14 w-full h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                         <div class="h-8 w-full"></div>
                         <TOC headings={headings}></TOC>
@@ -112,28 +123,6 @@ const isPost = isPostPage;
         </div>
 
         <BackToTop></BackToTop>
-    </div>
-</div>
-
-
-<!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
-        <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] flex items-center",
-            {"toc-hide": siteConfig.banner.enable}]}
-        >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full transition-swup-fade ">
-                    <div class="h-8 w-full"></div>
-                    <TOC headings={headings}></TOC>
-                    <div class="h-8 w-full"></div>
-                </div>
-            </div>
-        </div>}
-
-        <!-- #toc needs to exist for Swup to work normally -->
-        {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
 </Layout>
