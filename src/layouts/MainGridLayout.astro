@@ -61,7 +61,7 @@ const isPost = isPostPage;
             // 非文章页使用原有两栏布局
             {"grid-cols-[17.5rem_auto]": !isPost},
             // 文章页使用三栏对称布局
-            {"grid-cols-[17.5rem_minmax(auto,_90rem)_17.5rem]": isPost}
+            {"grid-cols-[17.5rem_minmax(auto,_45rem)_17.5rem]": isPost}
         ]}>
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
@@ -91,7 +91,7 @@ const isPost = isPostPage;
                 // 非文章页使用原有布局
                 {"col-span-2 lg:col-span-1": !isPost},
                 // 文章页使用中间位置
-                {"col-start-2 col-end-3 max-w-[70rem] mx-auto": isPost}
+                {"col-start-2 col-end-3 max-w-[45rem] mx-auto": isPost}
             ]}>
                 <div id="content-wrapper" class="onload-animation">
                     <!-- the overflow-hidden here prevent long text break the layout-->
