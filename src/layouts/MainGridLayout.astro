@@ -108,25 +108,25 @@ const showToc = isPost && siteConfig.toc.enable;
                 </div>
             </main>
             <!-- 文章页在第三栏显示TOC -->
-            {isPost && siteConfig.toc.enable && 
-                <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
+{isPost && siteConfig.toc.enable && 
+    <div class="relative col-start-3 col-end-4 max-w-[17.5rem] mx-auto">
         <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition] w-[var(--toc-width)] flex items-center",
+        <div id="toc-wrapper" class:list={["hidden lg:block transition w-[var(--toc-width)] flex items-center",
             {"toc-hide": siteConfig.banner.enable}]}
         >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
+            <div id="toc-inner-wrapper" class="sticky top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                 <div id="toc" class="w-full h-full transition-swup-fade ">
                     <div class="h-8 w-full"></div>
                     <TOC headings={headings}></TOC>
                     <div class="h-8 w-full"></div>
                 </div>
             </div>
-        </div>}
+        </div>
 
         <!-- #toc needs to exist for Swup to work normally -->
         {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
-            }
+}
 
             <div class="footer col-span-2 onload-animation block lg:hidden">
                 <Footer></Footer>
