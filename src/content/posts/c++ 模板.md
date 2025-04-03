@@ -3,7 +3,7 @@ title: c++ 模板
 published: 2025-03-21
 discription: C++ 模板是 C++ 的一个重要特性，它允许程序员编写通用的代码，以便在不同的数据类型上工作。模板可以用于函数和类，使得代码更加灵活和可重用。
 category: 指南
-tags: [c++高级]
+tags: [C++高级]
 ---
 *In my family; Father, Mother, and Grandmother all hated each other. I was the trash can into which they dumped their hatred. That's why I only thought about beautiful and warm things, fun things. But after I met you, I understood. No matter how many beautiful stories I made, they were all lies. Because the person telling the stories, me, was an ugly and dirty creature.*——*Bungaku Shoujo*
 
@@ -18,7 +18,6 @@ tags: [c++高级]
 泛型编程是一种以独立于任何特定类型的方式编写代码的编程方法。它允许程序员编写可以处理不同数据类型的通用代码，提高了代码的可重用性和灵活性。
 
 例如，一个泛型的排序函数可以对整数数组、字符串数组等不同类型的数组进行排序，而**不需要为每种类型都编写一个单独的排序函数**。
-
 
 ## 函数模板
 
@@ -62,7 +61,6 @@ int main ()
     return 0;
 }
 ```
-
 
 ## 类模板
 

@@ -3,7 +3,7 @@ title: c++ 对象数组与指针
 published: 2025-03-28
 discription: 
 category: 指南
-tags: [c++面向对象]
+tags: [C++面向对象]
 ---
 *请求出错: SOCKSHTTPSConnectionPool(host='animechan.io', port=443): Max retries exceeded with url: /api/v1/quotes/random (Caused by NewConnectionError('<urllib3.contrib.socks.SOCKSHTTPSConnection object at 0x0000021E558E2E10>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'))*——*未知*
 
@@ -22,7 +22,7 @@ tags: [c++面向对象]
 
 # C++ 指针
 
-取地址&、解引用* 
+取地址&、解引用*
 
 ## void类型指针
 

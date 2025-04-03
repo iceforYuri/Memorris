@@ -3,7 +3,7 @@ title: c++ 预处理器
 published: 2025-03-21
 discription: C++ 预处理器是一个在编译之前对源代码进行处理的工具。它可以用于宏定义、条件编译、文件包含等操作。预处理器的主要作用是将源代码转换为编译器可以理解的格式。
 category: 指南
-tags: [c++高级]
+tags: [C++高级]
 ---
 *There isn't anything that's evil to everyone. Even the worst evil saves something. On the other hand, even the greatest good hurts someone. The phrase "There are no absolutes in this world" means there isn't any absolute good or absolute evil.*——*Hanamonogatari*
 
@@ -54,7 +54,6 @@ int main ()
 
 ```
 
-
 ### 参数宏
 
 `#define`同样可以定义一个类似函数可以传参的宏：
@@ -62,7 +61,6 @@ int main ()
 ```
 #define MIN(a,b) (a<b ? a : b)
 ```
-
 
 ## #if/#elif/#else/#endif/#ifdef 条件编译
 
@@ -112,7 +110,6 @@ Trace: Coming out of main function
 
 ## 预定义宏
 
-
 C++ 提供了下表所示的一些预定义宏：
 
 | 宏             | 描述                                                                             |
@@ -146,13 +143,11 @@ Value of __DATE__ : Feb 28 2011
 Value of __TIME__ : 18:52:48
 ```
 
-
 # 特殊预处理运算符
 
 ## # 和 ## 运算符
 
 这里的#运算符并不是引用头文件的那个#，而是作为参数宏的一种运算过程：
-
 
 ## `#` 运算符（字符串化运算符）
 
@@ -166,7 +161,6 @@ const char* str = STRINGIFY(Hello World);  // 等价于 "Hello World"
 ```
 
 当宏展开时，`#x` 会变成 `"Hello World"`，即参数被转换为带引号的字符串
-
 
 ### `##` 运算符（标记连接运算符）
 
