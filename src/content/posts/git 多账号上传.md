@@ -176,6 +176,17 @@ git remote remove <_name>
 
 ### 更新仓库
 
+检查提交者
+
+```
+git config user.name
+git config user.email
+
+//全局提交者
+git config --global user.name
+git config --global user.email
+```
+
 首先还是需要一次重新添加将更改过的文件加入本地仓库
 
 ```
