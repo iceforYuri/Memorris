@@ -2,6 +2,8 @@
 
 This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
 
+想查看详细博主信息可选择 [Site](https://resume.memorris.dpdns.org/)
+
 ::github{repo="saicaca/fuwari"}
 
 > ### Sources of images used in this site
