@@ -297,7 +297,6 @@ public class MyStaticCounter {
 * 只有当该线程释放了 `lockObject`的锁后，其他线程才能获取该锁并进入该代码块。
 * 这种方式提供了 **更细粒度的控制** ，只对需要同步的代码进行锁定，而不是整个方法。
 
-
 ## `synchronized` 的工作原理
 
 当一个线程进入 `synchronized` 代码块或方法时，它会尝试获取一个 **对象的内置锁（monitor lock，也叫监视器锁）** 。
@@ -316,13 +315,11 @@ public class MyStaticCounter {
 
 **1.每个Java对象都是一个潜在的“锁”**
 
-
 Java的设计哲学是， **每个Java对象都可以作为一把锁** 。当你使用 `synchronized` 关键字时，它背后操作的就是这个对象的监视器。
 
 * **`synchronized (this)` 或 同步非静态方法：** 锁是当前实例对象。
 * **`synchronized (SomeClass.class)` 或 同步静态方法：** 锁是当前类的 `Class` 对象。
 * **`synchronized (someObject)`：** 锁是 `someObject` 实例。
-
 
 **2. Monitor (管程) 的构成与工作机制**
 
@@ -339,7 +336,6 @@ Java的设计哲学是， **每个Java对象都可以作为一把锁** 。当你
 4. **计数器（Reentrancy Counter）：**
    `synchronized` 是 **可重入锁** 。这意味着如果一个线程已经持有了某个对象的Monitor，那么它可以再次进入该对象的其他 `synchronized` 方法或代码块而不会死锁。
    Monitor内部有一个计数器。当一个线程首次获取Monitor时，计数器加1。每当同一个线程再次进入该Monitor（重入）时，计数器会再次加1。当线程退出 `synchronized` 代码块/方法时，计数器减1。只有当计数器归零时，锁才真正被释放。
-
 
 **3. `synchronized` 的底层指令**
 
@@ -389,10 +385,231 @@ TestThread离开 methodB()
 TestThread离开 methodA()
 ```
 
-
 1. 当一个线程第一次成功获取到某个对象的Monitor锁时，这个 **计数器会加1** ，并且将Monitor的**所有者（Owner）**设置为当前线程。
-1. 当同一个线程再次尝试获取这个对象的Monitor锁（例如，它调用了同一个对象的另一个 `synchronized` 方法，或者在一个 `synchronized` 方法中又调用了另一个 `synchronized` 方法），JVM会发现当前线程就是这个Monitor的Owner。此时，它不会阻塞当前线程，而是直接允许其进入，并且将 **计数器再次加1** 。
-1. 每当线程退出一个 `synchronized` 代码块或方法时， **计数器就会减1** 。
-1. 只有当计数器归零时，这个Monitor锁才会被完全释放，其他等待的线程才能有机会获取它
+2. 当同一个线程再次尝试获取这个对象的Monitor锁（例如，它调用了同一个对象的另一个 `synchronized` 方法，或者在一个 `synchronized` 方法中又调用了另一个 `synchronized` 方法），JVM会发现当前线程就是这个Monitor的Owner。此时，它不会阻塞当前线程，而是直接允许其进入，并且将 **计数器再次加1** 。
+3. 每当线程退出一个 `synchronized` 代码块或方法时， **计数器就会减1** 。
+4. 只有当计数器归零时，这个Monitor锁才会被完全释放，其他等待的线程才能有机会获取它
 
 如果 `synchronized` 不具备重入性，那么当 `TestThread` 在 `methodA()` 中调用 `methodB()` 时，它会尝试再次获取 `demo` 对象的锁。由于 `demo` 对象的锁已经被 `TestThread` 持有，如果不可重入，`TestThread` 就会被自己阻塞，从而导致死锁。但由于 `synchronized` 是可重入的，`TestThread` 可以顺利进入 `methodB()`。
+
+
+## `ReentrantLock`锁机制升级
+
+本质上是locks部分：`ReentrantLock` 是 `Lock` 接口的实现类，它提供了与 `synchronized` 相似的互斥和内存可见性保证，但提供了更丰富的操作。
+
+在Java 5之后，`java.util.concurrent.locks` 包（通常简称为 `JUC` 包中的 `locks` 部分）提供了比 `synchronized` 关键字更强大、更灵活的锁机制。其中最核心的就是 `ReentrantLock`。
+
+### 核心方法
+
+
+`Lock` 接口中几个重要的方法：
+
+* **`void lock()`：**
+  * 获取锁。如果锁被其他线程持有，当前线程会 **一直阻塞** ，直到获取到锁。
+  * 与 `synchronized` 类似，是最常用的加锁方式。
+* **`void unlock()`：**
+  * 释放锁。 **必须在 `finally` 块中调用** ，以确保锁在任何情况下都能被释放，避免死锁。
+  * 如果当前线程没有持有锁就调用 `unlock()`，会抛出 `IllegalMonitorStateException`。
+* **`boolean tryLock()`：**
+  * 尝试获取锁。如果锁可用，则立即获取并返回 `true`。
+  * 如果锁不可用，则立即返回 `false`， **不会阻塞** 。
+  * 这使得你可以实现非阻塞的锁获取逻辑，例如：“如果能拿到锁就处理，拿不到就先做别的事情”。
+* **`boolean tryLock(long timeout, TimeUnit unit)`：**
+  * 在指定的时间内尝试获取锁。
+  * 如果在指定时间内获取到锁，返回 `true`。
+  * 如果超时仍未获取到锁，返回 `false`。
+  * 这使得你可以实现带超时机制的锁获取。
+* **`void lockInterruptibly()`：**
+  * 获取锁。如果锁被其他线程持有，当前线程会阻塞。
+  * **但与 `lock()` 不同的是，如果当前线程在等待锁的过程中被中断，它会抛出 `InterruptedException`。**
+  * 这使得你可以响应中断，优雅地退出等待。
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class ReentrantLockDemo {
+    private int counter = 0; // 共享资源：计数器
+    private final Lock lock = new ReentrantLock(); // 创建 ReentrantLock 实例
+
+    public void increment() {
+        lock.lock(); // 获取锁
+        try {
+            // 临界区代码
+            counter++;
+            System.out.println(Thread.currentThread().getName() + " incremented counter to: " + counter);
+        } finally {
+            // 确保锁在任何情况下都被释放
+            lock.unlock(); 
+        }
+    }
+
+    public int getCounter() {
+        // 通常读取共享变量也需要加锁，以保证可见性
+        lock.lock();
+        try {
+            return counter;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        ReentrantLockDemo demo = new ReentrantLockDemo();
+
+        Runnable task = () -> {
+            for (int i = 0; i < 10000; i++) {
+                demo.increment();
+            }
+        };
+
+        Thread t1 = new Thread(task, "Thread-A");
+        Thread t2 = new Thread(task, "Thread-B");
+        Thread t3 = new Thread(task, "Thread-C");
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.join(); 
+        t2.join();
+        t3.join();
+
+        System.out.println("Final counter value: " + demo.getCounter());
+        // 最终结果会是 30000
+    }
+}
+```
+
+**重点：`lock.unlock()` 必须放在 `finally` 块中！**
+这是因为如果在 `try` 块中发生了异常，`lock()` 之后的代码可能不会执行，导致 `unlock()` 无法被调用，从而造成锁永远不会被释放，引发 **死锁** 。将 `unlock()` 放在 `finally` 块中，可以确保无论 `try` 块中的代码是否发生异常，`unlock()` 都会被执行。
+
+
+### `ReentrantLock` 与 `synchronized` 的对比总结
+
+| 特性/方面            | `synchronized`                               | `ReentrantLock`                                           |
+| -------------------- | ---------------------------------------------- | ----------------------------------------------------------- |
+| **用法**       | 关键字，隐式加锁/解锁                          | 类，显式调用 `lock()`和 `unlock()`方法                  |
+| **灵活性**     | 较差，功能固定                                 | 更高，提供更多高级功能                                      |
+| **中断响应**   | 无法响应中断（线程会一直阻塞）                 | `lockInterruptibly()`可响应中断                           |
+| **尝试获取锁** | 无法实现非阻塞获取                             | `tryLock()`和 `tryLock(timeout, unit)`可实现            |
+| **锁类型**     | 只能是排他锁                                   | 可实现公平锁/非公平锁，且可配合 `Condition`实现更复杂同步 |
+| **性能**       | JDK 1.6 后优化很多，性能接近 `ReentrantLock` | 性能通常更高，尤其在低竞争环境下                            |
+| **异常处理**   | 自动释放锁，无需 `finally`块                 | 必须在 `finally`块中手动 `unlock()`释放锁               |
+| **底层实现**   | JVM 层面，基于 Monitor 对象                    | Java 代码层面，基于 AQS（AbstractQueuedSynchronizer）       |
+
+
+## `volatile` 关键字
+
+`volatile` 是Java 虚拟机提供的一种轻量级的同步机制，它主要用于保证变量的 **内存可见性** (Memory Visibility)和**禁止指令重排序。**
+
+> Java内存层面上的观察者模式变量
+
+
+### 内存可见性问题
+
+ **Java内存模型** (Java Memory Moedel, JMM)。JMM规定了所有的变量都存储在 **主内存** (Main Memory)中。每个线程都有自己的 **工作内存** (Working Memory)，工作内存中保存了该线程使用到的变量的副本。线程对变量的所有操作(读、取)都必须在**工作内存**中进行，而不能直接读写主内存中的变量。
+
+当一个线程修改了工作内存中的变量副本时，它需要将更新后的值刷新到主内存中，而其他线程如果想要读取这个变量，也需要从主内存中重新加载最新值到自己的工作内存中。这就是内存可见性问题。
+
+
+### `volatile` 关键字的作用
+
+`volatile` 关键字就是为了解决上述的**可见性**和 **有序性（禁止指令重排）问题，但它不保证原子性** 。
+
+当你声明一个变量为 `volatile` 时，它会做以下两件事：
+
+1. **保证可见性：**
+   当一个线程修改了 `volatile` 变量的值时，这个新值会**立即被刷新到主内存**中。
+   当另一个线程读取 `volatile` 变量时，它总是会 **从主内存中重新读取** ，而不是使用自己工作内存中的缓存值。
+   这确保了对 `volatile` 变量的所有修改，对所有线程都是立即可见的。
+2. **保证有序性（禁止指令重排）：**
+   `volatile` 变量的读写操作会插入特殊的 **内存屏障（Memory Barrier）** 。
+
+   * 在 `volatile` 写操作之前插入一个屏障：确保屏障之前的操作（包括对其他非 `volatile` 变量的修改）都已完成，且其结果对其他线程可见，并且不允许将屏障之后的指令重排到屏障之前。
+   * 在 `volatile` 写操作之后插入一个屏障：确保屏障之前的 `volatile` 写操作已经刷新到主内存。
+   * 在 `volatile` 读操作之后插入一个屏障：确保屏障之后的指令不会被重排到屏障之前，防止读取到过期的值。
+
+   通过这些内存屏障，`volatile` 确保了对其变量的操作不会被重排序，从而避免了因指令重排导致的问题。
+3. **`volatile` 不保证原子性**
+
+这是 `volatile` 最常被误解的地方。**`volatile` 变量的复合操作（如 `i++`）不是原子的。**
+
+* `i++` 这个操作实际上包含三个步骤：
+  1. 读取 `i` 的当前值。
+  2. 对 `i` 进行加1操作。
+  3. 将新值写回 `i`。
+* 虽然 `volatile` 可以保证步骤 1（读取）和步骤 3（写入）是直接与主内存交互，保证了可见性。但是，在步骤 1 和步骤 3 之间，如果有多个线程同时执行，仍然可能出现问题。
+
+
+### 禁止指令重新排序
+
+编译器和处理器为了优化性能，可能会对指令进行重排序。而 `volatile`关键字会**阻止**对其修饰的变量的读写操作与其他普通内存操作之间的重排序。
+
+简单来说，`volatile`就像一个”屏障”，它之前的操作都必须在它之前运行，它之后的操作都必须在它之后运行。
+
+```java
+public class VolatileVisibilityDemo {
+
+    // 共享变量：不使用 volatile 修饰
+    private boolean running = true;
+
+    public void stopRunning() {
+        System.out.println(Thread.currentThread().getName() + " 正在修改 running 为 false...");
+        running = false; // 修改标志位
+        System.out.println(Thread.currentThread().getName() + " 已将 running 设置为 false.");
+    }
+
+    public void runLoop() {
+        System.out.println(Thread.currentThread().getName() + " 开始循环检查 running 状态...");
+        while (running) { // 持续检查 running 状态
+            // 可以放一些不耗时的操作，或者短暂休眠，避免CPU空转过快
+            // Thread.sleep(1); // 如果加入 sleep，可能会因为调度导致偶尔“正确”
+        }
+        System.out.println(Thread.currentThread().getName() + " 检测到 running 为 false，循环结束！");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        VolatileVisibilityDemo demo = new VolatileVisibilityDemo();
+
+        // 线程A：读线程，负责循环检查 running 状态
+        Thread readerThread = new Thread(() -> {
+            demo.runLoop();
+        }, "ReaderThread");
+
+        // 线程B：写线程，负责在一段时间后修改 running 状态
+        Thread writerThread = new Thread(() -> {
+            try {
+                System.out.println(Thread.currentThread().getName() + " 准备休眠 1 秒后修改 running...");
+                Thread.sleep(1000); // 模拟一些耗时操作
+                demo.stopRunning();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, "WriterThread");
+
+        readerThread.start();
+        writerThread.start();
+
+        // 等待两个线程执行完毕
+        readerThread.join();
+        writerThread.join();
+
+        System.out.println("主线程结束。");
+    }
+}
+```
+
+![1753864530594](image/Java多线程/1753864530594.png)
+
+可以看到进程一直卡死不动，说明在修改线程中对于flag的修改并没有加载到观察线程的工作区中。
+
+添加volatile 指令：
+
+```java
+private volatile boolean running = true;
+```
+
+程序运行结果如下：
+
+![1753864651787](image/Java多线程/1753864651787.png)
