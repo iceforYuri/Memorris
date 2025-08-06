@@ -297,7 +297,7 @@ public class MyStaticCounter {
 * 只有当该线程释放了 `lockObject`的锁后，其他线程才能获取该锁并进入该代码块。
 * 这种方式提供了 **更细粒度的控制** ，只对需要同步的代码进行锁定，而不是整个方法。
 
-## `synchronized` 的工作原理
+### `synchronized` 的工作原理
 
 当一个线程进入 `synchronized` 代码块或方法时，它会尝试获取一个 **对象的内置锁（monitor lock，也叫监视器锁）** 。
 
@@ -307,7 +307,7 @@ public class MyStaticCounter {
 
 **这确保了在任何给定时刻，只有一个线程可以执行 `synchronized` 保护的代码段，从而避免了数据竞争。**
 
-### 原理(Monitor/管程)
+#### 原理(Monitor/管程)
 
 在Java中，`synchronized` 关键字实现同步的基石是  **Monitor（监视器）** ，也常被称为 **管程** 。每个Java对象都可以关联一个监视器，当一个线程试图进入 `synchronized` 代码块或方法时，它实际上就是在尝试获取这个对象所关联的监视器锁。
 
@@ -347,7 +347,7 @@ Java的设计哲学是， **每个Java对象都可以作为一把锁** 。当你
 * **`monitorexit`：**
   当JVM执行到 `synchronized` 代码块的**结束位置**时（无论是正常退出还是异常退出），会执行 `monitorexit` 指令。它释放 Monitor 的所有权，计数器减1。当计数器为0时，锁才完全释放。
 
-### 可重入性
+#### 可重入性
 
 `synchronized` 锁是可重入的。这意味着如果一个线程已经持有一个对象的锁，它可以再次进入同一个对象的其他 `synchronized` 方法或代码块而不会 **死锁** 。每次重入，锁的计数器会增加；每次退出，计数器会减少。只有当计数器归零时，锁才真正被释放
 
@@ -392,15 +392,26 @@ TestThread离开 methodA()
 
 如果 `synchronized` 不具备重入性，那么当 `TestThread` 在 `methodA()` 中调用 `methodB()` 时，它会尝试再次获取 `demo` 对象的锁。由于 `demo` 对象的锁已经被 `TestThread` 持有，如果不可重入，`TestThread` 就会被自己阻塞，从而导致死锁。但由于 `synchronized` 是可重入的，`TestThread` 可以顺利进入 `methodB()`。
 
+### `synchronized`局限
 
-## `ReentrantLock`锁机制升级
+
+* **无法响应中断** ：当一个线程因为等待 `synchronized` 锁而被阻塞时，它无法被中断。它会一直等到拿到锁或者程序结束。
+* **无法实现非阻塞的获取锁** ：`synchronized` 要么获取到锁，要么就一直阻塞等待。它无法像 `tryLock()` 那样，在获取不到锁时立即返回，让线程去执行其他任务。
+* **不够灵活的锁机制** ：
+* **公平性** ：`synchronized` 是非公平锁，无法保证等待时间最长的线程优先获取锁，可能导致线程饥饿。
+* **读写锁** ：`synchronized` 只能实现排他锁，不允许并发的读操作。
+
+#### 与JUC对比
+
+提供了很多 `synchronized` 无法实现的高级功能，比如可中断锁、非阻塞锁、公平锁、读写锁等，同时在提供更好的性能上还增加了线程安全性
+
+## `ReentrantLock`锁机制升级（JUC中一种）
 
 本质上是locks部分：`ReentrantLock` 是 `Lock` 接口的实现类，它提供了与 `synchronized` 相似的互斥和内存可见性保证，但提供了更丰富的操作。
 
 在Java 5之后，`java.util.concurrent.locks` 包（通常简称为 `JUC` 包中的 `locks` 部分）提供了比 `synchronized` 关键字更强大、更灵活的锁机制。其中最核心的就是 `ReentrantLock`。
 
 ### 核心方法
-
 
 `Lock` 接口中几个重要的方法：
 
@@ -484,7 +495,6 @@ public class ReentrantLockDemo {
 **重点：`lock.unlock()` 必须放在 `finally` 块中！**
 这是因为如果在 `try` 块中发生了异常，`lock()` 之后的代码可能不会执行，导致 `unlock()` 无法被调用，从而造成锁永远不会被释放，引发 **死锁** 。将 `unlock()` 放在 `finally` 块中，可以确保无论 `try` 块中的代码是否发生异常，`unlock()` 都会被执行。
 
-
 ### `ReentrantLock` 与 `synchronized` 的对比总结
 
 | 特性/方面            | `synchronized`                               | `ReentrantLock`                                           |
@@ -498,20 +508,17 @@ public class ReentrantLockDemo {
 | **异常处理**   | 自动释放锁，无需 `finally`块                 | 必须在 `finally`块中手动 `unlock()`释放锁               |
 | **底层实现**   | JVM 层面，基于 Monitor 对象                    | Java 代码层面，基于 AQS（AbstractQueuedSynchronizer）       |
 
-
 ## `volatile` 关键字
 
 `volatile` 是Java 虚拟机提供的一种轻量级的同步机制，它主要用于保证变量的 **内存可见性** (Memory Visibility)和**禁止指令重排序。**
 
 > Java内存层面上的观察者模式变量
 
-
 ### 内存可见性问题
 
  **Java内存模型** (Java Memory Moedel, JMM)。JMM规定了所有的变量都存储在 **主内存** (Main Memory)中。每个线程都有自己的 **工作内存** (Working Memory)，工作内存中保存了该线程使用到的变量的副本。线程对变量的所有操作(读、取)都必须在**工作内存**中进行，而不能直接读写主内存中的变量。
 
 当一个线程修改了工作内存中的变量副本时，它需要将更新后的值刷新到主内存中，而其他线程如果想要读取这个变量，也需要从主内存中重新加载最新值到自己的工作内存中。这就是内存可见性问题。
-
 
 ### `volatile` 关键字的作用
 
@@ -540,7 +547,6 @@ public class ReentrantLockDemo {
   2. 对 `i` 进行加1操作。
   3. 将新值写回 `i`。
 * 虽然 `volatile` 可以保证步骤 1（读取）和步骤 3（写入）是直接与主内存交互，保证了可见性。但是，在步骤 1 和步骤 3 之间，如果有多个线程同时执行，仍然可能出现问题。
-
 
 ### 禁止指令重新排序
 
