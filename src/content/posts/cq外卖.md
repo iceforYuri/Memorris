@@ -3,7 +3,7 @@ title: cq外卖
 published: 2025-09-08
 description: 企业级项目实践
 category: 实践
-tags: [('Java', 'Spring')]
+tags: ['Java', 'Spring']
 ---
 111
 
@@ -214,8 +214,6 @@ public class EmployeeController {
     }
 ```
 
-
-
 # 员工开发
 
 ## 员工认证
@@ -273,7 +271,6 @@ response.setStatus(401);
 ```
 
 在BaseContext中有这样的定义，专门声明了一个ThreadLocal用来处理单个线程：
-
 
 ```java
 package com.sky.context;

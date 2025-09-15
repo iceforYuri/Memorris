@@ -3,10 +3,9 @@ title: Spring-boot 配置
 published: 2025-09-03
 description: Spring-boot 配置优先级
 category: 指南
-tags: [('Java', 'Spring')]
+tags: ['Java', 'Spring']
 ---
 # 配置优先级
-
 
 SpringBoot 提供了多种属性配置方式：
 

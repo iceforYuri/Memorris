@@ -3,7 +3,7 @@ title: Bean 管理
 published: 2025-09-03
 description: Bean
 category: 指南
-tags: [('Java', 'Spring')]
+tags: ['Java', 'Spring']
 ---
 
 # 获取bean

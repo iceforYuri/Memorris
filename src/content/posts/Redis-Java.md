@@ -3,7 +3,7 @@ title: Redis Java客户端
 published: 2025-09-13
 description: 包含Jedis、SpringJavaRedis等
 category: 指南
-tags: [('Java', 'Spring', 'DataBase', 'Redis')]
+tags: ['Java', 'Spring', 'DataBase', 'Redis']
 ---
 # Jedis
 

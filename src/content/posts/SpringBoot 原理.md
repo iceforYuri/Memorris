@@ -3,7 +3,7 @@ title: SpringBoot 原理
 published: 2025-09-03
 description: springboot framework++
 category: 指南
-tags: [('Java', 'Spring')]
+tags: ['Java', 'Spring']
 ---
 ![1756912317976](image/SpringBoot原理/1756912317976.png)
 
@@ -153,7 +153,6 @@ public HeaderParser headerParser() {...}
 starter仅定义起步依赖，autoconfigure包定义自动配置操作，然后starter需要将autoconfigure包引入进来
 
 这样在之后的开发中只需要引入starter（起步依赖）即可，通过依赖传递将自动配置也同时引入
-
 
 ### 需求
 

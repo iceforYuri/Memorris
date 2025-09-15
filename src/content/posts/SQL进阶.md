@@ -3,7 +3,7 @@ title: SQL进阶
 published: 2025-08-18
 description: 引擎、索引、优化、存储过程、视图、锁
 category: 指南
-tags: [DB]
+tags: [DataBase]
 ---
 # 存储引擎
 
@@ -606,7 +606,6 @@ mysql> explain select id, phone, name from tb_user where phone = '17799990010' a
 6. 要控制索引的数量，索引并不是多多益善，索引越多，维护索引结构的代价也就越大，会影响增删改的效率。
 7. 如果索引列不能存储 `NULL`值，请在创建表时使用 `NOT NULL`约束它。当优化器知道列是否包含 `NULL`值时，它可以更好地确定哪个索引最有效地用于查询。
 
-
 # SQL视图
 
 视图(View)是一种虚拟存在的表。视图中的数据并不在数据库中实际存在，行和列数据来自定义视图的查询中使用的表，并且是在使用视图时动态生成的。
@@ -614,8 +613,6 @@ mysql> explain select id, phone, name from tb_user where phone = '17799990010' a
 通俗的讲，视图只保存了查询的SQL逻辑，不保存查询结果。所以我们在创建视图的时候，主要的工作就落在创建这条SQL查询语句上。
 
 ## 基础语法
-
-
 
 - **创建**
 
@@ -630,7 +627,6 @@ mysql> explain select id, phone, name from tb_user where phone = '17799990010' a
 ```
 
 这样可以保证只能插入条件允许的数据到视图中
-
 
 - **查询**
 
@@ -666,7 +662,6 @@ mysql> explain select id, phone, name from tb_user where phone = '17799990010' a
 
 ## 视图更新
 
-
 要使视图可更新，视图中的行与基础表中的行之间必须存在一对一的关系。如果视图包含以下任何一项，则该视图不可更新：
 
 1. 聚合函数或窗口函数（`SUM()`、`MIN()`、`MAX()`、`COUNT()` 等）
@@ -674,7 +669,6 @@ mysql> explain select id, phone, name from tb_user where phone = '17799990010' a
 3. `GROUP BY`
 4. `HAVING`
 5. `UNION` 或者 `UNION ALL`
-
 
 ## 作用
 

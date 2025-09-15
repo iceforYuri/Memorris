@@ -3,7 +3,7 @@ title: Mybatis 基础
 published: 2025-08-26
 description: 持久层框架
 category: 指南
-tags: [DB]
+tags: [DataBase]
 ---
 外表或举止上令人愉悦的优美和雅观；令人愉悦的精致和简单
 
@@ -127,7 +127,6 @@ spring.datasource.password=admin123
 </dependency>
 ```
 
-
 ### 在Service实现层中使用
 
 查询语句：
@@ -222,7 +221,6 @@ public PageInfo<User> listUsers(int pageNum, int pageSize) {
 }
 ```
 
-
 调用：
 
 ```java
@@ -231,15 +229,6 @@ System.out.println("总记录数: " + pageInfo.getTotal());
 System.out.println("总页数: " + pageInfo.getPages());
 System.out.println("当前页数据: " + pageInfo.getList());
 ```
-
-
-
-
-
-
-
-
-
 
 ### 深入其原理
 

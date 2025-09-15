@@ -3,7 +3,7 @@ title: Java Web 前端工程化
 published: 2025-09-01
 description: 包括Vue等前端技术在内的前端工程化实践
 category: 指南
-tags: [('Java', 'Spring')]
+tags: ['Java', 'Spring']
 ---
 # 环境准备
 
