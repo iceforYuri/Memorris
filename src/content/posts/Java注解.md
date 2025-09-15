@@ -1,5 +1,5 @@
 ---
-title: Java注解
+title: Java 注解
 published: 2025-08-02
 description: Java注解是Java 5引入的一个特性，它允许开发者在代码中添加元数据，这些元数据可以在编译时、类加载时或运行时被读取。注解本身并不影响程序的逻辑，但可以被用来提供信息给编译器或框架。常见的注解包括`@Override`、`@Deprecated`和自定义注解等。
 category: 指南
@@ -47,7 +47,6 @@ Java 支持三种注释方式：
 注解本质上是一种特殊的接口。你可以像定义接口一样定义一个注解。
 
 在 Java 的世界里，**注解**就像是给代码贴上的“标签”。它们本身不是代码逻辑的一部分（比如不会改变方法的执行方式），但它们提供了关于代码的 **元数据（Metadata）** 。这些元数据可以在编译时、类加载时乃至运行时被读取和处理，从而实现各种强大的功能。
-
 
 ## 什么我们需要注解？
 
@@ -97,7 +96,6 @@ public @interface BusinessOperation {
 
 对照：
 
-
 * `public @interface BusinessOperation`：这是定义注解的标准语法。`@interface` 关键字是它的标志。
 * `String value() default "未知业务操作";`：定义了一个名为 `value` 的属性，类型是 `String`，默认值是 `"未知业务操作"`。当注解只有一个属性，并且其名称为 `value` 时，在使用注解时可以省略 `value=`，直接提供值。
 * `String owner() default "团队负责人";`：定义了另一个名为 `owner` 的属性，类型为 `String`，默认值是 `"团队负责人"`。
@@ -111,7 +109,6 @@ public @interface BusinessOperation {
   * `RetentionPolicy.SOURCE`：注解只保留在源代码中，编译时会被丢弃，不会出现在 `.class` 文件中。通常用于编译时的代码生成或检查，例如 `@Override`。
   * `RetentionPolicy.CLASS`：注解在编译后的字节码文件（`.class` 文件）中存在，但在 JVM 加载类时会被丢弃。默认值就是 `CLASS`。通常用于编译后处理工具。
   * `RetentionPolicy.RUNTIME`：注解在运行时也可用，可以通过反射机制获取到。这是最常用的策略，因为大多数框架都需要在运行时读取注解信息。我们的 `BusinessOperation` 需要在程序运行时被识别并处理，所以必须选择 `RUNTIME`。
-
 
 **使用注解：为代码贴上标签**
 
@@ -194,7 +191,6 @@ public class OperationMonitor {
     }
 }
 ```
-
 
 **代码对照：**
 

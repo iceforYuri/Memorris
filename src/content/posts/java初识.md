@@ -1,9 +1,9 @@
 ---
-title: java初识
+title: Java初识
 published: 2025-06-30
 description: Java 是一种广泛使用的编程语言，具有跨平台特性和强大的生态系统。它被广泛应用于企业级应用、移动应用和大数据处理等领域。
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 环境配置
 

@@ -1,9 +1,9 @@
 ---
-title: Java 多态
+title: Java 多态与继承
 published: 2025-07-03
 description: java 多态
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 继承
 

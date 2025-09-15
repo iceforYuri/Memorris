@@ -1,9 +1,9 @@
 ---
-title: java程序初步探索
+title: Java 程序初步探索
 published: 2025-06-30
 description: 通过一些简单的代码示例，探索 Java 程序的基本结构和功能。
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 一个简单java程序组成
 
@@ -17,7 +17,7 @@ public class HelloWorld{
 }
 ```
 
-因为该顶层类的命名为`HelloWorld`，故java程序的文件名也需要命名为 `HelloWorld.java`，在java中每个 `.java`文件都只能有一个 **顶级public类** ，但是可以拥有多个非public类
+因为该顶层类的命名为 `HelloWorld`，故java程序的文件名也需要命名为 `HelloWorld.java`，在java中每个 `.java`文件都只能有一个 **顶级public类** ，但是可以拥有多个非public类
 
 ```java
 public class helloworld {
@@ -52,7 +52,6 @@ public static void main(String[] args) {
     // 程序逻辑代码
 }
 ```
-
 
 1. `public` 访问修饰符：
    * 表示该方法是公开的，可以从任何地方访问。
@@ -93,7 +92,7 @@ public static void main(String[] args) {
 
 ![1751286652686](image/java程序初步探索/1751286652686.png)
 
-此时做一些小小的修改将 `Car` 类中增加一个主函数方法，并在`helloworld`中应用
+此时做一些小小的修改将 `Car` 类中增加一个主函数方法，并在 `helloworld`中应用
 
 ```java
 public class helloworld {
@@ -124,7 +123,6 @@ class Car {
 
 ![1751286855900](image/java程序初步探索/1751286855900.png)
 
-
 更准确的说，一个类中只能存在一个标准的函数 `public static void main(String[] args)` 作为程序入口。
 
 在此给出一个最简单的java程序创建模板：
@@ -133,7 +131,7 @@ class Car {
 // name.java
 public class name {
     public static void main(String[] args) {
-    
+  
     }
 }
 ```

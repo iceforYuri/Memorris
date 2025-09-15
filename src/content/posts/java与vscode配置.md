@@ -1,9 +1,9 @@
 ---
-title: java与vscode配置
+title: Java与vscode配置
 published: 2025-06-30
 description: Java配置注意事项，使用VSCode作为IDE。
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 调试中的编译
 

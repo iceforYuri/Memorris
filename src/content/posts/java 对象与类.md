@@ -1,9 +1,9 @@
 ---
-title: java 对象与类
+title: Java 对象与类
 published: 2025-06-30
 description: Java中类与对象的关系，主要与C++区分开来
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 类(Class)
 
@@ -100,7 +100,7 @@ public class Car {
 
 `static` (可选): 表示静态方法，属于类本身，而不是类的实例。通过static声明的方法，无需创建对象实例就可以直接使用，反之，未用static声明的方法。只能由创建后的实例调用。
 
-就拿`System.in/System.out`为例：`static` 关键字意味着 `in` 这个变量属于 `System` 类本身，而不是 `System` 类的某个对象。因此，你可以直接通过类名 `System` 来访问它，比如 `System.in`，而不需要先创建一个 `System` 类的实例。这使得它可以在程序启动时就立即可用。
+就拿 `System.in/System.out`为例：`static` 关键字意味着 `in` 这个变量属于 `System` 类本身，而不是 `System` 类的某个对象。因此，你可以直接通过类名 `System` 来访问它，比如 `System.in`，而不需要先创建一个 `System` 类的实例。这使得它可以在程序启动时就立即可用。
 
 ```java
 // 调用实况

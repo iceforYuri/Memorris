@@ -3,7 +3,7 @@ title: Java 枚举
 published: 2025-07-04
 description: java enum 枚举类的使用方法
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 # 枚举(enum)
 

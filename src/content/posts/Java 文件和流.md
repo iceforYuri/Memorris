@@ -3,10 +3,9 @@ title: Java 文件和流
 published: 2025-07-02
 description: java控制台、文件、流的使用方法。
 category: 指南
-tags: [java]
+tags: [Java]
 ---
 *⌈去成为谁也抓不住的风⌋*
-
 
 # 控制台input
 
@@ -20,7 +19,6 @@ tags: [java]
 * 需要**手动处理异常**
 
 ## BufferedReader
-
 
 我们通常将System.in包装在一个InputStreamReader类中，将读取的字节流转换为字符流。在java中，char类型占用两个字节的空间，对于文本数据，我们可以通过InputStreamReader类来将原始的字节流合并为字符流，将两个字节的内容合并的一个char类型数据。
 
@@ -41,7 +39,6 @@ public class io {
 ```
 
 ![1751458415215](image/Java文件和流/1751458415215.png)
-
 
 Unhandled exception type IOException：未处理的 IOException 异常类型
 
@@ -65,7 +62,6 @@ public class BfReader {
     }
 }
 ```
-
 
 ### 读取int、float、double类型数据
 

@@ -1,11 +1,10 @@
 ---
-title: java 数组
+title: Java 数组
 published: 2025-07-01
 description: Java数组细节
 category: 指南
-tags: [java]
+tags: [Java]
 ---
-
 # 数组声明
 
 java中支持两种数组的声明方式：
@@ -56,9 +55,7 @@ int[] numbers = new int[arraysize];
 
 ![1751375425401](image/java数组/1751375425401.png)
 
-
 ## java中引用的概念
-
 
 在 Java 中：
 
@@ -88,7 +85,6 @@ Person p = new Person();
 
 > **程序员不需要手动释放内存（不像 C/C++ 用 malloc/free）** ，而是由 **JVM 的垃圾回收器** 自动判断哪些对象不再被使用，并释放它们。
 
-
 对于数组，可以通过访问 `arrayRefVar.length` 来获得数组的长度。需要注意的是，通过该成员获取的长度是数组的总长度，而非已经初始化元素的个数，如：
 
 ```java
@@ -104,7 +100,6 @@ class array1 {
 ```
 
 此时输出结果依旧为 `5`
-
 
 # 数组的增强处理
 
@@ -131,7 +126,6 @@ int arraysize = Integer.parseInt(args[0]);
         }
 ```
 
-
 # 二维数组
 
 与c/c++中理解的多维数组相似，java中的二维数组也可以认为是一个对于一维数组的数组。
@@ -148,7 +142,6 @@ s[0] = new String[2];
 s[1] = new String[3];
 ```
 
-
 # Arrays 类
 
 java.util.Arrays 类能方便地操作数组，它提供的所有方法都是静态的。
@@ -159,7 +152,6 @@ java.util.Arrays 类能方便地操作数组，它提供的所有方法都是静
 * 对数组排序：通过 sort 方法,按升序。
 * 比较数组：通过 equals 方法比较数组中元素值是否相等。
 * 查找数组元素：通过 binarySearch 方法能对排序好的数组进行二分查找法操作。
-
 
 具体说明请查看下表：
 
