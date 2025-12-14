@@ -1,7 +1,7 @@
 ---
 title: 数据库系统概念 中级SQL
 published: 2025-11-20
-description: 有更复杂形式的SQL查询、 视图定义、 事务、完整性约束，以及关于SQL 数据定义和授权的更多详细信息。
+description: 第四章 有更复杂形式的SQL查询、 视图定义、 事务、完整性约束，以及关于SQL 数据定义和授权的更多详细信息。
 category: 指南
 tags: ['DataBase']
 ---

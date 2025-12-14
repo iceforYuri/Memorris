@@ -1,7 +1,7 @@
 ---
 title: 数据库系统概念 SQL介绍
 published: 2025-11-12
-description: 尽管我们说SQL 语言是一种“查询语言”，但是除了查询数据库，它还具有很多别的功能。 它可以定义数据结构、 修改数据库中的数据以及定义安全性约束。
+description: 第三章 尽管我们说SQL 语言是一种“查询语言”，但是除了查询数据库，它还具有很多别的功能。 它可以定义数据结构、 修改数据库中的数据以及定义安全性约束。
 category: 指南
 tags: ['DataBase']
 ---
@@ -126,7 +126,6 @@ ALTER TABLE 表名 DROP 字段名;
 ALTER TABLE 表名 RENAME TO 新表名;
 ```
 
-
 ##### 删除
 
 - DDL-表操作-删除
@@ -142,7 +141,6 @@ TRUNCATE TABLE 表名
 ```
 
 ### DML
-
 
 #### 删除数据
 
@@ -169,26 +167,24 @@ SQL 查询的基本结构 由 三个子句构成 ： select, from 和 where
 
 涉及字符串函数
 
-* 连接字符串（使用“**||** "）
-* 提取子串
-* 计算字符串长度 **len()**
-* 大小写转换（用**upper(s)** 函数将字符串s转换为大写，或用 **lower(s）** 函数将字符串s转换为小写）
-* 去掉字符串后面的空格（使用trim(s)）
-* 
+- 连接字符串（使用“**||** "）
+- 提取子串
+- 计算字符串长度 **len()**
+- 大小写转换（用**upper(s)** 函数将字符串s转换为大写，或用 **lower(s）** 函数将字符串s转换为小写）
+- 去掉字符串后面的空格（使用trim(s)）
+-
 
 ### 使用like运算符来实现模式匹配
 
-* 百分号（%): ％字符匹配任意子串。
-* 下划线（_ )： 字符匹配任意一个字符。
+- 百分号（%): ％字符匹配任意子串。
+- 下划线（_ )： 字符匹配任意一个字符。
 
 示例：
 
->
 > - `'Intro%'` 匹配以 “Intro” 打头的任意字符串。
 > - `'%Comp%'` 匹配包含 “Comp” 子串的任意字符串，例如 `'Intro. to Computer Science'` 和 `'Computational Biology'`。
 > - `'___'` 匹配只含三个字符的任意字符串。
 > - `'___%'` 匹配至少含有三个字符的任意字符串。
-
 
 SQL 通过使用比较运算符 `like` 来表达模式。考虑查询 “找出所在建筑名称中包含子串 `'Watson'` 的所有系名”。该查询可以写成：
 
@@ -198,11 +194,9 @@ from department
 where building like '%Watson%';
 ```
 
-
 # 3.5 集合运算
 
 ## 3.5.1 并运算
-
 
 ```sql
 (select course_id
@@ -215,7 +209,6 @@ union
 ```
 
 与 `select` 子句不同，`union` 运算自动去除重复
-
 
 如果我们想保留所有重复项，就必须用 `union all` 代替 `union`：
 
@@ -231,12 +224,11 @@ union all
 
 ## 3.5.2 交运算
 
-交运算使用 `intersect `表示，与`union`一样，包含去重属性，且使用`all`可取消去重
+交运算使用 `intersect`表示，与 `union`一样，包含去重属性，且使用 `all`可取消去重
 
 ## 3.5.3 差运算
 
-差运算使用 `except `表示，与 `union`一样，包含去重属性，且使用 `all`可取消去重
-
+差运算使用 `except`表示，与 `union`一样，包含去重属性，且使用 `all`可取消去重
 
 # 3.6 空值
 
@@ -244,11 +236,10 @@ union all
 
 如果算术表达式的任一输入值为空 `null`，则该算术表达式（涉及诸如十、 一、 *或／）结果为空。
 
-SQL将涉及空值的任何比较运算的结果视为 `unknown `（既不是谓词 `is null`，也不是 `is not null`,
-我们将在本节的后面介绍这两个谓词）。 这创建了除`true `、`false`之外的第三种逻辑值。
+SQL将涉及空值的任何比较运算的结果视为 `unknown`（既不是谓词 `is null`，也不是 `is not null`,
+我们将在本节的后面介绍这两个谓词）。 这创建了除 `true`、`false`之外的第三种逻辑值。
 
-
-由于`where`子句中的谓词可以对比较结果使用诸如 `and`、 `or`、`not`的布尔运算，因此这些布尔运算的定义也被扩展为可以处理`unknown`值。
+由于 `where`子句中的谓词可以对比较结果使用诸如 `and`、 `or`、`not`的布尔运算，因此这些布尔运算的定义也被扩展为可以处理 `unknown`值。
 
 | 布尔运算 | 操作组合                | 结果        |
 | -------- | ----------------------- | ----------- |
@@ -280,14 +271,9 @@ from instructor
 where salary > 10000 is unknown;
 ```
 
-
-
-
-
 ## 3.6.2 distinct
 
-当一个查询使用`select distinct`子句时，重复元组必须被去除。在一些依赖查询中尤为有用
-
+当一个查询使用 `select distinct`子句时，重复元组必须被去除。在一些依赖查询中尤为有用
 
 # 3.7 聚集函数
 
@@ -301,9 +287,7 @@ where salary > 10000 is unknown;
 
 `sum` 和 `avg` 的输入必须是数字集，但其他运算符可以作用在非数字数据类型的集合上，比如字符串。
 
-
 ## 3.7.1 基本聚集
-
 
 ```sql
 select avg (salary)
@@ -317,13 +301,11 @@ where dept_name = 'Comp. Sci.';
 
 我们使用group by子句将聚集函数作用在一组元组集上，
 
-
 ### 分组查询注意事项
 
-基本要求：出现在`select`语句中但没有被聚集的属性只能是出现在`group by`子句中的那些属性
+基本要求：出现在 `select`语句中但没有被聚集的属性只能是出现在 `group by`子句中的那些属性
 
 > 任何没有出现在group by 子句中的属性如果出现在 select子句中，它只能作为聚集函数的参数
-
 
 ```sql
 /* 错误查询 */
@@ -334,10 +316,9 @@ group by dept_name;
 
 ## 3.7.3 having 子句
 
-针对元组的查询，SQL语句中使用`having`。SQL 在形成分组后才应用`having`子句中的谓词，因此在`having` 子句中可以使用聚集函数
+针对元组的查询，SQL语句中使用 `having`。SQL 在形成分组后才应用 `having`子句中的谓词，因此在 `having` 子句中可以使用聚集函数
 
 > `where`语句中不允许使用聚集函数
-
 
 ```sql
 select dept_name, avg (salary) as avg_salary
@@ -345,7 +326,6 @@ from instructor
 group by dept_name
 having avg (salary) > 42000;
 ```
-
 
 与 `select` 子句的情况类似，任何出现在 `having` 子句中，但没有被聚集的属性必须出现在 `group by` 子句中，否则查询就是错误的。
 
@@ -361,19 +341,16 @@ having avg (salary) > 42000;
 
 原则：
 
-* 除了`count(*）`之外所有的聚集函数都忽略其输入集合中的空值
-* 规定空集的`count`运算值为0，并且当作用在空集上时，其他所有聚集运算返回一个空值。
-
+- 除了 `count(*）`之外所有的聚集函数都忽略其输入集合中的空值
+- 规定空集的 `count`运算值为0，并且当作用在空集上时，其他所有聚集运算返回一个空值。
 
 # 3.8 嵌套子查询
 
-
 ## 3.8.1 集合成员资格
 
-连接词`in`测试集合成员资格
+连接词 `in`测试集合成员资格
 
 连接词 `not in`测试集合成员资格的缺失。
-
 
 我们需要从子查询得到的课程集合中找出那些在 2017 年秋季开课的课程。为完成此项任务我们将子查询嵌入外部查询的 `where` 子句中。最后的查询语句是：
 
@@ -392,7 +369,6 @@ where semester = 'Fall' and year= 2017 and
 
 考虑查询“找出工资至少比Biology系某位教师 的工资要高 的所有教师的姓名”：
 
-
 ```sql
 select distinct T.name
 from instructor as T, instructor as S
@@ -400,7 +376,6 @@ where T.salary > S.salary and S.dept_name = 'Biology';
 ```
 
 SQL 提供另外一种方式编写上面的查询。 “至少比某一个要大”在SQL 中用 `>some`表示
-
 
 ```sql
 select name
@@ -410,13 +385,11 @@ where salary > some (select salary
                     where dept_name = 'Biology');
 ```
 
-
-SQL 也允许 `=some` , `=some` ，`<>some`，`=all, =all `和 `<>all `的比较
+SQL 也允许 `=some` , `=some` ，`<>some`，`=all, =all`和 `<>all`的比较
 
 ## 3.8.3 空关系测试
 
-`exists `结构在作为参数的子查询非空时返回`true`值
-
+`exists`结构在作为参数的子查询非空时返回 `true`值
 
 ```sql
 select course_id
@@ -428,17 +401,15 @@ where semester = 'Fall' and year= 2017 and
                     S.course_id= T.course_id);
 ```
 
-
 同理，`no exists`表示相反的用法
 
 上述查询还说明了 SQL 的一个特性：
 
-* 来自外层查询的相关名称（上述查询中的 `S`）可以用在 `where` 子句的子查询中。使用了来自外层查询的相关名称的子查询被称作**相关子查询（correlated subquery）**。
+- 来自外层查询的相关名称（上述查询中的 `S`）可以用在 `where` 子句的子查询中。使用了来自外层查询的相关名称的子查询被称作**相关子查询（correlated subquery）**。
 
 ## 3.8.4 重复元组存在性测试
 
 如果在作为参数的子查询结果中没有重复的元组，则unique 结构返回true值
-
 
 ```sql
 select T.course_id
@@ -449,7 +420,6 @@ where unique (select R.course_id
                     R.year = 2017);
 ```
 
-
 ## 3.8.5 from 子句中的子查询
 
 SQL 允在from 子句中使用子查询表达式。
@@ -457,7 +427,6 @@ SQL 允在from 子句中使用子查询表达式。
 > 原理：
 >
 > 任何 select-from-where 表达式返回的结果都是关系，因而可以被插入到另一个 select-from-where 中关系可以出现的任何位置。
-
 
 ```sql
 select dept_name, avg_salary
@@ -467,13 +436,11 @@ from (select dept_name, avg (salary) as avg_salary
 where avg_salary > 42000;
 ```
 
-
 ## 3.8.6 with子句
 
 with子句提供了一种定义临时关系的方式，这个定义只对包含with子句的查询有效。
 
 > 可以将其理解为视图(view)或者局部变量
-
 
 ```sql
 with max_budget (value) as
