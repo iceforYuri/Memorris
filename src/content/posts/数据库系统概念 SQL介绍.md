@@ -108,7 +108,7 @@ ALTER TABLE 表名 ADD 字段名 类型 [COMMENT 注释] [约束];
 ALTER TABLE 表名 MODIFY 字段名 新数据类型;
 ```
 
-- DDL-表操作-修改字段名和字段类型
+- DDL-表操作-修改字段名和字段类型（**添加约束？**）
 
 ```sql
 ALTER TABLE 表名 CHANGE 旧字段名 新字段名 类型 [COMMENT注释] [约束];
@@ -174,7 +174,7 @@ SQL 查询的基本结构 由 三个子句构成 ： select, from 和 where
 - 去掉字符串后面的空格（使用trim(s)）
 -
 
-### 使用like运算符来实现模式匹配
+### 使用like运算符来实现模式匹配（实际应用挺重要的）
 
 - 百分号（%): ％字符匹配任意子串。
 - 下划线（_ )： 字符匹配任意一个字符。
@@ -208,9 +208,9 @@ union
  where semester = 'Spring' and year= 2018);
 ```
 
-与 `select` 子句不同，`union` 运算自动去除重复
+与 `select` 子句不同，`union` 运算自动**去除重复**
 
-如果我们想保留所有重复项，就必须用 `union all` 代替 `union`：
+如果我们想**保留所有重复项**，就必须用 `union all` 代替 `union`：
 
 ```sql
 (select course_id
@@ -236,8 +236,7 @@ union all
 
 如果算术表达式的任一输入值为空 `null`，则该算术表达式（涉及诸如十、 一、 *或／）结果为空。
 
-SQL将涉及空值的任何比较运算的结果视为 `unknown`（既不是谓词 `is null`，也不是 `is not null`,
-我们将在本节的后面介绍这两个谓词）。 这创建了除 `true`、`false`之外的第三种逻辑值。
+SQL将涉及空值的任何比较运算的结果视为 `unknown`（既不是谓词 `is null`，也不是 `is not null`, 我们将在本节的后面介绍这两个谓词）。 这创建了除 `true`、`false`之外的第三种逻辑值。
 
 由于 `where`子句中的谓词可以对比较结果使用诸如 `and`、 `or`、`not`的布尔运算，因此这些布尔运算的定义也被扩展为可以处理 `unknown`值。
 
@@ -327,7 +326,7 @@ group by dept_name
 having avg (salary) > 42000;
 ```
 
-与 `select` 子句的情况类似，任何出现在 `having` 子句中，但没有被聚集的属性必须出现在 `group by` 子句中，否则查询就是错误的。
+与 `select` 子句的情况类似，任何出现在 `having` 子句中，但**没有被聚集的属性必须出现在 `group by` 子句**中，否则查询就是错误的。
 
 包含聚集、`group by` 或 `having` 子句的查询的含义可通过下述运算序列来定义：
 
