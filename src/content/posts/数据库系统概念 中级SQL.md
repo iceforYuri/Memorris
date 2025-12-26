@@ -212,6 +212,51 @@ create table course
 * 类似地，如果更新被约束引用的字段时违反了约束，则系统并不拒绝更新操作，而是将 `course`中引用元组的 `dept_name`字段也改为新值。
 * SQL还允许外码（`foreign key`）子句指定除级联以外的其他动作，如果约束被违反，可将引用域（这里是 `dept_name`）置为 `null`（通过用 `set null`代替 `cascade`），或置为该域的缺省值（通过使用 `set default`）。
 
+
+### 完整性约束SQL查询
+
+* 普通**函数依赖**
+  * 检验**非箭头侧**的表中**唯一性**
+  * ```sql
+    SELECT 
+        MAX(A.Unique_MFGR_Count) AS Max_Unique_MFGR_Count
+    FROM (
+        SELECT 
+            P_BRAND,
+            COUNT(DISTINCT P_MFGR) AS Unique_MFGR_Count
+        FROM 
+            PART
+        GROUP BY 
+            P_BRAND
+    ) AS A;
+
+    ```
+* **主键**依赖
+  * 检验主键在表中的**唯一性**
+  * 通过 where xx is null **检验非空状态**
+  * ```sql
+    select l_orderkey, count(*) 
+    from lineitemcopy1
+    group by (l_orderkey, l_linenumber) 
+    having count(*)>1;
+
+    select * from lineitemcopy1 
+    where l_orderkey is null 
+    and l_linenumber is null;
+
+    ```
+* **外键**依赖
+  * 检验外键表中的取值是否**都出现在了主键表**中
+  * ```sql
+    select count(O_CUSTKEY) 
+    from orderscopy1 
+    where O_CUSTKEY 
+    not in 
+    ( select C_CUSTKEY from customercopy1 );
+
+    ```
+
+
 ## 4.4.3 给约束赋名
 
 命名约束：在约束的前面使用关键字 `constraint` 和我们希望为其赋予的名称
