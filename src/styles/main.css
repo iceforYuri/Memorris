@@ -126,6 +126,35 @@
     .copy-btn.success .success-icon {
         @apply opacity-100
     }
+
+    /* left TOC panel glass effect */
+    .left-toc-panel {
+        /* translucent background with blur to create glass effect */
+        background-color: rgba(255,255,255,0.6);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.25);
+        box-shadow: var(--tw-shadow, 0 10px 30px rgba(2,6,23,0.12));
+    }
+    @media (prefers-color-scheme: dark) {
+        .left-toc-panel {
+            background-color: rgba(12,12,12,0.55);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+    }
+
+    /* Left back-to-top button hide/show */
+    #left-back-to-top-btn {
+        transition: transform .2s ease, opacity .2s ease;
+    }
+    #left-back-to-top-btn.hide {
+        transform: scale(0.9);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Ensure sidebar sticky area has enough bottom space for buttons */
+    #sidebar-sticky { padding-bottom: 5rem; }
 }
 
 .custom-md img, #post-cover img {

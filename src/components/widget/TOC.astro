@@ -6,9 +6,10 @@ import { siteConfig } from "../../config";
 interface Props {
   class?: string
   headings: MarkdownHeading[]
+  wrapperId?: string
 }
 
-let { headings = [] } = Astro.props;
+let { headings = [], wrapperId = "toc-inner-wrapper" } = Astro.props;
 
 let minDepth = 10;
 for (const heading of headings) {
@@ -308,9 +309,11 @@ class TableOfContents extends HTMLElement {
     };
 
     init() {
-        this.tocEl = document.getElementById(
-            "toc-inner-wrapper"
-        );
+-        this.tocEl = document.getElementById(
+-            "toc-inner-wrapper"
+-        );
++        // support alternate wrapper id passed in via props
++        this.tocEl = document.getElementById(wrapperId);
 
         if (!this.tocEl) return;
 

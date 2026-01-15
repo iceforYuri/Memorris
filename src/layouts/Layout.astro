@@ -427,7 +427,9 @@ if (window?.swup?.hooks) {
 }
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
+let leftBackToTopBtn = document.getElementById('left-back-to-top-btn');
 let toc = document.getElementById('toc-wrapper');
+let tocPanel = document.getElementById('toc-panel');
 let navbar = document.getElementById('navbar-wrapper')
 function scrollFunction() {
 	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
@@ -437,6 +439,15 @@ function scrollFunction() {
 			backToTopBtn.classList.remove('hide')
 		} else {
 			backToTopBtn.classList.add('hide')
+		}
+	}
+
+	// 同步控制左侧的 back-to-top 按钮显示
+	if (leftBackToTopBtn) {
+		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
+			leftBackToTopBtn.classList.remove('hide')
+		} else {
+			leftBackToTopBtn.classList.add('hide')
 		}
 	}
 
@@ -467,6 +478,30 @@ function scrollFunction() {
 }
 window.onscroll = scrollFunction
 
+// Attach sidebar button listeners
+function attachSidebarListeners() {
+    const tocToggleBtn = document.getElementById('toc-toggle-btn');
+    if (tocToggleBtn) {
+        tocToggleBtn.addEventListener('click', () => {
+            document.getElementById('toc-panel')?.classList.toggle('float-panel-closed');
+        });
+    }
+
+    const leftBtn = document.getElementById('left-back-to-top-btn');
+    if (leftBtn) {
+        leftBtn.addEventListener('click', () => {
+            window.scroll({ top: 0, behavior: 'smooth' });
+        });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachSidebarListeners);
+} else {
+    attachSidebarListeners();
+}
+
+// (listeners attached via attachSidebarListeners)
 window.onresize = () => {
 	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));

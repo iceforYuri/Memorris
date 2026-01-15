@@ -18,8 +18,19 @@ const headings = Astro.props.headings
     <div class="flex flex-col w-full gap-4 mb-4">
         <Profile></Profile>
     </div>
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4">
+    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4 pb-20">
         <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
         <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
+
+        <!-- Sidebar controls: TOC toggle (small screens) and BackToTop button -->
+        <div id="sidebar-controls" class="mt-auto flex flex-col items-center gap-3">
+            <button id="toc-toggle-btn" aria-label="Toggle TOC" class="btn-plain lg:hidden w-11 h-11">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+            </button>
+
+            <button id="left-back-to-top-btn" aria-label="Back to top" class="btn-plain w-11 h-11 hide">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M5 12l7-7 7 7"></path></svg>
+            </button>
+        </div>
     </div>
 </div>

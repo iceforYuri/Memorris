@@ -109,4 +109,14 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
         {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
+
+<!-- Small-screen left TOC panel (hidden on large screens) -->
+{siteConfig.toc.enable && <div id="toc-panel" class="float-panel float-panel-closed fixed left-4 top-[5.25rem] w-[var(--toc-width)] lg:hidden px-2 py-2 left-toc-panel">
+    <div class="card-base p-2">
+        <div id="toc-inner-wrapper-panel" class="h-[60vh] overflow-y-auto hide-scrollbar">
+            <TOC headings={headings} wrapperId="toc-inner-wrapper-panel"></TOC>
+        </div>
+    </div>
+</div>}
+
 </Layout>
