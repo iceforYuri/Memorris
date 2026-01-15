@@ -73,7 +73,7 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 }
 </style>
 
-<table-of-contents class:list={[className, "group"]}>
+<table-of-contents class:list={[className, "group"]} data-wrapper-id={wrapperId}>
     <!-- 使用分组渲染标题 -->
     {groupedHeadings.map((group, idx) => (
         <div class="toc-group" data-slug={group.heading.slug}>
@@ -133,6 +133,7 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 <script>
 class TableOfContents extends HTMLElement {
     tocEl: HTMLElement | null = null;
+    wrapperId: string = "toc-inner-wrapper";
     visibleClass = "visible";
     observer: IntersectionObserver;
     anchorNavTarget: HTMLElement | null = null;
@@ -223,7 +224,7 @@ class TableOfContents extends HTMLElement {
     scrollToActiveHeading = () => {
         if (this.anchorNavTarget || !this.tocEl) return;
         const activeHeading =
-            document.querySelectorAll<HTMLDivElement>(`#toc .${this.visibleClass}`);
+            document.querySelectorAll<HTMLDivElement>(`#${this.wrapperId} .${this.visibleClass}`);
         if (!activeHeading.length) return;
 
         const topmost = activeHeading[0];
@@ -309,11 +310,9 @@ class TableOfContents extends HTMLElement {
     };
 
     init() {
--        this.tocEl = document.getElementById(
--            "toc-inner-wrapper"
--        );
-+        // support alternate wrapper id passed in via props
-+        this.tocEl = document.getElementById(wrapperId);
+        // support alternate wrapper id passed in via data attribute
+        this.wrapperId = this.dataset.wrapperId || "toc-inner-wrapper";
+        this.tocEl = document.getElementById(this.wrapperId);
 
         if (!this.tocEl) return;
 
@@ -323,13 +322,13 @@ class TableOfContents extends HTMLElement {
 
         this.activeIndicator = document.getElementById("active-indicator");
         
-        // 获取所有目录组
+        // 获取所有目录组（仅在当前组件内）
         this.tocGroups = Array.from(
-            document.querySelectorAll<HTMLDivElement>(".toc-group")
+            this.tocEl.querySelectorAll<HTMLDivElement>(".toc-group")
         );
 
         this.tocEntries = Array.from(
-            document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
+            this.tocEl.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
         );
 
         if (this.tocEntries.length === 0) return;

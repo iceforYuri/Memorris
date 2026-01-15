@@ -89,31 +89,19 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
     </div>
 </div>
 
-<!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
-        <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] flex items-center",
-            {"toc-hide": siteConfig.banner.enable}]}
-        >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full transition-swup-fade ">
-                    <div class="h-8 w-full"></div>
-                    <TOC headings={headings}></TOC>
-                    <div class="h-8 w-full"></div>
-                </div>
-            </div>
-        </div>}
-
-        <!-- #toc needs to exist for Swup to work normally -->
-        {!siteConfig.toc.enable && <div id="toc"></div>}
+<!-- Hidden right-side TOC (kept for Swup compatibility) -->
+<div class="hidden">
+    <div id="toc-wrapper">
+        <div id="toc-inner-wrapper">
+            <div id="toc"></div>
+        </div>
     </div>
 </div>
 
-<!-- Small-screen left TOC panel (hidden on large screens) -->
-{siteConfig.toc.enable && <div id="toc-panel" class="float-panel float-panel-closed fixed left-4 top-[5.25rem] w-[var(--toc-width)] lg:hidden px-2 py-2 left-toc-panel">
-    <div class="card-base p-2">
-        <div id="toc-inner-wrapper-panel" class="h-[60vh] overflow-y-auto hide-scrollbar">
+<!-- Left floating TOC panel (all screens) -->
+{siteConfig.toc.enable && <div id="toc-panel" class="float-panel float-panel-closed left-toc-panel">
+    <div class="p-3">
+        <div id="toc-inner-wrapper-panel" class="max-h-[calc(100vh-12rem)] overflow-y-auto hide-scrollbar">
             <TOC headings={headings} wrapperId="toc-inner-wrapper-panel"></TOC>
         </div>
     </div>

@@ -428,6 +428,7 @@ if (window?.swup?.hooks) {
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
 let leftBackToTopBtn = document.getElementById('left-back-to-top-btn');
+let tocToggleBtn = document.getElementById('toc-toggle-btn');
 let toc = document.getElementById('toc-wrapper');
 let tocPanel = document.getElementById('toc-panel');
 let navbar = document.getElementById('navbar-wrapper')
@@ -442,7 +443,7 @@ function scrollFunction() {
 		}
 	}
 
-	// 同步控制左侧的 back-to-top 按钮显示
+	// 同步控制左侧的浮动按钮显示
 	if (leftBackToTopBtn) {
 		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
 			leftBackToTopBtn.classList.remove('hide')
@@ -451,6 +452,16 @@ function scrollFunction() {
 		}
 	}
 
+	// 同步控制 TOC 按钮显示
+	if (tocToggleBtn) {
+		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
+			tocToggleBtn.classList.remove('hide')
+		} else {
+			tocToggleBtn.classList.add('hide')
+		}
+	}
+
+	// 右侧 TOC 已隐藏，此逻辑可保留但不再生效
 	if (bannerEnabled && toc) {
 		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
 			toc.classList.remove('toc-hide')

@@ -21,10 +21,14 @@
         @apply transition rounded-md p-1.5 -m-1.5 expand-animation;
     }
     .float-panel {
-        @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
+        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
     }
     .float-panel-closed {
-        @apply -translate-y-1 opacity-0 pointer-events-none
+        @apply opacity-0 pointer-events-none
+    }
+    /* Override for left TOC panel - do NOT use translate-y */
+    .left-toc-panel.float-panel-closed {
+        transform: translateX(-100%) !important;
     }
     .search-panel mark {
         @apply bg-transparent text-[var(--primary)]
@@ -129,18 +133,61 @@
 
     /* left TOC panel glass effect */
     .left-toc-panel {
-        /* translucent background with blur to create glass effect */
-        background-color: rgba(255,255,255,0.6);
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.25);
-        box-shadow: var(--tw-shadow, 0 10px 30px rgba(2,6,23,0.12));
+        /* Use theme colors with transparency for glass effect */
+        background-color: oklch(0.23 0.015 var(--hue) / 0.92);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid oklch(0.4 0.05 var(--hue) / 0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        /* Override positioning */
+        position: fixed !important;
+        left: 1rem !important;
+        top: 5.5rem !important;
+        width: 17.5rem !important;
+        max-height: calc(100vh - 8rem) !important;
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        z-index: 99999 !important;
+        border-radius: var(--radius-large);
+        transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    @media (prefers-color-scheme: dark) {
-        .left-toc-panel {
-            background-color: rgba(12,12,12,0.55);
-            border: 1px solid rgba(255,255,255,0.04);
-        }
+    /* Light mode: use darker theme background */
+    :root:not(.dark) .left-toc-panel {
+        background-color: oklch(0.28 0.025 var(--hue) / 0.95);
+        border: 1px solid oklch(0.2 0.02 var(--hue) / 0.2);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    :root:not(.dark) .left-toc-panel,
+    :root:not(.dark) .left-toc-panel * {
+        color: white;
+    }
+    :root:not(.dark) .left-toc-panel .text-50 {
+        color: rgba(255,255,255,0.85) !important;
+    }
+    :root:not(.dark) .left-toc-panel .text-30 {
+        color: rgba(255,255,255,0.6) !important;
+    }
+    /* Dark mode: use lighter theme background */
+    :root.dark .left-toc-panel {
+        background-color: oklch(0.85 0.03 var(--hue) / 0.92);
+        border: 1px solid oklch(0.7 0.05 var(--hue) / 0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    :root.dark .left-toc-panel,
+    :root.dark .left-toc-panel * {
+        color: oklch(0.2 0.02 var(--hue));
+    }
+    :root.dark .left-toc-panel .text-50 {
+        color: oklch(0.25 0.02 var(--hue) / 0.85) !important;
+    }
+    :root.dark .left-toc-panel .text-30 {
+        color: oklch(0.3 0.02 var(--hue) / 0.6) !important;
+    }
+    .left-toc-panel.float-panel-closed {
+        transform: translateX(-120%) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
 
     /* Left back-to-top button hide/show */
