@@ -465,10 +465,10 @@ function disableAnimation() {
 					heightExtend.classList.remove("hidden");
 				}
 
-				// Hide the TOC while scrolling back to top
-				let toc = document.getElementById("toc-wrapper");
-				if (toc) {
-					toc.classList.add("toc-not-ready");
+				// 页面切换时关闭 TOC 面板
+				const tocPanel = document.getElementById("toc-panel");
+				if (tocPanel) {
+					tocPanel.classList.add("float-panel-closed");
 				}
 			},
 		);
@@ -486,12 +486,6 @@ function disableAnimation() {
 				if (heightExtend) {
 					heightExtend.classList.add("hidden");
 				}
-
-				// Just make the transition looks better
-				const toc = document.getElementById("toc-wrapper");
-				if (toc) {
-					toc.classList.remove("toc-not-ready");
-				}
 			}, 200);
 		});
 	};
@@ -504,7 +498,6 @@ function disableAnimation() {
 	let backToTopBtn = document.getElementById("back-to-top-btn");
 	let leftBackToTopBtn = document.getElementById("left-back-to-top-btn");
 	let tocToggleBtn = document.getElementById("toc-toggle-btn");
-	let toc = document.getElementById("toc-wrapper");
 	let tocPanel = document.getElementById("toc-panel");
 	let navbar = document.getElementById("navbar-wrapper");
 	function scrollFunction() {
@@ -542,18 +535,6 @@ function disableAnimation() {
 				tocToggleBtn.classList.remove("hide");
 			} else {
 				tocToggleBtn.classList.add("hide");
-			}
-		}
-
-		// 右侧 TOC 已隐藏，此逻辑可保留但不再生效
-		if (bannerEnabled && toc) {
-			if (
-				document.body.scrollTop > bannerHeight ||
-				document.documentElement.scrollTop > bannerHeight
-			) {
-				toc.classList.remove("toc-hide");
-			} else {
-				toc.classList.add("toc-hide");
 			}
 		}
 

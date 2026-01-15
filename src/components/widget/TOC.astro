@@ -6,10 +6,9 @@ import { siteConfig } from "../../config";
 interface Props {
   class?: string
   headings: MarkdownHeading[]
-  wrapperId?: string
 }
 
-let { headings = [], wrapperId = "toc-inner-wrapper" } = Astro.props;
+let { headings = [] } = Astro.props;
 
 let minDepth = 10;
 for (const heading of headings) {
@@ -73,7 +72,8 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 }
 </style>
 
-<table-of-contents class:list={[className, "group"]} data-wrapper-id={wrapperId}>
+<div id="toc">
+<table-of-contents class:list={[className, "group"]}>
     <!-- 使用分组渲染标题 -->
     {groupedHeadings.map((group, idx) => (
         <div class="toc-group" data-slug={group.heading.slug}>
@@ -128,12 +128,12 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
     <div id="active-indicator" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
         "group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"]}></div>
 </table-of-contents>
+</div>
 
 
 <script>
 class TableOfContents extends HTMLElement {
     tocEl: HTMLElement | null = null;
-    wrapperId: string = "toc-inner-wrapper";
     visibleClass = "visible";
     observer: IntersectionObserver;
     anchorNavTarget: HTMLElement | null = null;
@@ -143,7 +143,7 @@ class TableOfContents extends HTMLElement {
     tocEntries: HTMLAnchorElement[] = [];
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
-    // 新增：跟踪目录组
+    // 跟踪目录组
     tocGroups: HTMLDivElement[] = [];
     activeGroup: HTMLDivElement | null = null;
 
@@ -176,12 +176,24 @@ class TableOfContents extends HTMLElement {
         this.update();
     };
 
-    // 新增：控制子标题显示/隐藏
+    // 控制子标题显示/隐藏 - 根据当前可见的标题ID找到对应的组
     toggleSubHeadings = (id: string | undefined | null) => {
         if (!id) return;
         
-        // 找到对应的标题组
-        const group = this.tocGroups.find(g => g.dataset.slug === id);
+        // 首先尝试直接匹配一级标题
+        let group = this.tocGroups.find(g => g.dataset.slug === id);
+        
+        // 如果没找到，说明是子标题，需要找到包含这个子标题链接的组
+        if (!group) {
+            for (const g of this.tocGroups) {
+                const childLink = g.querySelector(`a[href="#${id}"]`);
+                if (childLink) {
+                    group = g;
+                    break;
+                }
+            }
+        }
+        
         if (!group) return;
 
         // 如果这个组已经激活，不需要再做任何事
@@ -224,7 +236,7 @@ class TableOfContents extends HTMLElement {
     scrollToActiveHeading = () => {
         if (this.anchorNavTarget || !this.tocEl) return;
         const activeHeading =
-            document.querySelectorAll<HTMLDivElement>(`#${this.wrapperId} .${this.visibleClass}`);
+            document.querySelectorAll<HTMLDivElement>(`#toc .${this.visibleClass}`);
         if (!activeHeading.length) return;
 
         const topmost = activeHeading[0];
@@ -299,20 +311,29 @@ class TableOfContents extends HTMLElement {
         // 等待动画结束，以确保获得正确的位置
         const element = document.querySelector('.prose');
         if (element) {
-            element.addEventListener('animationend', () => {
+            // 检查动画是否已经完成
+            const computedStyle = getComputedStyle(element);
+            const animationName = computedStyle.animationName;
+            
+            if (animationName && animationName !== 'none') {
+                element.addEventListener('animationend', () => {
+                    this.init();
+                }, { once: true });
+            } else {
+                // 动画已完成或没有动画，直接初始化
                 this.init();
-            }, { once: true });
+            }
         } else {
             // 如果没有找到元素，延迟初始化
-            setTimeout(() => this.init(), 500);
-            console.warn('Animation element not found, delayed initialization');
+            setTimeout(() => this.init(), 300);
         }
     };
 
     init() {
-        // support alternate wrapper id passed in via data attribute
-        this.wrapperId = this.dataset.wrapperId || "toc-inner-wrapper";
-        this.tocEl = document.getElementById(this.wrapperId);
+        // 先清理旧状态
+        this.cleanup();
+        
+        this.tocEl = document.getElementById("toc-inner-wrapper");
 
         if (!this.tocEl) return;
 
@@ -322,13 +343,13 @@ class TableOfContents extends HTMLElement {
 
         this.activeIndicator = document.getElementById("active-indicator");
         
-        // 获取所有目录组（仅在当前组件内）
+        // 获取所有目录组
         this.tocGroups = Array.from(
-            this.tocEl.querySelectorAll<HTMLDivElement>(".toc-group")
+            document.querySelectorAll<HTMLDivElement>("#toc .toc-group")
         );
 
         this.tocEntries = Array.from(
-            this.tocEl.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
+            document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
         );
 
         if (this.tocEntries.length === 0) return;
@@ -353,14 +374,49 @@ class TableOfContents extends HTMLElement {
 
         this.fallback();
         this.update();
+        
+        // 初始化时展开第一个可见的目录组
+        this.initActiveGroup();
+    };
+    
+    // 初始化时根据当前滚动位置展开对应的目录组
+    initActiveGroup = () => {
+        // 找到第一个活动的标题
+        const firstActiveIdx = this.active.findIndex(a => a);
+        if (firstActiveIdx >= 0 && this.tocEntries[firstActiveIdx]) {
+            const id = decodeURIComponent(this.tocEntries[firstActiveIdx].hash?.substring(1));
+            this.toggleSubHeadings(id);
+        } else if (this.tocGroups.length > 0) {
+            // 如果没有活动标题，默认展开第一组
+            this.tocGroups[0].classList.add('active');
+            this.activeGroup = this.tocGroups[0];
+        }
+    };
+    
+    // 清理旧状态
+    cleanup = () => {
+        // 停止观察旧的 sections
+        this.sections.forEach((section) => {
+            if (section) this.observer.unobserve(section);
+        });
+        
+        // 移除旧的事件监听器
+        this.tocEl?.removeEventListener("click", this.handleAnchorClick);
+        
+        // 重置状态
+        this.headingIdxMap.clear();
+        this.headings = [];
+        this.sections = [];
+        this.tocEntries = [];
+        this.active = [];
+        this.tocGroups = [];
+        this.activeGroup = null;
+        this.anchorNavTarget = null;
     };
 
     disconnectedCallback() {
-        this.sections.forEach((section) =>
-            this.observer.unobserve(section)
-        );
+        this.cleanup();
         this.observer.disconnect();
-        this.tocEl?.removeEventListener("click", this.handleAnchorClick);
     };
 }
 
