@@ -44,16 +44,11 @@
     }
 
     .float-panel {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
+        @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
     }
 
     .float-panel-closed {
-        @apply opacity-0 pointer-events-none
-    }
-
-    /* Override for left TOC panel - do NOT use translate-y */
-    .left-toc-panel.float-panel-closed {
-        transform: translateX(-100%) !important;
+        @apply -translate-y-1 opacity-0 pointer-events-none
     }
 
     .search-panel mark {
@@ -177,13 +172,14 @@
         /* Override positioning */
         position: fixed !important;
         left: 1rem !important;
-        top: 5.5rem !important;
+        top: 4rem !important;
         width: 18rem !important;
-        max-height: calc(100vh - 8rem) !important;
+        /* 限制最大高度，为底部按钮留出空间 (按钮在 bottom: 8.5rem，高度约 8rem) */
+        max-height: calc(100vh - 5.5rem - 10rem) !important;
         transform: translateX(0) !important;
         opacity: 1 !important;
         pointer-events: auto !important;
-        z-index: 99999 !important;
+        z-index: 99 !important;
         border-radius: var(--radius-large);
         transition: transform 0.3s ease, opacity 0.3s ease;
     }
