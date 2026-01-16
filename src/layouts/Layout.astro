@@ -526,7 +526,7 @@ function disableAnimation() {
 			}
 		}
 
-		// 同步控制 TOC 按钮显示
+		// 同步控制 TOC 按钮显示，并在隐藏时同步关闭目录面板
 		if (tocToggleBtn) {
 			if (
 				document.body.scrollTop > bannerHeight ||
@@ -535,6 +535,10 @@ function disableAnimation() {
 				tocToggleBtn.classList.remove("hide");
 			} else {
 				tocToggleBtn.classList.add("hide");
+				// 按钮隐藏时，同时隐藏目录面板
+				if (tocPanel) {
+					tocPanel.classList.add("float-panel-closed");
+				}
 			}
 		}
 
