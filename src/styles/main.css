@@ -258,17 +258,6 @@
         pointer-events: none !important;
     }
 
-    /* Left back-to-top button hide/show */
-    #left-back-to-top-btn {
-        transition: transform .2s ease, opacity .2s ease;
-    }
-
-    #left-back-to-top-btn.hide {
-        transform: scale(0.9);
-        opacity: 0;
-        pointer-events: none;
-    }
-
     /* Ensure sidebar sticky area has enough bottom space for buttons */
     #sidebar-sticky {
         padding-bottom: 5rem;
