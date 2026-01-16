@@ -53,6 +53,7 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 <style is:global>
 :root {
   --toc-width: 14rem; /* 加宽目录栏 */
+  --toc-indicator-color: #00BEE0; /* 追踪颜色 */
 }
 
 .toc-group {
@@ -69,6 +70,32 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 .toc-group.active .child-headings {
   max-height: 1000px;
   opacity: 1;
+}
+
+/* TOC 进度指示器样式 */
+.left-toc-panel #active-indicator {
+  background-color: rgba(0, 190, 224, 0.15) !important;
+  border-color: var(--toc-indicator-color) !important;
+  border-width: 2px !important;
+  border-style: dashed !important;
+  border-radius: 0.75rem !important;
+  z-index: -1 !important;
+}
+
+/* 浅色模式下的进度指示器 */
+:root:not(.dark) .left-toc-panel #active-indicator {
+  background-color: rgba(0, 190, 224, 0.2) !important;
+}
+
+/* 深色模式下的进度指示器 */
+:root.dark .left-toc-panel #active-indicator {
+  background-color: rgba(0, 190, 224, 0.25) !important;
+}
+
+/* hover 时的样式 */
+.left-toc-panel table-of-contents:hover #active-indicator {
+  background-color: transparent !important;
+  border-color: var(--toc-indicator-color) !important;
 }
 </style>
 
@@ -125,8 +152,7 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 </div>
         </div>
     ))}
-    <div id="active-indicator" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
-        "group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"]}></div>
+    <div id="active-indicator" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute left-0 right-0 transition-all pointer-events-none"]}></div>
 </table-of-contents>
 </div>
 

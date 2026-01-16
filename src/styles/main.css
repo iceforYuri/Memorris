@@ -178,7 +178,7 @@
         position: fixed !important;
         left: 1rem !important;
         top: 5.5rem !important;
-        width: 17.5rem !important;
+        width: 18rem !important;
         max-height: calc(100vh - 8rem) !important;
         transform: translateX(0) !important;
         opacity: 1 !important;
@@ -186,6 +186,17 @@
         z-index: 99999 !important;
         border-radius: var(--radius-large);
         transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* TOC 内部内容区域，确保有padding */
+    .left-toc-panel #toc {
+        padding: 0.25rem;
+    }
+
+    /* table-of-contents 需要相对定位以支持 active-indicator */
+    .left-toc-panel table-of-contents {
+        position: relative;
+        display: block;
     }
 
     /* Light mode: use darker theme background */
@@ -208,6 +219,12 @@
         color: rgba(255, 255, 255, 0.6) !important;
     }
 
+    /* 浅色模式下的徽章样式 */
+    :root:not(.dark) .left-toc-panel .bg-\[var\(--toc-badge-bg\)\] {
+        background-color: rgba(0, 190, 224, 0.8) !important;
+        color: white !important;
+    }
+
     /* Dark mode: use lighter theme background */
     :root.dark .left-toc-panel {
         background-color: oklch(0.85 0.03 var(--hue) / 0.92);
@@ -226,6 +243,17 @@
 
     :root.dark .left-toc-panel .text-30 {
         color: oklch(0.3 0.02 var(--hue) / 0.6) !important;
+    }
+
+    /* 深色模式下的徽章样式 */
+    :root.dark .left-toc-panel .bg-\[var\(--toc-badge-bg\)\] {
+        background-color: rgba(0, 190, 224, 0.9) !important;
+        color: white !important;
+    }
+
+    /* 子标题小圆点颜色 */
+    .left-toc-panel .child-headings .rounded-\[0\.1875rem\] {
+        background-color: var(--toc-indicator-color) !important;
     }
 
     .left-toc-panel.float-panel-closed {
