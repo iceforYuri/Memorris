@@ -141,6 +141,12 @@ const jsonLd = {
             src={entry.data.image}
             basePath={path.join("content/posts/", getDir(entry.id))}
             class="mb-8 rounded-xl banner-container onload-animation"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 1280px) 1003px, (min-width: 768px) calc(100vw - 3rem), 100vw"
+            quality={72}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
           />
         )
       }

@@ -24,6 +24,9 @@ export default defineConfig({
   site: "https://fuwari.vercel.app/",
   base: "/",
   trailingSlash: "always",
+  devToolbar: {
+    enabled: false,
+  },
   integrations: [
     tailwind(
         {

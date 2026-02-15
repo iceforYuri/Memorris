@@ -389,6 +389,10 @@ function disableAnimation() {
 		});
 	}
 
+	function initCustomScrollbarDeferred() {
+		requestAnimationFrame(initCustomScrollbar);
+	}
+
 	function showBanner() {
 		const banner = document.getElementById("banner");
 		if (!banner) {
@@ -402,7 +406,7 @@ function disableAnimation() {
 		// disableAnimation()()		// TODO
 		loadTheme();
 		loadHue();
-		initCustomScrollbar();
+		initCustomScrollbarDeferred();
 		showBanner();
 	}
 
@@ -446,7 +450,7 @@ function disableAnimation() {
 				navbar.classList.add("navbar-hidden");
 			}
 		});
-		window.swup.hooks.on("content:replace", initCustomScrollbar);
+		window.swup.hooks.on("content:replace", initCustomScrollbarDeferred);
 		window.swup.hooks.on(
 			"visit:start",
 			(visit: { to: { url: string } }) => {
@@ -501,13 +505,12 @@ function disableAnimation() {
 	let tocPanel = document.getElementById("toc-panel");
 	let navbar = document.getElementById("navbar-wrapper");
 	function scrollFunction() {
+		const scrollTop = window.scrollY || document.documentElement.scrollTop;
 		let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+		const reachedBannerThreshold = scrollTop > bannerHeight;
 
 		if (backToTopBtn) {
-			if (
-				document.body.scrollTop > bannerHeight ||
-				document.documentElement.scrollTop > bannerHeight
-			) {
+			if (reachedBannerThreshold) {
 				backToTopBtn.classList.remove("hide");
 			} else {
 				backToTopBtn.classList.add("hide");
@@ -516,10 +519,7 @@ function disableAnimation() {
 
 		// 同步控制左侧的浮动按钮显示
 		if (leftBackToTopBtn) {
-			if (
-				document.body.scrollTop > bannerHeight ||
-				document.documentElement.scrollTop > bannerHeight
-			) {
+			if (reachedBannerThreshold) {
 				leftBackToTopBtn.classList.remove("hide");
 			} else {
 				leftBackToTopBtn.classList.add("hide");
@@ -528,10 +528,7 @@ function disableAnimation() {
 
 		// 同步控制 TOC 按钮显示，并在隐藏时同步关闭目录面板
 		if (tocToggleBtn) {
-			if (
-				document.body.scrollTop > bannerHeight ||
-				document.documentElement.scrollTop > bannerHeight
-			) {
+			if (reachedBannerThreshold) {
 				tocToggleBtn.classList.remove("hide");
 			} else {
 				tocToggleBtn.classList.add("hide");
@@ -560,17 +557,26 @@ function disableAnimation() {
 				NAVBAR_HEIGHT -
 				MAIN_PANEL_EXCESS_HEIGHT -
 				16;
-			if (
-				document.body.scrollTop >= threshold ||
-				document.documentElement.scrollTop >= threshold
-			) {
+			if (scrollTop >= threshold) {
 				navbar.classList.add("navbar-hidden");
 			} else {
 				navbar.classList.remove("navbar-hidden");
 			}
 		}
 	}
-	window.onscroll = scrollFunction;
+	let isScrollTicking = false;
+	window.addEventListener(
+		"scroll",
+		() => {
+			if (isScrollTicking) return;
+			isScrollTicking = true;
+			requestAnimationFrame(() => {
+				scrollFunction();
+				isScrollTicking = false;
+			});
+		},
+		{ passive: true },
+	);
 
 	// Attach sidebar button listeners
 	function attachSidebarListeners() {
