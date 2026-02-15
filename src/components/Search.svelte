@@ -39,7 +39,11 @@ onMount(() => {
 
     let arr = []
     if (import.meta.env.PROD) {
-      const ret = await pagefind.search(keyword)
+      const pagefindInstance = (window as any).pagefind
+      if (!pagefindInstance) {
+        return
+      }
+      const ret = await pagefindInstance.search(keyword)
       for (const item of ret.results) {
         arr.push(await item.data())
       }
