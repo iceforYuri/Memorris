@@ -1,0 +1,106 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    label: string;
+    value: number;
+    icon?: string;
+    suffix?: string;
+    class?: string;
+}
+
+const {
+    label,
+    value,
+    icon = "material-symbols:bar-chart-rounded",
+    suffix = "",
+} = Astro.props;
+const className = Astro.props.class;
+---
+
+<rolling-count-card
+    class:list={[
+        "card-base rounded-[var(--radius-large)] p-4 md:p-5 flex items-center gap-4",
+        className,
+    ]}
+    data-target={String(value)}
+>
+    <div
+        class="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--primary)] bg-[var(--btn-regular-bg)]"
+    >
+        <Icon name={icon} class="text-xl" />
+    </div>
+    <div class="min-w-0">
+        <div class="text-sm text-black/60 dark:text-white/60">{label}</div>
+        <div
+            class="mt-1 text-2xl md:text-3xl font-bold text-black/90 dark:text-white/90"
+        >
+            <span data-counter-value>{value}</span>{suffix}
+        </div>
+    </div>
+</rolling-count-card>
+
+<script>
+    class RollingCountCard extends HTMLElement {
+        private started = false;
+
+        connectedCallback() {
+            if (this.started) {
+                return;
+            }
+
+            const startAnimation = () => {
+                if (this.started) {
+                    return;
+                }
+                this.started = true;
+
+                const target = Number(this.dataset.target ?? "0");
+                const counter = this.querySelector("[data-counter-value]");
+                if (!counter || Number.isNaN(target)) {
+                    return;
+                }
+
+                const duration = 900;
+                const startAt = performance.now();
+
+                const tick = (now: number) => {
+                    const progress = Math.min((now - startAt) / duration, 1);
+                    const eased = 1 - (1 - progress) ** 3;
+                    const current = Math.round(target * eased);
+                    counter.textContent = String(current);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(tick);
+                    }
+                };
+
+                counter.textContent = "0";
+                requestAnimationFrame(tick);
+            };
+
+            if ("IntersectionObserver" in window) {
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        const visible = entries.some(
+                            (entry) => entry.isIntersecting,
+                        );
+                        if (visible) {
+                            observer.disconnect();
+                            startAnimation();
+                        }
+                    },
+                    { threshold: 0.25 },
+                );
+                observer.observe(this);
+                return;
+            }
+
+            startAnimation();
+        }
+    }
+
+    if (!customElements.get("rolling-count-card")) {
+        customElements.define("rolling-count-card", RollingCountCard);
+    }
+</script>

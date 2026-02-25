@@ -6,11 +6,17 @@ import I18nKey from "@i18n/i18nKey";
 import Categories from "@components/widget/Categories.astro";
 import { getEntry } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
+import RollingCountCard from "@components/misc/RollingCountCard.astro";
+import { getCategoryList } from "@utils/content-utils";
 
 const title = i18n(I18nKey.categories);
 // 加载 categories 内容文件
 const categoriesPost = await getEntry("spec", "categories");
-const { Content } = await categoriesPost.render();
+if (!categoriesPost) {
+  throw new Error("Missing content entry: spec/categories");
+}
+const { Content } = await (categoriesPost as any).render();
+const categoryList = await getCategoryList();
 ---
 
 <MainGridLayout title={title} description={title}>
@@ -22,6 +28,12 @@ const { Content } = await categoriesPost.render();
       <Markdown class="mb-6">
         <Content />
       </Markdown>
+      <RollingCountCard
+        class="mb-6"
+        label={title}
+        value={categoryList.length}
+        icon="material-symbols:category-rounded"
+      />
       <Categories class="w-full" />
     </div>
   </div>
