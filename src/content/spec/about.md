@@ -12,4 +12,4 @@ This is the improved site for [Fuwari](https://github.com/saicaca/fuwari).
 > - 📍[Beijing]() / [Shenzhen]()
 > - [✉️ yurivcty@gmail.com](yurivcty@gmail.com)
 
-Find Yourself  👏
+Find Yourself 👏
