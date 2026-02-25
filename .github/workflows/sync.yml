@@ -1,0 +1,73 @@
+name: Secure Cloud Merge
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [trigger_sync] # 接收来自其他仓库的信号
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 签出部署仓本身（保留 .github/workflows 和 git 历史）
+      - name: Checkout Deployment Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          fetch-depth: 0 # 获取完整历史
+
+      # 2. 签出模板（拉取到临时目录 temp-template）
+      - name: Checkout Template
+        uses: actions/checkout@v4
+        with:
+          repository: iceforYuri/blog-template
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          path: temp-template
+
+      # 3. 签出内容（拉取到临时目录 temp-content）
+      - name: Checkout Content
+        uses: actions/checkout@v4
+        with:
+          repository: iceforYuri/blog-content
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          path: temp-content
+
+      # 4. 物理拼装：把模板和内容填入当前目录
+      - name: Assemble Site
+        run: |
+          # A. 打印当前状态，方便调试
+          echo "Current directory: $(pwd)"
+          
+          # B. 清理旧文件（保留 git 核心目录）
+          # 我们改用更安全的方式：删除当前目录下非隐藏的文件和非 .git/.github 的隐藏文件
+          find . -maxdepth 1 ! -name '.git' ! -name '.github' ! -name '.' ! -name 'temp-template' ! -name 'temp-content' -exec rm -rf {} +
+          
+          # C. 将模板内容考入根目录（使用 . 包含隐藏文件）
+          echo "Copying template (excluding .github)..."
+          rsync -av --exclude='.github' temp-template/ ./
+          
+          # D. 确保文章存放路径存在并考入内容
+          echo "Copying content..."
+          mkdir -p src/content/posts
+          if [ -d "temp-content" ]; then
+            cp -r temp-content/. src/content/posts/
+          fi
+          
+          # E. 清理临时文件夹
+          rm -rf temp-template temp-content
+
+      # 5. 提交并推送（保留历史，非强制清空）
+      - name: Push Changes
+        run: |
+          git config --global user.name "Cloud Assembler"
+          git config --global user.email "bot@github.com"
+          
+          git add .
+          
+          # 检查是否有变动，避免空提交报错
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Site Update: $(date)"
+            git push origin main
+          else
+            echo "No changes detected, skipping push."
+          fi
