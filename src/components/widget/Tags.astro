@@ -8,6 +8,11 @@ import { url } from "../../utils/url-utils";
 import StaggerReveal from "../misc/StaggerReveal.astro";
 
 const tags = await getTagList();
+const maxCount = tags.reduce((max, tag) => Math.max(max, tag.count), 0);
+const minCount = tags.reduce(
+  (min, tag) => Math.min(min, tag.count),
+  Number.POSITIVE_INFINITY,
+);
 
 const COLLAPSED_HEIGHT = "100rem";
 
@@ -19,6 +24,33 @@ interface Props {
 }
 const className = Astro.props.class;
 const style = Astro.props.style;
+
+const MIN_SIZE_REM = 0.9;
+const MAX_SIZE_REM = 2.0;
+
+function getFontSizeByCount(count: number) {
+  if (!Number.isFinite(minCount) || maxCount <= minCount) {
+    return 1.05;
+  }
+  const ratio = (count - minCount) / (maxCount - minCount);
+  return MIN_SIZE_REM + ratio * (MAX_SIZE_REM - MIN_SIZE_REM);
+}
+
+function getHash(input: string) {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash * 31 + input.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function getCloudOffset(name: string) {
+  const h = getHash(name);
+  return {
+    top: ((h % 7) - 3) * 2,
+    left: ((Math.floor(h / 7) % 5) - 2) * 1.5,
+  };
+}
 ---
 
 <WidgetLayout
@@ -30,18 +62,26 @@ const style = Astro.props.style;
   style={style}
 >
   <StaggerReveal>
-    <div class="flex gap-2 flex-wrap">
+    <div class="flex flex-wrap items-end gap-x-2 gap-y-3 md:gap-x-3 md:gap-y-4">
       {
-        tags.map((t) => (
-          <div data-stagger-item>
+        tags.map((t) => {
+          const sizeRem = getFontSizeByCount(t.count);
+          const offset = getCloudOffset(t.name);
+          return (
+          <div
+            data-stagger-item
+            style={`margin-top:${offset.top}px; margin-left:${offset.left}px;`}
+          >
             <ButtonTag
               href={url(`/archive/tag/${t.urlSafeName}/`)}
               label={`View all posts with the ${t.name} tag`}
+              class="rounded-full bg-[var(--btn-regular-bg)]/70 hover:bg-[var(--btn-card-bg-hover)]"
+              style={`font-size:${sizeRem.toFixed(2)}rem;`}
             >
               {t.name}
             </ButtonTag>
           </div>
-        ))
+        )})
       }
     </div>
   </StaggerReveal>
