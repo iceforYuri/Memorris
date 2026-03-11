@@ -1,0 +1,96 @@
+---
+interface Props {
+  class?: string;
+  itemSelector?: string;
+  stepMs?: number;
+}
+
+const className = Astro.props.class;
+const itemSelector = Astro.props.itemSelector ?? "[data-stagger-item]";
+const stepMs = Astro.props.stepMs ?? 55;
+---
+
+<stagger-reveal
+  class={className}
+  data-item-selector={itemSelector}
+  data-step-ms={String(stepMs)}
+>
+  <slot />
+</stagger-reveal>
+
+<style>
+  stagger-reveal [data-stagger-item] {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 360ms ease, transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--stagger-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  stagger-reveal [data-stagger-item].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    stagger-reveal [data-stagger-item] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  class StaggerReveal extends HTMLElement {
+    private started = false;
+
+    connectedCallback() {
+      if (this.started) {
+        return;
+      }
+      this.started = true;
+
+      const selector = this.dataset.itemSelector ?? "[data-stagger-item]";
+      const stepMs = Number(this.dataset.stepMs ?? "55");
+      const items = Array.from(this.querySelectorAll<HTMLElement>(selector));
+
+      if (items.length === 0) {
+        return;
+      }
+
+      const reveal = () => {
+        items.forEach((item, index) => {
+          item.style.setProperty("--stagger-delay", `${index * stepMs}ms`);
+          item.classList.add("is-visible");
+        });
+      };
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        reveal();
+        return;
+      }
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries.some((entry) => entry.isIntersecting);
+            if (visible) {
+              observer.disconnect();
+              reveal();
+            }
+          },
+          { threshold: 0.16 },
+        );
+        observer.observe(this);
+        return;
+      }
+
+      reveal();
+    }
+  }
+
+  if (!customElements.get("stagger-reveal")) {
+    customElements.define("stagger-reveal", StaggerReveal);
+  }
+</script>
