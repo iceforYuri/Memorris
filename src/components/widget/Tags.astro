@@ -1,6 +1,5 @@
 ---
 import WidgetLayout from "./WidgetLayout.astro";
-import ButtonTag from "../control/ButtonTag.astro";
 import { getTagList } from "../../utils/content-utils";
 import { i18n } from "../../i18n/translation";
 import I18nKey from "../../i18n/i18nKey";
@@ -25,15 +24,34 @@ interface Props {
 const className = Astro.props.class;
 const style = Astro.props.style;
 
-const MIN_SIZE_REM = 0.9;
-const MAX_SIZE_REM = 2.0;
+const MIN_SIZE_REM = 0.95;
+const MAX_SIZE_REM = 2.25;
 
 function getFontSizeByCount(count: number) {
   if (!Number.isFinite(minCount) || maxCount <= minCount) {
-    return 1.05;
+    return 1.1;
   }
   const ratio = (count - minCount) / (maxCount - minCount);
   return MIN_SIZE_REM + ratio * (MAX_SIZE_REM - MIN_SIZE_REM);
+}
+
+function getWeightRatio(count: number) {
+  if (!Number.isFinite(minCount) || maxCount <= minCount) {
+    return 0.5;
+  }
+  return (count - minCount) / (maxCount - minCount);
+}
+
+function getOpacityByCount(count: number) {
+  const ratio = getWeightRatio(count);
+  return 0.58 + ratio * 0.42;
+}
+
+function getWeightTier(count: number) {
+  const ratio = getWeightRatio(count);
+  if (ratio >= 0.72) return "high";
+  if (ratio >= 0.38) return "mid";
+  return "low";
 }
 
 function getHash(input: string) {
@@ -47,8 +65,8 @@ function getHash(input: string) {
 function getCloudOffset(name: string) {
   const h = getHash(name);
   return {
-    top: ((h % 7) - 3) * 2,
-    left: ((Math.floor(h / 7) % 5) - 2) * 1.5,
+    top: ((h % 9) - 4) * 1.8,
+    left: ((Math.floor(h / 9) % 7) - 3) * 1.6,
   };
 }
 ---
@@ -62,27 +80,90 @@ function getCloudOffset(name: string) {
   style={style}
 >
   <StaggerReveal>
-    <div class="flex flex-wrap items-end gap-x-2 gap-y-3 md:gap-x-3 md:gap-y-4">
+    <div class="tag-cloud flex flex-wrap items-center justify-center gap-x-4 gap-y-4 md:gap-x-6 md:gap-y-5">
       {
         tags.map((t) => {
           const sizeRem = getFontSizeByCount(t.count);
+          const opacity = getOpacityByCount(t.count);
+          const tier = getWeightTier(t.count);
           const offset = getCloudOffset(t.name);
           return (
           <div
             data-stagger-item
             style={`margin-top:${offset.top}px; margin-left:${offset.left}px;`}
           >
-            <ButtonTag
+            <a
               href={url(`/archive/tag/${t.urlSafeName}/`)}
-              label={`View all posts with the ${t.name} tag`}
-              class="rounded-full bg-[var(--btn-regular-bg)]/70 hover:bg-[var(--btn-card-bg-hover)]"
-              style={`font-size:${sizeRem.toFixed(2)}rem;`}
+              aria-label={`View all posts with the ${t.name} tag`}
+              class="tag-cloud-item"
+              data-tier={tier}
+              style={`font-size:${sizeRem.toFixed(2)}rem; --tag-opacity:${opacity.toFixed(2)};`}
             >
               {t.name}
-            </ButtonTag>
+            </a>
           </div>
         )})
       }
     </div>
   </StaggerReveal>
 </WidgetLayout>
+
+<style>
+  .tag-cloud-item {
+    position: relative;
+    display: inline-block;
+    line-height: 1.2;
+    text-decoration: none;
+    opacity: var(--tag-opacity, 0.8);
+    color: var(--tag-color, oklch(0.55 0.03 var(--hue)));
+    transition: opacity 260ms ease, transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1), text-shadow 320ms ease, color 220ms ease;
+    will-change: transform, opacity;
+  }
+
+  .tag-cloud-item[data-tier="high"] {
+    --tag-color: oklch(0.72 0.14 var(--hue));
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .tag-cloud-item[data-tier="mid"] {
+    --tag-color: oklch(0.8 0.05 var(--hue));
+    font-weight: 560;
+  }
+
+  .tag-cloud-item[data-tier="low"] {
+    --tag-color: oklch(0.72 0.03 var(--hue));
+    font-weight: 430;
+  }
+
+  :global(html.dark) .tag-cloud:hover .tag-cloud-item {
+    opacity: 0.24;
+    transform: scale(0.96);
+  }
+
+  :global(html.dark) .tag-cloud:hover .tag-cloud-item:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    color: oklch(0.97 0.02 var(--hue));
+    text-shadow: 0 0 14px oklch(0.72 0.14 var(--hue) / 0.38);
+  }
+
+  :global(html:not(.dark)) .tag-cloud-item {
+    color: oklch(0.42 0.05 var(--hue));
+    opacity: 0.92;
+  }
+
+  :global(html:not(.dark)) .tag-cloud-item:hover {
+    color: var(--primary);
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tag-cloud-item {
+      transition: none;
+      transform: none !important;
+      text-shadow: none !important;
+    }
+  }
+</style>
