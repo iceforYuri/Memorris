@@ -97,6 +97,23 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
   background-color: transparent !important;
   border-color: var(--toc-indicator-color) !important;
 }
+
+/* 调整目录中公式的尺寸，避免行高过大 */
+.left-toc-panel #toc a .katex-html {
+  font-size: 0.85em;
+  line-height: 1.1;
+}
+.left-toc-panel #toc a .katex-display .katex-html {
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
+/* 纯公式标题行高优化 */
+.left-toc-panel #toc a.toc-pure-math {
+  min-height: 1.5rem !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
 </style>
 
 <div id="toc">
@@ -158,6 +175,13 @@ headings.filter((heading) => heading.depth < minDepth + maxLevel).forEach((headi
 
 
 <script>
+import katex from "katex";
+
+type TocTitlePart = {
+    type: "text" | "math";
+    value: string;
+};
+
 class TableOfContents extends HTMLElement {
     tocEl: HTMLElement | null = null;
     visibleClass = "visible";
@@ -172,6 +196,99 @@ class TableOfContents extends HTMLElement {
     // 跟踪目录组
     tocGroups: HTMLDivElement[] = [];
     activeGroup: HTMLDivElement | null = null;
+
+    escapeHtml = (input: string): string => {
+        return input
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    };
+
+    normalizeText = (input: string): string => {
+        return input.replace(/\s+/g, " ").trim();
+    };
+
+    collectTitleParts = (node: Node, parts: TocTitlePart[]) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = this.normalizeText(node.textContent || "");
+            if (text) parts.push({ type: "text", value: text });
+            return;
+        }
+
+        if (!(node instanceof HTMLElement)) return;
+
+        if (node.classList.contains("anchor")) return;
+
+        if (node.classList.contains("katex")) {
+            const tex = this.normalizeText(
+                node.querySelector(".katex-mathml annotation")?.textContent || ""
+            );
+            if (tex) {
+                parts.push({ type: "math", value: tex });
+            } else {
+                const fallback = this.normalizeText(node.textContent || "");
+                if (fallback) parts.push({ type: "text", value: fallback });
+            }
+            return;
+        }
+
+        Array.from(node.childNodes).forEach((child) => this.collectTitleParts(child, parts));
+    };
+
+    buildTocTitleHtml = (headingEl: HTMLElement): { html: string; isPureMath: boolean } => {
+        const parts: TocTitlePart[] = [];
+        this.collectTitleParts(headingEl, parts);
+
+        const hasPlainText = parts.some((part) => part.type === "text" && part.value.trim().length > 0);
+        const isPureMathTitle = !hasPlainText && parts.some((part) => part.type === "math");
+
+        if (parts.length === 0) {
+            return {
+                html: this.escapeHtml(this.normalizeText(headingEl.textContent || "")),
+                isPureMath: false,
+            };
+        }
+
+        const rendered = parts
+            .map((part) => {
+                if (part.type === "text") {
+                    return this.escapeHtml(part.value);
+                }
+                try {
+                    return katex.renderToString(part.value, {
+                        throwOnError: false,
+                        strict: "ignore",
+                        displayMode: isPureMathTitle,
+                    });
+                } catch {
+                    return this.escapeHtml(part.value);
+                }
+            })
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        return { html: rendered, isPureMath: isPureMathTitle };
+    };
+
+    syncTocLabelsFromHeadings = () => {
+        for (let i = 0; i < this.tocEntries.length; i++) {
+            const tocLink = this.tocEntries[i];
+            const headingEl = this.headings[i];
+            if (!tocLink || !headingEl) continue;
+
+            const labelEl = tocLink.querySelector<HTMLElement>(".text-sm");
+            if (!labelEl) continue;
+
+            const { html, isPureMath } = this.buildTocTitleHtml(headingEl);
+            labelEl.innerHTML = html;
+            if (isPureMath) {
+                tocLink.classList.add('toc-pure-math');
+            }
+        }
+    };
 
     constructor() {
         super();
@@ -393,6 +510,9 @@ class TableOfContents extends HTMLElement {
             }
         }
         this.active = new Array(this.tocEntries.length).fill(false);
+
+        // 从真实标题节点同步 TOC 文本，避免 Astro headings 中 KaTeX 文本重复
+        this.syncTocLabelsFromHeadings();
 
         this.sections.forEach((section) =>
             this.observer.observe(section)
