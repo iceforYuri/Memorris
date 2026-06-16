@@ -21,16 +21,16 @@ Personal blog customized from [Fuwari](https://github.com/saicaca/fuwari), built
 
 Inherited from Fuwari:
 
-- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [x] Smooth animations and page transitions (Swup)
-- [x] Light / dark mode
-- [x] Customizable theme colors & banner
-- [x] Responsive design
-- [x] Search with [Pagefind](https://pagefind.app/)
-- [x] Table of contents (TOC)
-- [x] KaTeX math formulas
-- [x] [Markdown extended features](#-markdown-extended-syntax)
-- [x] RSS feed
+- [X] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
+- [X] Smooth animations and page transitions (Swup)
+- [X] Light / dark mode
+- [X] Customizable theme colors & banner
+- [X] Responsive design
+- [X] Search with [Pagefind](https://pagefind.app/)
+- [X] Table of contents (TOC)
+- [X] KaTeX math formulas
+- [X] [Markdown extended features](#-markdown-extended-syntax)
+- [X] RSS feed
 - [ ] Comments
 
 ## 🔧 Customizations over Upstream
@@ -46,6 +46,8 @@ Additional enhancements in this fork:
 - **KaTeX formula headings** render correctly in the TOC
 - Integrated with Swup page transitions
 
+![1781607282363](image/README/1781607282363.png)
+
 ### Performance
 
 - Image lazy loading, `decoding="async"`, and `fetchpriority` control
@@ -59,6 +61,8 @@ Additional enhancements in this fork:
 - **Categories page**: all categories expanded by default (`forceExpand`)
 - **StaggerReveal**: staggered list entrance animations with `prefers-reduced-motion` support
 
+![1781607577275](image/README/1781607577275.png)
+
 ## 🚀 Getting Started
 
 1. Clone this repository and install dependencies:
@@ -68,11 +72,8 @@ Additional enhancements in this fork:
    ```
 
    Install [pnpm](https://pnpm.io) with `npm install -g pnpm` if needed.
-
 2. Edit `src/config.ts` for site title, navigation, profile, etc.; edit `site` in `astro.config.mjs` for your deployment domain.
-
 3. Run `pnpm new-post <filename>` to create a new post in `src/content/posts/`.
-
 4. Local development:
 
    ```bash
@@ -126,17 +127,17 @@ In addition to GitHub Flavored Markdown, this project supports:
 
 All commands are run from the project root:
 
-| Command | Action |
-|:--------|:-------|
-| `pnpm install` | Installs dependencies |
-| `pnpm dev` | Starts local dev server at `localhost:4321` |
-| `pnpm build` | Builds the site to `./dist/` (includes Pagefind index) |
-| `pnpm preview` | Previews the built site locally |
-| `pnpm new-post <filename>` | Creates a new post |
-| `pnpm format` | Formats code with Biome |
-| `pnpm lint` | Lints and auto-fixes with Biome |
-| `pnpm astro ...` | Runs CLI commands like `astro add`, `astro check` |
-| `pnpm astro --help` | Shows Astro CLI help |
+| Command                      | Action                                                   |
+| :--------------------------- | :------------------------------------------------------- |
+| `pnpm install`             | Installs dependencies                                    |
+| `pnpm dev`                 | Starts local dev server at `localhost:4321`            |
+| `pnpm build`               | Builds the site to `./dist/` (includes Pagefind index) |
+| `pnpm preview`             | Previews the built site locally                          |
+| `pnpm new-post <filename>` | Creates a new post                                       |
+| `pnpm format`              | Formats code with Biome                                  |
+| `pnpm lint`                | Lints and auto-fixes with Biome                          |
+| `pnpm astro ...`           | Runs CLI commands like `astro add`, `astro check`    |
+| `pnpm astro --help`        | Shows Astro CLI help                                     |
 
 ## 🙏 Acknowledgments
 
