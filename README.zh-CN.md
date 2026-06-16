@@ -15,7 +15,7 @@
 
 > README 版本：`2026-03-11`
 
-![Preview Image](https://file+.vscode-resource.vscode-cdn.net/f%3A/hexo/fuwari/fuwari/image/README/1781606389145.png)
+![Preview Image](./image/README/1781606389145.png)
 
 ## ✨ 功能特性
 
@@ -46,6 +46,8 @@
 - **KaTeX 公式标题**可在目录中正确渲染
 - 与 Swup 页面过渡集成，切换页面时目录同步更新
 
+![TOC 预览](./image/README/1781607282363.png)
+
 ### 性能优化
 
 - 图片懒加载、`decoding="async"` 与 `fetchpriority` 控制
@@ -58,6 +60,11 @@
 - **标签云**：按文章数量映射字号、透明度与字重，带稳定哈希配色
 - **分类页**：默认展开全部分类（`forceExpand`）
 - **StaggerReveal**：列表项交错入场动画，支持 `prefers-reduced-motion`
+
+<p align="center">
+  <img src="./image/README/1781607819957.png" alt="标签云" width="49%" />
+  <img src="./image/README/1781607863903.png" alt="分类页" width="49%" />
+</p>
 
 ## 🚀 使用方法
 

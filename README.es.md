@@ -36,9 +36,24 @@ Heredadas de Fuwari:
 
 Mejoras adicionales en este fork:
 
-- **TOC**: agrupación lateral, indicador de progreso, soporte de fórmulas KaTeX
-- **Rendimiento**: carga diferida de imágenes, optimización de componentes principales
-- **Páginas de archivo**: nube de etiquetas por frecuencia, contador animado, categorías expandidas por defecto
+### TOC
+
+- Agrupación lateral, indicador de progreso, soporte de fórmulas KaTeX
+
+![TOC preview](./image/README/1781607282363.png)
+
+### Rendimiento
+
+- Carga diferida de imágenes, optimización de componentes principales
+
+### Páginas de archivo
+
+- Nube de etiquetas por frecuencia, contador animado, categorías expandidas por defecto
+
+<p align="center">
+  <img src="./image/README/1781607819957.png" alt="Nube de etiquetas" width="49%" />
+  <img src="./image/README/1781607863903.png" alt="Página de categorías" width="49%" />
+</p>
 
 > Para la documentación completa del fork, consulta [README.md](README.md) o [README.zh-CN.md](README.zh-CN.md).
 

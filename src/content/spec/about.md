@@ -4,7 +4,7 @@ This is the improved site for [Fuwari](https://github.com/saicaca/fuwari).
 
 想查看详细博主信息可选择 [Site](https://resume.memorris.dpdns.org/)
 
-::github{repo="iceforYuri/astro"}
+::github{repo="iceforYuri/Memorris"}
 
 > ### 错落平静，浮沉摘星
 >

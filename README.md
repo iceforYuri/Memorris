@@ -46,7 +46,7 @@ Additional enhancements in this fork:
 - **KaTeX formula headings** render correctly in the TOC
 - Integrated with Swup page transitions
 
-![1781607282363](image/README/1781607282363.png)
+![TOC preview](./image/README/1781607282363.png)
 
 ### Performance
 
@@ -61,7 +61,10 @@ Additional enhancements in this fork:
 - **Categories page**: all categories expanded by default (`forceExpand`)
 - **StaggerReveal**: staggered list entrance animations with `prefers-reduced-motion` support
 
-![1781607577275](image/README/1781607577275.png)
+<p align="center">
+  <img src="./image/README/1781607819957.png" alt="Tag cloud" width="49%" />
+  <img src="./image/README/1781607863903.png" alt="Categories page" width="49%" />
+</p>
 
 ## 🚀 Getting Started
 

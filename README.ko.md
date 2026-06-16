@@ -34,7 +34,24 @@ Fuwari에서 상속:
 
 ## 🔧 업스트림 대비 커스터마이징
 
-이 포크에는 TOC 강화, 성능 최적화, 아카이브 페이지 UI 개선 등이 추가되어 있습니다.
+### 목차 (TOC)
+
+- 그룹화, 스크롤 추적, KaTeX 수식 제목 지원
+
+![TOC 미리보기](./image/README/1781607282363.png)
+
+### 성능
+
+- 이미지 지연 로딩, 주요 컴포넌트 최적화
+
+### 아카이브 페이지
+
+- 태그 클라우드, 카운트 애니메이션, 카테고리 기본 펼침
+
+<p align="center">
+  <img src="./image/README/1781607819957.png" alt="태그 클라우드" width="49%" />
+  <img src="./image/README/1781607863903.png" alt="카테고리 페이지" width="49%" />
+</p>
 
 > 자세한 내용은 [README.md](README.md) 또는 [README.zh-CN.md](README.zh-CN.md)를 참고하세요.
 
