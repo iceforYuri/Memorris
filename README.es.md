@@ -1,58 +1,83 @@
-# 🍥Fuwari
+# 🍥 Memorris
 
-Un tema estático para blogs construido con [Astro](https://astro.build).
+Blog personalizado a partir de [Fuwari](https://github.com/saicaca/fuwari), construido con [Astro](https://astro.build).
 
-[**🖥️ Demostración en Vivo (Vercel)**](https://fuwari.vercel.app)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**📦 Versión Antigua de Hexo**](https://github.com/saicaca/hexo-theme-vivia)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**🖥️ Demostración en vivo**](https://blog.memorris.dpdns.org/)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 Plantilla Fuwari**](https://github.com/saicaca/fuwari)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 Versión antigua de Hexo**](https://github.com/saicaca/hexo-theme-vivia)
 
-> Versión del README: `2024-04-07`
+🌏 README en
+[**English**](README.md) /
+[**中文**](README.zh-CN.md) /
+[**日本語**](README.ja-JP.md) /
+[**한국어**](README.ko.md) /
+[**ไทย**](README.th.md)
 
-![Imagen de Vista Previa](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+> Versión del README: `2026-03-11`
+
+![Vista previa](./image/README/1781606389145.png)
 
 ## ✨ Características
 
+Heredadas de Fuwari:
+
 - [x] Construido con [Astro](https://astro.build) y [Tailwind CSS](https://tailwindcss.com)
-- [x] Animaciones suaves y transiciones de página
+- [x] Animaciones suaves y transiciones de página (Swup)
 - [x] Modo claro / oscuro
 - [x] Colores del tema y banner personalizables
 - [x] Diseño responsivo
+- [x] Búsqueda con [Pagefind](https://pagefind.app/)
+- [x] Tabla de contenidos (TOC)
+- [x] Fórmulas matemáticas KaTeX
+- [x] Feed RSS
 - [ ] Comentarios
-- [x] Buscador
-- [ ] TOC (Tabla de Contenidos)
 
-## 🚀 Cómo Usar
+## 🔧 Personalizaciones respecto al upstream
 
-1. [Genera un nuevo repositorio](https://github.com/saicaca/fuwari/generate) desde esta plantilla o haz un fork de este repositorio.
-2. Para editar tu blog localmente, clona tu repositorio, ejecuta `pnpm install` y `pnpm add sharp` para instalar las dependencias.
-   - Instala [pnpm](https://pnpm.io) `npm install -g pnpm` si aún no lo tienes.
-3. Edita el archivo de configuración `src/config.ts` para personalizar tu blog.
-4. Ejecuta `pnpm new-post <nombre-de-archivo>` para crear una nueva entrada y edítala en `src/content/posts/`.
-5. Despliega tu blog en Vercel, Netlify, GitHub Pages, etc., siguiendo [las guías](https://docs.astro.build/en/guides/deploy/). Necesitas editar la configuración del sitio en `astro.config.mjs` antes del despliegue.
+Mejoras adicionales en este fork:
 
-## ⚙️ Cabecera de las Entradas
+- **TOC**: agrupación lateral, indicador de progreso, soporte de fórmulas KaTeX
+- **Rendimiento**: carga diferida de imágenes, optimización de componentes principales
+- **Páginas de archivo**: nube de etiquetas por frecuencia, contador animado, categorías expandidas por defecto
+
+> Para la documentación completa del fork, consulta [README.md](README.md) o [README.zh-CN.md](README.zh-CN.md).
+
+## 🚀 Cómo usar
+
+1. Clona este repositorio e instala dependencias con `pnpm install`.
+2. Edita `src/config.ts` y `astro.config.mjs` para personalizar el sitio.
+3. Ejecuta `pnpm new-post <filename>` para crear entradas en `src/content/posts/`.
+4. Desarrollo local: `pnpm dev`
+5. Compilar y previsualizar: `pnpm build` y `pnpm preview`
+6. Despliega siguiendo las [guías de Astro](https://docs.astro.build/en/guides/deploy/).
+
+## ⚙️ Cabecera de las entradas
 
 ```yaml
 ---
-title: Mi Primer Post en el Blog
+title: Mi primer post
 published: 2023-09-09
-description: Esta es la primera entrada de mi nuevo blog con Astro.
-image: /images/cover.jpg
+description: Primera entrada de mi blog con Astro.
+image: ./cover.jpg
 tags: [Foo, Bar]
 category: Front-end
 draft: false
+lang: jp
 ---
 ```
 
 ## 🧞 Comandos
 
-Todos los comandos se ejecutan desde la raíz del proyecto, desde una terminal:
+| Comando | Acción |
+|:--------|:-------|
+| `pnpm install` | Instala dependencias |
+| `pnpm dev` | Inicia el servidor local en `localhost:4321` |
+| `pnpm build` | Compila el sitio en `./dist/` |
+| `pnpm preview` | Previsualiza el build localmente |
+| `pnpm new-post <filename>` | Crea una nueva entrada |
+| `pnpm format` | Formatea el código con Biome |
+| `pnpm lint` | Analiza y corrige con Biome |
 
-| Comando                             | Acción                                            |
-|:------------------------------------|:--------------------------------------------------|
-| `pnpm install` y `pnpm add sharp`   | Instala las dependencias                          |
-| `pnpm dev`                          | Inicia el servidor de desarrollo local en `localhost:4321` |
-| `pnpm build`                        | Compila tu web para producción en `./dist/`     |
-| `pnpm preview`                      | Previsualiza la web localmente, antes del despliegue |
-| `pnpm new-post <nombre-de-archivo>` | Crea una nueva entrada                            |
-| `pnpm astro ...`                    | Ejecuta comandos CLI como `astro add`, `astro check` |
-| `pnpm astro --help`                 | Obtén ayuda para usar el CLI de Astro             |
+## 🙏 Agradecimientos
+
+Este proyecto es un fork de [saicaca/fuwari](https://github.com/saicaca/fuwari).

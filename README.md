@@ -1,40 +1,105 @@
-# 🍥Fuwari
+# 🍥 Memorris
 
-A static blog template built with [Astro](https://astro.build).
+Personal blog customized from [Fuwari](https://github.com/saicaca/fuwari), built with [Astro](https://astro.build).
 
-[**🖥️ Live Demo (Vercel)**](https://fuwari.vercel.app)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**📦 Old Hexo Version**](https://github.com/saicaca/hexo-theme-vivia)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**🌏 中文**](https://github.com/saicaca/fuwari/blob/main/README.zh-CN.md)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**🌏 日本語**](https://github.com/saicaca/fuwari/blob/main/README.ja-JP.md)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**🌏 한국어**](https://github.com/saicaca/fuwari/blob/main/README.ko.md)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**🌏 Español**](https://github.com/saicaca/fuwari/blob/main/README.es.md)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**🌏 ไทย**](https://github.com/saicaca/fuwari/blob/main/README.th.md)
+[**🖥️ Live Demo**](https://blog.memorris.dpdns.org/)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 Upstream Fuwari**](https://github.com/saicaca/fuwari)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 Old Hexo Version**](https://github.com/saicaca/hexo-theme-vivia)
 
-> README version: `2024-09-10`
+🌏 README in
+[**中文**](README.zh-CN.md) /
+[**日本語**](README.ja-JP.md) /
+[**한국어**](README.ko.md) /
+[**Español**](README.es.md) /
+[**ไทย**](README.th.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+> README version: `2026-03-11`
+
+![Preview Image](./image/README/1781606389145.png)
 
 ## ✨ Features
 
-- [X] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [X] Smooth animations and page transitions
-- [X] Light / dark mode
-- [X] Customizable theme colors & banner
-- [X] Responsive design
+Inherited from Fuwari:
+
+- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
+- [x] Smooth animations and page transitions (Swup)
+- [x] Light / dark mode
+- [x] Customizable theme colors & banner
+- [x] Responsive design
+- [x] Search with [Pagefind](https://pagefind.app/)
+- [x] Table of contents (TOC)
+- [x] KaTeX math formulas
+- [x] [Markdown extended features](#-markdown-extended-syntax)
+- [x] RSS feed
 - [ ] Comments
-- [X] Search
-- [X] TOC
 
-## 🚀 How to Use
+## 🔧 Customizations over Upstream
 
-1. [Generate a new repository](https://github.com/saicaca/fuwari/generate) from this template or fork this repository.
-2. To edit your blog locally, clone your repository, run `pnpm install` AND `pnpm add sharp` to install dependencies.
-   - Install [pnpm](https://pnpm.io) `npm install -g pnpm` if you haven't.
-3. Edit the config file `src/config.ts` to customize your blog.
-4. Run `pnpm new-post <filename>` to create a new post and edit it in `src/content/posts/`.
-5. Deploy your blog to Vercel, Netlify, GitHub Pages, etc. following [the guides](https://docs.astro.build/en/guides/deploy/). You need to edit the site configuration in `astro.config.mjs` before deployment.
+Additional enhancements in this fork:
 
-## ⚙️ Frontmatter of Posts
+### Table of Contents (TOC)
+
+- Left-side grouped TOC with expandable / collapsible sections
+- Scroll progress tracking with themed dashed indicator
+- Auto-hide when pinned to top to avoid covering content
+- Fixed TOC sidebar behavior on non-post pages
+- **KaTeX formula headings** render correctly in the TOC
+- Integrated with Swup page transitions
+
+### Performance
+
+- Image lazy loading, `decoding="async"`, and `fetchpriority` control
+- First-screen optimizations for `PostCard`, `Layout`, `Navbar`, and `Profile`
+- Theme switching logic extracted to `setting-utils.ts`
+
+### Archive Pages
+
+- **RollingCountCard**: animated rolling count for categories / tags
+- **Tag cloud**: font size, opacity, and weight mapped by post count, with stable hash-based colors
+- **Categories page**: all categories expanded by default (`forceExpand`)
+- **StaggerReveal**: staggered list entrance animations with `prefers-reduced-motion` support
+
+## 🚀 Getting Started
+
+1. Clone this repository and install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+   Install [pnpm](https://pnpm.io) with `npm install -g pnpm` if needed.
+
+2. Edit `src/config.ts` for site title, navigation, profile, etc.; edit `site` in `astro.config.mjs` for your deployment domain.
+
+3. Run `pnpm new-post <filename>` to create a new post in `src/content/posts/`.
+
+4. Local development:
+
+   ```bash
+   pnpm dev
+   ```
+
+5. Build and preview:
+
+   ```bash
+   pnpm build
+   pnpm preview
+   ```
+
+6. Deploy following the [Astro deployment guides](https://docs.astro.build/en/guides/deploy/).
+
+## ⚙️ Site Configuration
+
+TOC options in `src/config.ts` under `siteConfig.toc`:
+
+```ts
+toc: {
+  enable: true,   // Show TOC on post pages
+  depth: 6,       // Maximum heading depth shown in TOC
+}
+```
+
+## 📝 Frontmatter of Posts
 
 ```yaml
 ---
@@ -49,16 +114,30 @@ lang: jp      # Set only if the post's language differs from the site's language
 ---
 ```
 
-## 🧞 Commands
+## 🧩 Markdown Extended Syntax
 
-All commands are run from the root of the project, from a terminal:
+In addition to GitHub Flavored Markdown, this project supports:
 
-| Command                                 | Action                                               |
-| :-------------------------------------- | :--------------------------------------------------- |
-| `pnpm install` AND `pnpm add sharp` | Installs dependencies                                |
-| `pnpm dev`                            | Starts local dev server at `localhost:4321`        |
-| `pnpm build`                          | Build your production site to `./dist/`            |
-| `pnpm preview`                        | Preview your build locally, before deploying         |
-| `pnpm new-post <filename>`            | Create a new post                                    |
-| `pnpm astro ...`                      | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro --help`                   | Get help using the Astro CLI                         |
+- Admonitions (note, tip, important, caution, warning)
+- GitHub repository cards
+- Enhanced code blocks via Expressive Code
+
+## ⚡ Commands
+
+All commands are run from the project root:
+
+| Command | Action |
+|:--------|:-------|
+| `pnpm install` | Installs dependencies |
+| `pnpm dev` | Starts local dev server at `localhost:4321` |
+| `pnpm build` | Builds the site to `./dist/` (includes Pagefind index) |
+| `pnpm preview` | Previews the built site locally |
+| `pnpm new-post <filename>` | Creates a new post |
+| `pnpm format` | Formats code with Biome |
+| `pnpm lint` | Lints and auto-fixes with Biome |
+| `pnpm astro ...` | Runs CLI commands like `astro add`, `astro check` |
+| `pnpm astro --help` | Shows Astro CLI help |
+
+## 🙏 Acknowledgments
+
+This project is a fork of [saicaca/fuwari](https://github.com/saicaca/fuwari). Thanks to the upstream authors for their open-source work.

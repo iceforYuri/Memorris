@@ -1,33 +1,100 @@
-# 🍥Fuwari
+# 🍥 Memorris
 
-基于 [Astro](https://astro.build) 开发的静态博客模板。
+基于 [Fuwari](https://github.com/saicaca/fuwari) 定制的个人博客，底层使用 [Astro](https://astro.build) 构建。
 
-[**🖥️在线预览（Vercel）**](https://fuwari.vercel.app)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**📦旧 Hexo 版本**](https://github.com/saicaca/hexo-theme-vivia)
+[**🖥️ 在线预览**](https://blog.memorris.dpdns.org/)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 上游模板 Fuwari**](https://github.com/saicaca/fuwari)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 旧 Hexo 版本**](https://github.com/saicaca/hexo-theme-vivia)
 
-> README 版本：`2024-09-10`
+🌏 README：
+[**English**](README.md) /
+[**日本語**](README.ja-JP.md) /
+[**한국어**](README.ko.md) /
+[**Español**](README.es.md) /
+[**ไทย**](README.th.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+> README 版本：`2026-03-11`
+
+![Preview Image](https://file+.vscode-resource.vscode-cdn.net/f%3A/hexo/fuwari/fuwari/image/README/1781606389145.png)
 
 ## ✨ 功能特性
 
-- [x] 基于 Astro 和 Tailwind CSS 开发
-- [x] 流畅的动画和页面过渡
-- [x] 亮色 / 暗色模式
-- [x] 自定义主题色和横幅图片
-- [x] 响应式设计
+继承自 Fuwari 的基础能力：
+
+- [X] 基于 Astro 和 Tailwind CSS 开发
+- [X] 流畅的动画和页面过渡（Swup）
+- [X] 亮色 / 暗色模式
+- [X] 自定义主题色和横幅图片
+- [X] 响应式设计
+- [X] 全文搜索（[Pagefind](https://pagefind.app/)）
+- [X] 文内目录（TOC）
+- [X] KaTeX 数学公式
+- [X] Markdown 扩展语法（Admonition、GitHub 卡片、Expressive Code）
+- [X] RSS 订阅
 - [ ] 评论
-- [x] 搜索
-- [ ] 文内目录
+
+## 🔧 相对上游的定制
+
+在 Fuwari 基础上，本仓库额外实现了以下增强：
+
+### 文内目录（TOC）
+
+- 左侧分组目录，一级标题可展开 / 折叠子标题
+- 滚动进度追踪，带主题色虚线指示器
+- 页面置顶时自动隐藏，避免遮挡正文
+- 非文章页目录栏显示修复
+- **KaTeX 公式标题**可在目录中正确渲染
+- 与 Swup 页面过渡集成，切换页面时目录同步更新
+
+### 性能优化
+
+- 图片懒加载、`decoding="async"` 与 `fetchpriority` 控制
+- `PostCard`、`Layout`、`Navbar`、`Profile` 等组件首屏加载优化
+- 主题切换逻辑抽离至 `setting-utils.ts`
+
+### 归档页体验
+
+- **RollingCountCard**：分类 / 标签数量滚动计数动画
+- **标签云**：按文章数量映射字号、透明度与字重，带稳定哈希配色
+- **分类页**：默认展开全部分类（`forceExpand`）
+- **StaggerReveal**：列表项交错入场动画，支持 `prefers-reduced-motion`
 
 ## 🚀 使用方法
 
-1. 使用此模板[生成新仓库](https://github.com/saicaca/fuwari/generate)或 Fork 此仓库
-2. 进行本地开发，Clone 新的仓库，执行 `pnpm install` 和 `pnpm add sharp` 以安装依赖  
-   - 若未安装 [pnpm](https://pnpm.io)，执行 `npm install -g pnpm`
-3. 通过配置文件 `src/config.ts` 自定义博客
-4. 执行 `pnpm new-post <filename>` 创建新文章，并在 `src/content/posts/` 目录中编辑
-5. 参考[官方指南](https://docs.astro.build/zh-cn/guides/deploy/)将博客部署至 Vercel, Netlify, GitHub Pages 等；部署前需编辑 `astro.config.mjs` 中的站点设置。
+1. Clone 本仓库并在本地安装依赖：
+
+   ```bash
+   pnpm install
+   ```
+
+   若未安装 [pnpm](https://pnpm.io)，先执行 `npm install -g pnpm`。
+2. 编辑 `src/config.ts` 自定义站点标题、导航、个人资料等；编辑 `astro.config.mjs` 中的 `site` 字段设置部署域名。
+3. 执行 `pnpm new-post <filename>` 创建新文章，在 `src/content/posts/` 目录中编辑。
+4. 本地开发：
+
+   ```bash
+   pnpm dev
+   ```
+
+5. 构建并预览：
+
+   ```bash
+   pnpm build
+   pnpm preview
+   ```
+
+6. 部署：参考 [Astro 部署指南](https://docs.astro.build/zh-cn/guides/deploy/)，将 `dist/` 部署至任意静态托管服务。
+
+## ⚙️ 站点配置
+
+目录相关选项位于 `src/config.ts` 的 `siteConfig.toc`：
+
+```ts
+toc: {
+  enable: true,   // 是否在文章页显示目录
+  depth: 6,       // 目录显示的最大标题层级深度
+}
+```
 
 ## ⚙️ 文章 Frontmatter
 
@@ -48,12 +115,18 @@ lang: jp      # 仅当文章语言与 `config.ts` 中的网站语言不同时需
 
 下列指令均需要在项目根目录执行：
 
-| Command                           | Action                            |
-|:----------------------------------|:----------------------------------|
-| `pnpm install` 并 `pnpm add sharp` | 安装依赖                              |
-| `pnpm dev`                        | 在 `localhost:4321` 启动本地开发服务器      |
-| `pnpm build`                      | 构建网站至 `./dist/`                   |
-| `pnpm preview`                    | 本地预览已构建的网站                        |
-| `pnpm new-post <filename>`        | 创建新文章                             |
-| `pnpm astro ...`                  | 执行 `astro add`, `astro check` 等指令 |
-| `pnpm astro --help`               | 显示 Astro CLI 帮助                   |
+| Command                      | Action                                     |
+| :--------------------------- | :----------------------------------------- |
+| `pnpm install`             | 安装依赖                                   |
+| `pnpm dev`                 | 在 `localhost:4321` 启动本地开发服务器   |
+| `pnpm build`               | 构建网站至 `./dist/`（含 Pagefind 索引） |
+| `pnpm preview`             | 本地预览已构建的网站                       |
+| `pnpm new-post <filename>` | 创建新文章                                 |
+| `pnpm format`              | 使用 Biome 格式化代码                      |
+| `pnpm lint`                | 使用 Biome 检查并自动修复                  |
+| `pnpm astro ...`           | 执行 `astro add`、`astro check` 等指令 |
+| `pnpm astro --help`        | 显示 Astro CLI 帮助                        |
+
+## 🙏 致谢
+
+本项目基于 [saicaca/fuwari](https://github.com/saicaca/fuwari) 二次开发。感谢上游作者的开源贡献。

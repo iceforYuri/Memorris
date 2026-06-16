@@ -1,57 +1,79 @@
-# 🍥Fuwari
+# 🍥 Memorris
 
-[Astro](https://astro.build)로 구축된 정적 블로그 템플릿입니다.
+[Fuwari](https://github.com/saicaca/fuwari)를 기반으로 커스터마이징한 개인 블로그입니다. [Astro](https://astro.build)로 구축되었습니다.
 
-[**🖥️미리보기 (Vercel)**](https://fuwari.vercel.app)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**📦Old Hexo Version**](https://github.com/saicaca/hexo-theme-vivia)
+[**🖥️ 라이브 데모**](https://blog.memorris.dpdns.org/)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 업스트림 Fuwari**](https://github.com/saicaca/fuwari)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 구 Hexo 버전**](https://github.com/saicaca/hexo-theme-vivia)
 
-> README 버전: `2024-04-07`
+🌏 README:
+[**English**](README.md) /
+[**中文**](README.zh-CN.md) /
+[**日本語**](README.ja-JP.md) /
+[**Español**](README.es.md) /
+[**ไทย**](README.th.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+> README 버전: `2026-03-11`
+
+![Preview Image](./image/README/1781606389145.png)
 
 ## ✨ 특징
 
-- [x] [Astro](https://astro.build) 및 [Tailwind CSS](https://tailwindcss.com)로 구축됨
-- [x] 부드러운 애니메이션 및 페이지 전환
-- [x] 라이트 모드 / 다크 모드
+Fuwari에서 상속:
+
+- [x] [Astro](https://astro.build) 및 [Tailwind CSS](https://tailwindcss.com)로 구축
+- [x] 부드러운 애니메이션 및 페이지 전환 (Swup)
+- [x] 라이트 / 다크 모드
 - [x] 사용자 정의 가능한 테마 색상 및 배너
 - [x] 반응형 디자인
+- [x] [Pagefind](https://pagefind.app/) 검색
+- [x] 목차 (TOC)
+- [x] KaTeX 수식
+- [x] RSS 피드
 - [ ] 댓글
-- [x] 검색
-- [ ] 목차
-## 🚀 사용하는 방법
 
-1. 이 템플릿에서 [새 저장소를 생성](https://github.com/saicaca/fuwari/generate)하거나 이 저장소를 포크하세요.
-2. 블로그를 로컬에서 편집하려면 저장소를 복제하고 `pnpm install` 및 `pnpm add sharp`를 실행하여 종속성을 설치하세요.  
-   - 아직 [pnpm](https://pnpm.io)을 설치하지 않았다면 `npm install -g pnpm`을 실행하여 [pnpm](https://pnpm.io)을 설치하세요.
-3. 블로그를 사용자 정의하려면 `src/config.ts` 구성 파일을 편집하세요.
-4. `pnpm new-post <filename>`을 실행하여 새 게시물을 만들고 `src/content/posts/`에서 편집하세요.
-5. [가이드](https://docs.astro.build/en/guides/deploy/)에 따라 블로그를 Vercel, Netlify, GitHub 페이지 등에 배포하세요. 배포하기 전에 `astro.config.mjs`에서 사이트 구성을 편집해야 합니다.
+## 🔧 업스트림 대비 커스터마이징
 
-## ⚙️ 게시물의 머리말 설정
+이 포크에는 TOC 강화, 성능 최적화, 아카이브 페이지 UI 개선 등이 추가되어 있습니다.
+
+> 자세한 내용은 [README.md](README.md) 또는 [README.zh-CN.md](README.zh-CN.md)를 참고하세요.
+
+## 🚀 사용 방법
+
+1. 이 저장소를 클론하고 `pnpm install`로 의존성을 설치합니다.
+2. `src/config.ts`와 `astro.config.mjs`를 편집해 사이트를 설정합니다.
+3. `pnpm new-post <filename>`으로 `src/content/posts/`에 게시물을 작성합니다.
+4. 로컬 개발: `pnpm dev`
+5. 빌드 및 미리보기: `pnpm build` / `pnpm preview`
+6. [Astro 배포 가이드](https://docs.astro.build/en/guides/deploy/)에 따라 배포합니다.
+
+## ⚙️ 게시물 Frontmatter
 
 ```yaml
 ---
 title: 내 첫 블로그 게시물
 published: 2023-09-09
 description: 내 새로운 Astro 블로그의 첫 번째 게시물입니다!
-image: /images/cover.jpg
-tags: [푸, 바, 오]
-category: 앞-끝
+image: ./cover.jpg
+tags: [Foo, Bar]
+category: Front-end
 draft: false
+lang: jp
 ---
 ```
 
 ## 🧞 명령어
 
-모든 명령어는 프로젝트 최상단, 터미널에서 실행됩니다:
+| 명령어 | 동작 |
+|:-------|:-----|
+| `pnpm install` | 의존성 설치 |
+| `pnpm dev` | `localhost:4321`에서 개발 서버 시작 |
+| `pnpm build` | `./dist/`에 사이트 빌드 |
+| `pnpm preview` | 로컬에서 빌드 미리보기 |
+| `pnpm new-post <filename>` | 새 게시물 작성 |
+| `pnpm format` | Biome으로 코드 포맷 |
+| `pnpm lint` | Biome으로 검사 및 자동 수정 |
 
-| Command                             | Action                                           |
-|:------------------------------------|:-------------------------------------------------|
-| `pnpm install` AND `pnpm add sharp` | 종속성을 설치합니다.                            |
-| `pnpm dev`                          | `localhost:4321`에서 로컬 개발 서버를 시작합니다.      |
-| `pnpm build`                        | `./dist/`에 프로덕션 사이트를 구축합니다.         |
-| `pnpm preview`                      | 배포하기 전에 로컬에서 빌드 미리보기     |
-| `pnpm new-post <filename>`          | 새 게시물 작성                                |
-| `pnpm astro ...`                    | `astro add`, `astro check`와 같은 CLI 명령어 실행 |
-| `pnpm astro --help`                 | Astro CLI를 사용하여 도움 받기                     |
+## 🙏 감사의 말
+
+이 프로젝트는 [saicaca/fuwari](https://github.com/saicaca/fuwari)의 포크입니다.

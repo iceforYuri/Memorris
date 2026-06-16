@@ -1,33 +1,51 @@
-# 🍥Fuwari
+# 🍥 Memorris
 
-[Astro](https://astro.build) で構築された静的ブログテンプレート
+[Fuwari](https://github.com/saicaca/fuwari) をベースにカスタマイズした個人ブログ。[Astro](https://astro.build) で構築。
 
-[**🖥️ライブデモ (Vercel)**](https://fuwari.vercel.app)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
-[**📦旧 Hexo バージョン**](https://github.com/saicaca/hexo-theme-vivia)
+[**🖥️ ライブデモ**](https://blog.memorris.dpdns.org/)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 上流テンプレート Fuwari**](https://github.com/saicaca/fuwari)&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;
+[**📦 旧 Hexo バージョン**](https://github.com/saicaca/hexo-theme-vivia)
 
-> README バージョン：`2024-04-07` 
+🌏 README：
+[**English**](README.md) /
+[**中文**](README.zh-CN.md) /
+[**한국어**](README.ko.md) /
+[**Español**](README.es.md) /
+[**ไทย**](README.th.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+> README バージョン：`2026-03-11`
+
+![Preview Image](./image/README/1781606389145.png)
 
 ## ✨ 特徴
 
+Fuwari から継承：
+
 - [x] [Astro](https://astro.build) 及び [Tailwind CSS](https://tailwindcss.com) で構築
-- [x] スムーズなアニメーションとページ遷移
-- [x] ライト/ダークテーマ対応
+- [x] スムーズなアニメーションとページ遷移（Swup）
+- [x] ライト / ダークテーマ対応
 - [x] カスタマイズ可能なテーマカラーとバナー
 - [x] レスポンシブデザイン
+- [x] [Pagefind](https://pagefind.app/) による検索
+- [x] 目次（TOC）
+- [x] KaTeX 数式
+- [x] RSS フィード
 - [ ] コメント機能
-- [x] 検索機能
-- [ ] 目次
+
+## 🔧 上流からのカスタマイズ
+
+このフォークでは TOC の強化、パフォーマンス最適化、アーカイブページの UI 改善などを追加しています。
+
+> 詳細は [README.md](README.md) または [README.zh-CN.md](README.zh-CN.md) を参照してください。
 
 ## 🚀 使用方法
 
-1. [テンプレート](https://github.com/saicaca/fuwari/generate)から新しいリポジトリを作成するかCloneをします。
-2. ブログをローカルで編集するには、リポジトリをクローンした後、`pnpm install` と `pnpm add sharp` を実行して依存関係をインストールします。  
-   - [pnpm](https://pnpm.io) がインストールされていない場合は `npm install -g pnpm` で導入可能です。
-3. `src/config.ts` ファイルを編集する事でブログを自分好みにカスタマイズ出来ます。
-4. `pnpm new-post <filename>` で新しい記事を作成し、`src/content/posts/`.フォルダ内で編集します。
-5. 作成したブログをVercel、Netlify、GitHub Pagesなどにデプロイするには[ガイド](https://docs.astro.build/ja/guides/deploy/)に従って下さい。加えて、別途デプロイを行う前に `astro.config.mjs` を編集してサイト構成を変更する必要があります。
+1. このリポジトリをクローンし、`pnpm install` で依存関係をインストール。
+2. `src/config.ts` と `astro.config.mjs` を編集してカスタマイズ。
+3. `pnpm new-post <filename>` で記事を作成し、`src/content/posts/` で編集。
+4. ローカル開発：`pnpm dev`
+5. ビルドとプレビュー：`pnpm build` / `pnpm preview`
+6. [Astro デプロイガイド](https://docs.astro.build/ja/guides/deploy/)に従ってデプロイ。
 
 ## ⚙️ 記事のフロントマター
 
@@ -36,23 +54,26 @@
 title: My First Blog Post
 published: 2023-09-09
 description: This is the first post of my new Astro blog.
-image: /images/cover.jpg
+image: ./cover.jpg
 tags: [Foo, Bar]
 category: Front-end
 draft: false
+lang: jp
 ---
 ```
 
 ## 🧞 コマンド
 
-すべてのコマンドは、ターミナルでプロジェクトのルートから実行する必要があります:
+| コマンド | 操作 |
+|:---------|:-----|
+| `pnpm install` | 依存関係のインストール |
+| `pnpm dev` | `localhost:4321` で開発サーバー起動 |
+| `pnpm build` | `./dist/` にビルド |
+| `pnpm preview` | ローカルでプレビュー |
+| `pnpm new-post <filename>` | 新しい投稿を作成 |
+| `pnpm format` | Biome でコード整形 |
+| `pnpm lint` | Biome でチェック・自動修正 |
 
-| Command                             | Action                                      |
-|:------------------------------------|:--------------------------------------------|
-| `pnpm install` AND `pnpm add sharp` | 依存関係のインストール                                 |
-| `pnpm dev`                          | `localhost:4321` で開発用ローカルサーバーを起動            |
-| `pnpm build`                        | `./dist/` にビルド内容を出力                         |
-| `pnpm preview`                      | デプロイ前の内容をローカルでプレビュー                         |
-| `pnpm new-post <filename>`          | 新しい投稿を作成                                    |
-| `pnpm astro ...`                    | `astro add`, `astro check` の様なコマンドを実行する際に使用 |
-| `pnpm astro --help`                 | Astro CLIのヘルプを表示                            |
+## 🙏 謝辞
+
+本プロジェクトは [saicaca/fuwari](https://github.com/saicaca/fuwari) のフォークです。
