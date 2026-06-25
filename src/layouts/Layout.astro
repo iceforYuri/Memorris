@@ -375,8 +375,11 @@ function disableAnimation() {
 				},
 			},
 		);
-		const preElements = document.querySelectorAll("pre");
+		const preElements = document.querySelectorAll(
+			"pre:not(.expressive-code pre)",
+		);
 		preElements.forEach((ele) => {
+			if (ele.closest(".expressive-code")) return;
 			OverlayScrollbars(ele, {
 				scrollbars: {
 					theme: "scrollbar-base scrollbar-dark px-2",
