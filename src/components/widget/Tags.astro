@@ -3,7 +3,7 @@ import WidgetLayout from "./WidgetLayout.astro";
 import { getTagList } from "../../utils/content-utils";
 import { i18n } from "../../i18n/translation";
 import I18nKey from "../../i18n/i18nKey";
-import { url } from "../../utils/url-utils";
+import { getTagUrl } from "../../utils/url-utils";
 import StaggerReveal from "../misc/StaggerReveal.astro";
 
 const tags = await getTagList();
@@ -93,7 +93,7 @@ function getCloudOffset(name: string) {
             style={`margin-top:${offset.top}px; margin-left:${offset.left}px;`}
           >
             <a
-              href={url(`/archive/tag/${t.urlSafeName}/`)}
+              href={getTagUrl(t.name)}
               aria-label={`View all posts with the ${t.name} tag`}
               class="tag-cloud-item"
               data-tier={tier}

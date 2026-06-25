@@ -16,10 +16,22 @@ export function getPostUrlBySlug(slug: string): string {
   return url(`/posts/${slug}/`)
 }
 
-export function getCategoryUrl(category: string): string {
-  if (category === i18n(i18nKey.uncategorized))
+export function getTagUrl(tag: string): string {
+  const name = tag?.trim() ?? ''
+  if (!name) return url('/archive/tag/')
+  return url(`/archive/tag/${encodeURIComponent(name)}/`)
+}
+
+export function getCategoryUrl(category: string | null | undefined): string {
+  const name = category?.trim() ?? ''
+  const uncategorizedLabel = i18n(i18nKey.uncategorized)
+  if (
+    !name ||
+    name.toLowerCase() === uncategorizedLabel.toLowerCase()
+  ) {
     return url('/archive/category/uncategorized/')
-  return url(`/archive/category/${category}/`)
+  }
+  return url(`/archive/category/${encodeURIComponent(name)}/`)
 }
 
 export function getDir(path: string): string {

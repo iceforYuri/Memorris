@@ -31,7 +31,7 @@ const isCollapsed = !forceExpand && categories.length > COLLAPSE_THRESHOLD
         {categories.map((c) =>
             <div data-stagger-item>
                 <ButtonLink
-                    url={getCategoryUrl(c.urlSafeName)}
+                    url={getCategoryUrl(c.name)}
                     badge={String(c.count)}
                     label=`View all posts in the ${c.name} category`
                 >
