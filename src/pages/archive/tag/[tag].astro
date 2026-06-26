@@ -3,42 +3,27 @@ import ArchivePanel from "@components/ArchivePanel.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPosts } from "@utils/content-utils";
+import { getTagList } from "@utils/content-utils";
 
 export async function getStaticPaths() {
-  const posts = await getSortedPosts();
+  const tags = await getTagList();
 
-  // 收集所有标签
-  const allTags = posts.reduce<Set<string>>((acc, post) => {
-    post.data.tags.forEach((tag) => acc.add(tag));
-    return acc;
-  }, new Set());
-
-  const allTagsArray = Array.from(allTags);
-
-  // 为每个标签生成路径和编码后的参数
-  return allTagsArray.map((tag) => ({
+  return tags.map((tag) => ({
     params: {
-      // URL 中使用编码后的标签名
-      tag: encodeURIComponent(tag),
+      tag: tag.urlSafeName,
     },
-    // 存储原始标签名，供页面组件使用
     props: {
-      originalTag: tag,
+      originalTag: tag.name,
     },
   }));
 }
 
-// 接收原始标签名
 const { originalTag } = Astro.props;
-// 编码后的标签名（URL 中的参数）
-const encodedTag = Astro.params.tag as string;
 ---
 
 <MainGridLayout
   title={i18n(I18nKey.archive)}
   description={i18n(I18nKey.archive)}
 >
-  <!-- 使用原始标签名而不是编码后的标签名 -->
   <ArchivePanel tags={[originalTag]} />
 </MainGridLayout>

@@ -1,22 +1,24 @@
-import { getCollection } from 'astro:content'
 import type { BlogPostData } from '@/types/config'
+import { type CollectionEntry, getCollection } from 'astro:content'
 import I18nKey from '@i18n/i18nKey'
 import { i18n } from '@i18n/translation'
 
-export async function getSortedPosts(): Promise<
-  { body: string, data: BlogPostData; slug: string }[]
-> {
-  const allBlogPosts = (await getCollection('posts', ({ data }) => {
+async function getRawSortedPosts() {
+  const allBlogPosts = await getCollection('posts', ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true
-  })) as unknown as { body: string, data: BlogPostData; slug: string }[]
+  })
 
-  const sorted = allBlogPosts.sort(
-    (a: { data: BlogPostData }, b: { data: BlogPostData }) => {
-      const dateA = new Date(a.data.published)
-      const dateB = new Date(b.data.published)
-      return dateA > dateB ? -1 : 1
-    },
-  )
+  return allBlogPosts.sort((a, b) => {
+    const dateA = new Date(a.data.published)
+    const dateB = new Date(b.data.published)
+    return dateA > dateB ? -1 : 1
+  })
+}
+
+export async function getSortedPosts(): Promise<
+  { body: string; data: BlogPostData; slug: string }[]
+> {
+  const sorted = await getRawSortedPosts()
 
   for (let i = 1; i < sorted.length; i++) {
     sorted[i].data.nextSlug = sorted[i - 1].slug
@@ -27,14 +29,26 @@ export async function getSortedPosts(): Promise<
     sorted[i].data.prevTitle = sorted[i + 1].data.title
   }
 
-  return sorted
+  return sorted as unknown as { body: string; data: BlogPostData; slug: string }[]
 }
 
-// 更新 Tag 类型定义
+export type PostForList = {
+  slug: string
+  data: CollectionEntry<'posts'>['data']
+}
+
+export async function getSortedPostsList(): Promise<PostForList[]> {
+  const sorted = await getRawSortedPosts()
+  return sorted.map((post) => ({
+    slug: post.slug,
+    data: post.data,
+  }))
+}
+
 export type Tag = {
   name: string
   count: number
-  urlSafeName: string // 新增字段
+  urlSafeName: string
 }
 
 export async function getTagList(): Promise<Tag[]> {
@@ -43,34 +57,28 @@ export async function getTagList(): Promise<Tag[]> {
   })
 
   const countMap: { [key: string]: number } = {}
-  // 存储原始标签名与规范化标签名之间的映射
-  const originalNameMap: { [key: string]: string } = {}
-  
-  allBlogPosts.map((post: { data: { tags: string[] } }) => {
-    post.data.tags.map((tag: string) => {
+  allBlogPosts.forEach((post) => {
+    post.data.tags.forEach((tag) => {
       if (!countMap[tag]) countMap[tag] = 0
       countMap[tag]++
     })
   })
 
-  // sort tags
-  const keys: string[] = Object.keys(countMap).sort((a, b) => {
+  const keys = Object.keys(countMap).sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase())
   })
 
-  // 返回带有原始名称和安全 URL 名称的标签列表
-  return keys.map(key => ({ 
-    name: key, // 原始标签名称（用于显示）
+  return keys.map((key) => ({
+    name: key,
     count: countMap[key],
-    urlSafeName: encodeURIComponent(key) // 添加 URL 安全的名称（用于 URL 生成）
+    urlSafeName: encodeURIComponent(key),
   }))
 }
 
-// 更新 Category 类型
 export type Category = {
   name: string
   count: number
-  urlSafeName: string  // 添加 URL 安全名称字段
+  urlSafeName: string
 }
 
 export async function getCategoryList(): Promise<Category[]> {
@@ -78,28 +86,29 @@ export async function getCategoryList(): Promise<Category[]> {
     return import.meta.env.PROD ? data.draft !== true : true
   })
   const count: { [key: string]: number } = {}
-  
-  // 处理文章分类
-  allBlogPosts.map((post: { data: { category: string | number } }) => {
+
+  allBlogPosts.forEach((post) => {
     if (!post.data.category) {
       const ucKey = i18n(I18nKey.uncategorized)
       count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1
       return
     }
-    count[post.data.category] = count[post.data.category]
-      ? count[post.data.category] + 1
-      : 1
+
+    const categoryName =
+      typeof post.data.category === 'string'
+        ? post.data.category.trim()
+        : String(post.data.category).trim()
+
+    count[categoryName] = count[categoryName] ? count[categoryName] + 1 : 1
   })
 
-  // 排序分类
   const lst = Object.keys(count).sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase())
   })
 
-  // 返回带有 URL 安全名称的分类列表
-  return lst.map(category => ({ 
+  return lst.map((category) => ({
     name: category,
     count: count[category],
-    urlSafeName: encodeURIComponent(category)  // 添加 URL 安全名称
-  }));
+    urlSafeName: encodeURIComponent(category),
+  }))
 }

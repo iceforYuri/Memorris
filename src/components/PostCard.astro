@@ -1,4 +1,5 @@
 ---
+import type { CollectionEntry } from 'astro:content'
 import path from "path";
 import PostMetadata from "./PostMeta.astro";
 import ImageWrapper from "./misc/ImageWrapper.astro";
@@ -9,13 +10,13 @@ import { getDir } from "../utils/url-utils";
 
 interface Props {
     class?: string;
-    entry: any;
+    entry: CollectionEntry<"posts">;
     title: string;
     url: string;
     published: Date;
     updated?: Date;
     tags: string[];
-    category: string;
+    category: string | null;
     image: string;
     description: string;
     draft: boolean;
@@ -104,12 +105,12 @@ const { remarkPluginFrontmatter } = await entry.render();
         >
             <div>
                 {remarkPluginFrontmatter.words}
-                {" " + i18n(I18nKey.wordsCount)}
+                {" " + i18n(remarkPluginFrontmatter.words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}
             </div>
             <div>|</div>
             <div>
                 {remarkPluginFrontmatter.minutes}
-                {" " + i18n(I18nKey.minutesCount)}
+                {" " + i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
             </div>
         </div>
     </div>
