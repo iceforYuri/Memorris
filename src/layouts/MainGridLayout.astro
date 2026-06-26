@@ -39,18 +39,33 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
 </div>
 
 <!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class=`absolute z-10 w-full transition duration-700 overflow-hidden` style=`top: -${BANNER_HEIGHT_EXTEND}vh`>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={siteConfig.banner.src} position={siteConfig.banner.position}
-                  widths={[640, 960, 1280, 1600, 1920]}
-                  sizes="100vw"
-                  quality={72}
-                  loading="eager"
-                  fetchpriority="high"
-                  decoding="async"
-    >
-    </ImageWrapper>
-</div>}
+{siteConfig.banner.enable && (
+    <>
+        <div id="banner-wrapper" class=`absolute z-10 w-full transition duration-700 overflow-hidden` style=`top: -${BANNER_HEIGHT_EXTEND}vh`>
+            <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+                          src={siteConfig.banner.src} position={siteConfig.banner.position}
+                          widths={[640, 960, 1280, 1600, 1920]}
+                          sizes="100vw"
+                          quality={72}
+                          loading="eager"
+                          fetchpriority="high"
+                          decoding="async"
+            >
+            </ImageWrapper>
+        </div>
+        <!-- Inline reveal: Layout module script may load after paint in dev -->
+        <script is:inline>
+            function revealBanner() {
+                document.getElementById("banner")?.classList.remove("opacity-0", "scale-105");
+            }
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", revealBanner, { once: true });
+            } else {
+                revealBanner();
+            }
+        </script>
+    </>
+)}
 
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style=`top: ${mainPanelTop}`>

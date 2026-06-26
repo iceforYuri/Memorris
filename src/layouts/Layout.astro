@@ -189,7 +189,11 @@ const bannerOffset =
 	<body
 		class="min-h-screen transition"
 		class:list={[
-			{ "lg:is-home": isHomePage, "enable-banner": enableBanner },
+			{
+				"lg:is-home": isHomePage,
+				"is-home": isHomePage,
+				"enable-banner": enableBanner,
+			},
 		]}
 		data-overlayscrollbars-initialize
 	>
@@ -300,6 +304,39 @@ function disableAnimation() {
 */
 
 	const bannerEnabled = !!document.getElementById("banner-wrapper");
+
+	function setHomeLayout(isHome: boolean) {
+		document.body.classList.toggle("lg:is-home", isHome);
+		document.body.classList.toggle("is-home", isHome);
+	}
+
+	function bindWhenSwupReady(
+		bind: () => void,
+		boundKey: string,
+	) {
+		const tryBind = () => {
+			if ((window as any)[boundKey]) return true;
+			if (!window?.swup?.hooks) return false;
+			(window as any)[boundKey] = true;
+			bind();
+			return true;
+		};
+
+		if (tryBind()) return;
+
+		const retry = () => {
+			tryBind();
+		};
+		window.addEventListener("load", retry, { once: true });
+		document.addEventListener("astro:page-load", retry);
+
+		let attempts = 0;
+		const timer = window.setInterval(() => {
+			if (tryBind() || ++attempts > 200) {
+				window.clearInterval(timer);
+			}
+		}, 50);
+	}
 
 	function setClickOutsideToClose(panel: string, ignores: string[]) {
 		const boundKey = `__layoutClickOutsideBound_${panel}`;
@@ -433,8 +470,16 @@ function disableAnimation() {
 		showBanner();
 	}
 
+	function runInit() {
+		init();
+	}
+
 	/* Load settings when entering the site */
-	init();
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", runInit, { once: true });
+	} else {
+		runInit();
+	}
 
 	const setup = () => {
 		// TODO: temp solution to change the height of the banner
@@ -478,12 +523,7 @@ function disableAnimation() {
 			"visit:start",
 			(visit: { to: { url: string } }) => {
 				// change banner height immediately when a link is clicked
-				const bodyElement = document.querySelector("body");
-				if (pathsEqual(visit.to.url, url("/"))) {
-					bodyElement!.classList.add("lg:is-home");
-				} else {
-					bodyElement!.classList.remove("lg:is-home");
-				}
+				setHomeLayout(pathsEqual(visit.to.url, url("/")));
 
 				// increase the page height during page transition to prevent the scrolling animation from jumping
 				const heightExtend =
@@ -505,6 +545,7 @@ function disableAnimation() {
 			if (heightExtend) {
 				heightExtend.classList.remove("hidden");
 			}
+			showBanner();
 			refreshFloatingControls();
 			attachSidebarListeners();
 			scrollFunction();
@@ -519,23 +560,7 @@ function disableAnimation() {
 			}, 200);
 		});
 	};
-	if (window?.swup?.hooks) {
-		if (!(window as any).__layoutSwupHooksBound) {
-			setup();
-			(window as any).__layoutSwupHooksBound = true;
-		}
-	} else {
-		document.addEventListener(
-			"swup:enable",
-			() => {
-				if (!(window as any).__layoutSwupHooksBound) {
-					setup();
-					(window as any).__layoutSwupHooksBound = true;
-				}
-			},
-			{ once: true },
-		);
-	}
+	bindWhenSwupReady(setup, "__layoutSwupHooksBound");
 
 	let backToTopBtn = document.getElementById("back-to-top-btn");
 	let leftBackToTopBtn = document.getElementById("left-back-to-top-btn");
@@ -749,21 +774,5 @@ function disableAnimation() {
 		);
 	};
 
-	if (window.swup) {
-		if (!(window as any).__layoutPhotoSwipeHooksBound) {
-			setup();
-			(window as any).__layoutPhotoSwipeHooksBound = true;
-		}
-	} else {
-		document.addEventListener(
-			"swup:enable",
-			() => {
-				if (!(window as any).__layoutPhotoSwipeHooksBound) {
-					setup();
-					(window as any).__layoutPhotoSwipeHooksBound = true;
-				}
-			},
-			{ once: true },
-		);
-	}
+	bindWhenSwupReady(setup, "__layoutPhotoSwipeHooksBound");
 </script>}
