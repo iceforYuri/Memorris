@@ -52,6 +52,7 @@
     "remark-directive": "^3.0.1",
     "remark-directive-rehype": "^0.4.2",
     "remark-github-admonitions-to-directives": "^1.0.5",
+    "remark-highlight-mark": "^1.4.0",
     "remark-math": "^6.0.0",
     "remark-sectionize": "^2.1.0",
     "sanitize-html": "^2.17.0",

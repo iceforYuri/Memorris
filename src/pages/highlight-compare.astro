@@ -1,0 +1,220 @@
+---
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { siteConfig } from "../config";
+
+const defaultHue = siteConfig.themeColor.hue;
+---
+
+<MainGridLayout
+	title="高亮方案对比 B2 / B3"
+	description="Split-complement +210° 与 color-mix 派生高亮色的并排预览"
+>
+	<div
+		id="highlight-compare"
+		class="card-base custom-md mx-auto w-full max-w-[var(--page-width)] px-6 py-8 md:px-10 onload-animation"
+		style={`--hue: ${defaultHue}`}
+	>
+		<h1 class="text-2xl font-bold mb-2 !mt-0">高亮方案对比：B2 vs B3</h1>
+		<p class="text-75 mb-6">
+			<strong>已定稿：全站采用 B2（Split +210°）。</strong>
+			本页保留 B2 / B3 / 旧样式并排参考。拖动滑块可模拟不同主题色相；也可配合 Navbar 切换浅/深色。
+		</p>
+
+		<div class="compare-controls mb-8 rounded-[var(--radius-large)] bg-[var(--btn-regular-bg)] p-4 md:p-5">
+			<label for="hue-slider" class="flex flex-wrap items-center gap-x-4 gap-y-2 font-medium">
+				<span>预览色相 <code class="text-sm">--hue</code></span>
+				<input
+					id="hue-slider"
+					type="range"
+					min="0"
+					max="360"
+					step="4"
+					value={defaultHue}
+					class="min-w-[12rem] flex-1 accent-[var(--primary)]"
+				/>
+				<span id="hue-value" class="tabular-nums text-[var(--primary)] font-bold">{defaultHue}°</span>
+			</label>
+			<p class="text-50 text-sm mt-3 mb-0">
+				滑块只作用于本卡片内的色值（含行内 <code>code</code> 背景），便于和 Navbar 全局色相分开试验。
+			</p>
+		</div>
+
+		<div class="compare-grid">
+			<section class="compare-card" aria-labelledby="card-legacy">
+				<h2 id="card-legacy" class="compare-card__title">旧 · 样式 2（已弃用）</h2>
+				<p class="compare-card__formula">同 <code>--hue</code> · 与 code 撞色</p>
+				<div class="compare-swatch" data-swatch="legacy"></div>
+				<p class="compare-sample">
+					正文 ==高亮文字== 与 `` `inline code` `` 并排：
+					<mark class="mark-legacy">高亮文字</mark>
+					<code>`inline code`</code>
+				</p>
+				<p class="compare-sample text-sm text-75">
+					<strong><mark class="mark-legacy">加粗高亮</mark></strong> ·
+					<a href="#card-legacy">主题色链接</a>
+				</p>
+			</section>
+
+			<section class="compare-card compare-card--featured" aria-labelledby="card-b2">
+				<h2 id="card-b2" class="compare-card__title">B2 · 全站现行</h2>
+				<p class="compare-sample">
+					正文 ==高亮文字== 与 `` `inline code` `` 并排：
+					<mark class="mark-b2">高亮文字</mark>
+					<code>`inline code`</code>
+				</p>
+				<p class="compare-sample text-sm text-75">
+					<strong><mark class="mark-b2">加粗高亮</mark></strong> ·
+					<a href="#card-b2">主题色链接</a>
+				</p>
+			</section>
+
+			<section class="compare-card compare-card--featured" aria-labelledby="card-b3">
+				<h2 id="card-b3" class="compare-card__title">B3 · color-mix 派生</h2>
+				<p class="compare-card__formula">
+					补色 accent + <code>color-mix(..., 22% / 35%)</code>
+				</p>
+				<div class="compare-swatch" data-swatch="b3"></div>
+				<p class="compare-sample">
+					正文 ==高亮文字== 与 `` `inline code` `` 并排：
+					<mark class="mark-b3">高亮文字</mark>
+					<code>`inline code`</code>
+				</p>
+				<p class="compare-sample text-sm text-75">
+					<strong><mark class="mark-b3">加粗高亮</mark></strong> ·
+					<a href="#card-b3">主题色链接</a>
+				</p>
+			</section>
+		</div>
+
+		<section class="mt-10 pt-6 border-t border-dashed border-[var(--line-divider)]">
+			<h2 class="text-lg font-semibold mb-3">怎么选？</h2>
+			<ul class="text-75 space-y-2 mb-4">
+				<li><strong>B2</strong>：色相偏移固定，饱和更明显，整体更像「荧光笔块」。</li>
+				<li><strong>B3</strong>：从补色 accent 透明混合，更柔和、可单靠 mix 比例调深浅。</li>
+				<li>若 B2 觉得太艳、B3 觉得太淡，可在两者之间折中（例如 B2 降 chroma 或 B3 提高 mix 比例）。</li>
+			</ul>
+			<p class="text-50 text-sm mb-0">
+				全站已启用 B2。Markdown 验证：
+				<a href="/posts/highlight-validation/">/posts/highlight-validation/</a>
+			</p>
+		</section>
+	</div>
+</MainGridLayout>
+
+<style is:global>
+	#highlight-compare {
+		--text-highlight-legacy: oklch(0.92 0.06 var(--hue));
+		--highlight-hue-b3: calc(var(--hue) + 180);
+		--highlight-accent-b3: oklch(0.65 0.14 var(--highlight-hue-b3));
+		--text-highlight-preview-b3: color-mix(
+			in oklch,
+			var(--highlight-accent-b3) 22%,
+			transparent
+		);
+	}
+
+	:root.dark #highlight-compare {
+		--text-highlight-legacy: oklch(0.35 0.06 var(--hue));
+		--text-highlight-preview-b3: color-mix(
+			in oklch,
+			var(--highlight-accent-b3) 35%,
+			transparent
+		);
+	}
+
+	#highlight-compare .compare-grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 768px) {
+		#highlight-compare .compare-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	#highlight-compare .compare-card {
+		border-radius: var(--radius-large);
+		border: 1px solid var(--line-divider);
+		padding: 1rem 1.1rem 1.25rem;
+		background: var(--card-bg);
+	}
+
+	#highlight-compare .compare-card--featured {
+		border-color: color-mix(in oklch, var(--primary) 35%, var(--line-divider));
+	}
+
+	#highlight-compare .compare-card__title {
+		font-size: 1.05rem;
+		font-weight: 600;
+		margin: 0 0 0.35rem;
+	}
+
+	#highlight-compare .compare-card__formula {
+		font-size: 0.75rem;
+		line-height: 1.45;
+		color: var(--btn-content);
+		margin: 0 0 0.75rem;
+		word-break: break-word;
+	}
+
+	#highlight-compare .compare-swatch {
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		margin-bottom: 0.85rem;
+		border: 1px solid var(--line-divider);
+	}
+
+	#highlight-compare .compare-swatch[data-swatch="legacy"] {
+		background: var(--text-highlight-legacy);
+	}
+
+	#highlight-compare .compare-swatch[data-swatch="b2"] {
+		background: var(--text-highlight-bg);
+	}
+
+	#highlight-compare .compare-swatch[data-swatch="b3"] {
+		background: var(--text-highlight-preview-b3);
+	}
+
+	#highlight-compare .compare-sample {
+		margin: 0 0 0.65rem;
+		line-height: 1.75;
+	}
+
+	#highlight-compare mark[class^="mark-"] {
+		border-radius: 0.25rem;
+		padding: 0.05em 0.15em;
+		color: inherit;
+	}
+
+	#highlight-compare .mark-legacy {
+		background-color: var(--text-highlight-legacy);
+	}
+
+	#highlight-compare .mark-b2 {
+		background-color: var(--text-highlight-bg);
+	}
+
+	#highlight-compare .mark-b3 {
+		background-color: var(--text-highlight-preview-b3);
+	}
+</style>
+
+<script define:vars={{ defaultHue }}>
+	const panel = document.getElementById("highlight-compare");
+	const slider = document.getElementById("hue-slider");
+	const label = document.getElementById("hue-value");
+
+	function applyHue(value) {
+		panel?.style.setProperty("--hue", String(value));
+		if (label) label.textContent = `${value}°`;
+	}
+
+	slider?.addEventListener("input", () => {
+		applyHue(slider.value);
+	});
+
+	applyHue(defaultHue);
+</script>

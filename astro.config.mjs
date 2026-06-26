@@ -17,10 +17,12 @@ import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkDirective from "remark-directive"; /* Handle directives */
 import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-directives";
+import { remarkHighlightMark } from "remark-highlight-mark";
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
+import { remarkHighlightMarkHast } from "./src/plugins/remark-highlight-mark-hast.js";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
@@ -119,6 +121,8 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [
       remarkMath,
+      remarkHighlightMark,
+      remarkHighlightMarkHast,
       remarkReadingTime,
       remarkExcerpt,
       remarkGithubAdmonitionsToDirectives,
