@@ -304,16 +304,81 @@ function disableAnimation() {
 */
 
 	const bannerEnabled = !!document.getElementById("banner-wrapper");
+	const homePath = url("/");
+
+	function isHomePath(pathOrUrl: string) {
+		try {
+			const { pathname } = new URL(pathOrUrl, window.location.href);
+			return pathsEqual(pathname, homePath);
+		} catch {
+			return pathsEqual(pathOrUrl, homePath);
+		}
+	}
 
 	function setHomeLayout(isHome: boolean) {
 		document.body.classList.toggle("lg:is-home", isHome);
 		document.body.classList.toggle("is-home", isHome);
 	}
 
-	function bindWhenSwupReady(
-		bind: () => void,
-		boundKey: string,
-	) {
+	function syncHomeLayoutFromLocation() {
+		setHomeLayout(isHomePath(window.location.pathname));
+	}
+
+	function installHomeLayoutNavigationHandlers() {
+		const boundKey = "__layoutHomeNavBound";
+		if ((window as any)[boundKey]) return;
+		(window as any)[boundKey] = true;
+
+		// Do not rely on Swup hook timing: toggle layout as soon as an internal link is clicked.
+		document.addEventListener(
+			"click",
+			(event) => {
+				if (event.defaultPrevented) return;
+				if (
+					event.metaKey ||
+					event.ctrlKey ||
+					event.shiftKey ||
+					event.altKey
+				) {
+					return;
+				}
+				if (event.button !== 0) return;
+
+				const target = event.target;
+				if (!(target instanceof Element)) return;
+
+				const anchor = target.closest("a[href]");
+				if (
+					!anchor ||
+					anchor.target === "_blank" ||
+					anchor.hasAttribute("download") ||
+					anchor.closest("[data-no-swup]")
+				) {
+					return;
+				}
+
+				const href = anchor.getAttribute("href");
+				if (!href || href.startsWith("#")) return;
+
+				let parsed: URL;
+				try {
+					parsed = new URL(href, window.location.href);
+				} catch {
+					return;
+				}
+
+				if (parsed.origin !== window.location.origin) return;
+				if (pathsEqual(parsed.pathname, window.location.pathname)) return;
+				setHomeLayout(isHomePath(parsed.pathname));
+			},
+			true,
+		);
+
+		window.addEventListener("popstate", syncHomeLayoutFromLocation);
+		document.addEventListener("astro:page-load", syncHomeLayoutFromLocation);
+	}
+
+	function bindWhenSwupReady(bind: () => void, boundKey: string) {
 		const tryBind = () => {
 			if ((window as any)[boundKey]) return true;
 			if (!window?.swup?.hooks) return false;
@@ -332,11 +397,13 @@ function disableAnimation() {
 
 		let attempts = 0;
 		const timer = window.setInterval(() => {
-			if (tryBind() || ++attempts > 200) {
+			if (tryBind() || ++attempts > 400) {
 				window.clearInterval(timer);
 			}
 		}, 50);
 	}
+
+	installHomeLayoutNavigationHandlers();
 
 	function setClickOutsideToClose(panel: string, ignores: string[]) {
 		const boundKey = `__layoutClickOutsideBound_${panel}`;
@@ -481,6 +548,64 @@ function disableAnimation() {
 		runInit();
 	}
 
+	let lightbox: any = (window as any).__layoutPhotoSwipeInstance;
+
+	function hasPhotoSwipeTargets() {
+		return !!document.querySelector(".custom-md img, #post-cover img");
+	}
+
+	async function createPhotoSwipe() {
+		if (lightbox) return;
+		if (!hasPhotoSwipeTargets()) return;
+		const [{ default: PhotoSwipeLightbox }] = await Promise.all([
+			import("photoswipe/lightbox"),
+			import("photoswipe/style.css"),
+		]);
+
+		lightbox = new PhotoSwipeLightbox({
+			gallery: ".custom-md img, #post-cover img",
+			pswpModule: () => import("photoswipe"),
+			padding: { top: 20, bottom: 20, left: 20, right: 20 },
+			wheelToZoom: true,
+			arrowPrev: false,
+			arrowNext: false,
+			imageClickAction: "close",
+			tapAction: "close",
+			doubleTapAction: "zoom",
+		});
+
+		lightbox?.addFilter(
+			"domItemData",
+			(
+				itemData: {
+					src?: string;
+					w?: number;
+					h?: number;
+					msrc?: string;
+				},
+				element: unknown,
+			) => {
+				if (element instanceof HTMLImageElement) {
+					itemData.src = element.src;
+
+					itemData.w = Number(
+						element.naturalWidth || window.innerWidth,
+					);
+					itemData.h = Number(
+						element.naturalHeight || window.innerHeight,
+					);
+
+					itemData.msrc = element.src;
+				}
+
+				return itemData;
+			},
+		);
+
+		lightbox?.init();
+		(window as any).__layoutPhotoSwipeInstance = lightbox;
+	}
+
 	const setup = () => {
 		// TODO: temp solution to change the height of the banner
 		/*
@@ -523,7 +648,7 @@ function disableAnimation() {
 			"visit:start",
 			(visit: { to: { url: string } }) => {
 				// change banner height immediately when a link is clicked
-				setHomeLayout(pathsEqual(visit.to.url, url("/")));
+				setHomeLayout(isHomePath(visit.to.url));
 
 				// increase the page height during page transition to prevent the scrolling animation from jumping
 				const heightExtend =
@@ -545,11 +670,22 @@ function disableAnimation() {
 			if (heightExtend) {
 				heightExtend.classList.remove("hidden");
 			}
+			syncHomeLayoutFromLocation();
 			showBanner();
+			void createPhotoSwipe();
 			refreshFloatingControls();
 			attachSidebarListeners();
 			scrollFunction();
 		});
+		window.swup.hooks.on(
+			"content:replace",
+			() => {
+				lightbox?.destroy?.();
+				lightbox = null;
+				(window as any).__layoutPhotoSwipeInstance = null;
+			},
+			{ before: true },
+		);
 		window.swup.hooks.on("visit:end", (visit: { to: { url: string } }) => {
 			setTimeout(() => {
 				const heightExtend =
@@ -559,6 +695,8 @@ function disableAnimation() {
 				}
 			}, 200);
 		});
+
+		void createPhotoSwipe();
 	};
 	bindWhenSwupReady(setup, "__layoutSwupHooksBound");
 
@@ -695,84 +833,3 @@ function disableAnimation() {
 		);
 	});
 </script>
-
-{setOGTypeArticle && <script>
-	let lightbox: any = (window as any).__layoutPhotoSwipeInstance;
-
-	function hasPhotoSwipeTargets() {
-		return !!document.querySelector(".custom-md img, #post-cover img");
-	}
-
-	async function createPhotoSwipe() {
-		if (lightbox) return;
-		if (!hasPhotoSwipeTargets()) return;
-		const [{ default: PhotoSwipeLightbox }] = await Promise.all([
-			import("photoswipe/lightbox"),
-			import("photoswipe/style.css"),
-		]);
-
-		lightbox = new PhotoSwipeLightbox({
-			gallery: ".custom-md img, #post-cover img",
-			pswpModule: () => import("photoswipe"),
-			padding: { top: 20, bottom: 20, left: 20, right: 20 },
-			wheelToZoom: true,
-			arrowPrev: false,
-			arrowNext: false,
-			imageClickAction: "close",
-			tapAction: "close",
-			doubleTapAction: "zoom",
-		});
-
-		lightbox?.addFilter(
-			"domItemData",
-			(
-				itemData: {
-					src?: string;
-					w?: number;
-					h?: number;
-					msrc?: string;
-				},
-				element: unknown,
-			) => {
-				if (element instanceof HTMLImageElement) {
-					itemData.src = element.src;
-
-					itemData.w = Number(
-						element.naturalWidth || window.innerWidth,
-					);
-					itemData.h = Number(
-						element.naturalHeight || window.innerHeight,
-					);
-
-					itemData.msrc = element.src;
-				}
-
-				return itemData;
-			},
-		);
-
-		lightbox?.init();
-		(window as any).__layoutPhotoSwipeInstance = lightbox;
-	}
-
-	const setup = () => {
-		if (!lightbox) {
-			void createPhotoSwipe();
-		}
-		window.swup.hooks.on("page:view", () => {
-			void createPhotoSwipe();
-		});
-
-		window.swup.hooks.on(
-			"content:replace",
-			() => {
-				lightbox?.destroy?.();
-				lightbox = null;
-				(window as any).__layoutPhotoSwipeInstance = null;
-			},
-			{ before: true },
-		);
-	};
-
-	bindWhenSwupReady(setup, "__layoutPhotoSwipeHooksBound");
-</script>}
