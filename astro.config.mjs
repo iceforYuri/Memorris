@@ -49,7 +49,8 @@ export default defineConfig({
       containers: ["main", "#toc"],
       smoothScrolling: true,
       cache: true,
-      preload: false,
+      // 悬停/视口内链接预取 HTML，加速二次导航（对齐 Firefly）
+      preload: true,
       accessibility: true,
       updateHead: true,
       updateBodyClass: false,
