@@ -1,6 +1,7 @@
 ---
 import path from "node:path";
 import { getCollection } from "astro:content";
+import KatexManager from "@components/features/KatexManager.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
@@ -56,6 +57,8 @@ const jsonLd = {
   setOGTypeArticle={true}
   headings={headings}
 >
+  <!-- KaTeX CSS 按路由加载：仅文章页，避免首页/归档等背负 -->
+  <KatexManager slot="head" />
   <script
     is:inline
     slot="head"

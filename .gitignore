@@ -28,3 +28,6 @@ yarn.lock
 
 # personal files
 personal/
+
+# generated KaTeX assets (copied from node_modules on build/dev)
+public/vendor/katex/

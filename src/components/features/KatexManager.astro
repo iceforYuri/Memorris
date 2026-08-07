@@ -1,0 +1,5 @@
+---
+import { url } from "@utils/url-utils";
+---
+<!-- 使用 public 静态链接，避免 Vite 把 KaTeX CSS 打进全站共享 chunk -->
+<link rel="stylesheet" href={url("/vendor/katex/katex.min.css")} />
