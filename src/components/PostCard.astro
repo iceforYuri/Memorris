@@ -21,6 +21,8 @@ interface Props {
     description: string;
     draft: boolean;
     style: string;
+    /** 列表首屏封面用 eager，其余 lazy（由 PostPage 传入） */
+    loading?: "lazy" | "eager";
 }
 const {
     entry,
@@ -33,6 +35,7 @@ const {
     image,
     description,
     style,
+    loading = "lazy",
 } = Astro.props;
 const className = Astro.props.class;
 
@@ -141,7 +144,7 @@ const { remarkPluginFrontmatter } = await entry.render();
                     widths={[420, 640, 960, 1280]}
                     sizes="(min-width: 768px) 28vw, 100vw"
                     quality={72}
-                    loading="lazy"
+                    loading={loading}
                     decoding="async"
                 ></ImageWrapper>
             </a>
