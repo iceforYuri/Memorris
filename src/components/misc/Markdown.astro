@@ -1,12 +1,21 @@
 ---
-import '@fontsource-variable/jetbrains-mono'
-import '@fontsource-variable/jetbrains-mono/wght-italic.css'
+// 仅加载 JetBrains Mono latin 可变字体（去掉全量子集与 italic，减小 Markdown 页字体体积）
+import jetbrainsLatinWoff2 from "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url";
 
 interface Props {
   class: string
 }
 const className = Astro.props.class
 ---
+<style is:global set:html={`
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url(${JSON.stringify(jetbrainsLatinWoff2)}) format('woff2-variations');
+}
+`} />
 <div data-pagefind-body class=`prose dark:prose-invert prose-base !max-w-none custom-md ${className}`>
     <slot/>
 </div>
