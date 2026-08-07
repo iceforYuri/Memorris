@@ -35,7 +35,12 @@ export const siteConfig: SiteConfig = {
     //   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
     //   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
     // }
-  ]
+  ],
+  // 本地图片优化：先 WebP（构建快）；若要更小体积可改为 "both"（AVIF+WebP，构建更慢）
+  imageOptimization: {
+    formats: 'webp',
+    quality: 72,
+  },
 }
 
 export const navBarConfig: NavBarConfig = {

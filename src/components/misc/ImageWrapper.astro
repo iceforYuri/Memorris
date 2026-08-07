@@ -1,5 +1,9 @@
 ---
 import path from "path";
+import { Image } from "astro:assets";
+import { getFallbackFormat, getImageQuality } from "@/utils/image-utils";
+import { url } from "../../utils/url-utils";
+
 interface Props {
   id?: string;
   src: string;
@@ -16,8 +20,6 @@ interface Props {
   decoding?: "sync" | "async" | "auto";
   fetchpriority?: "high" | "low" | "auto";
 }
-import { Image } from "astro:assets";
-import { url } from "../../utils/url-utils";
 
 const {
   id,
@@ -29,12 +31,14 @@ const {
   height,
   widths,
   sizes,
-  quality,
+  quality = getImageQuality(),
   loading = "lazy",
   decoding = "async",
   fetchpriority,
 } = Astro.props;
 const className = Astro.props.class;
+// 用 Image + format，避免 Picture 外包 <picture> 导致布局塌陷
+const outputFormat = getFallbackFormat();
 
 const isLocal = !(
   src.startsWith("/") ||
@@ -46,6 +50,7 @@ const isPublic = src.startsWith("/");
 
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
+// 保持与改前一致的 glob，避免路径 key 对不上导致图片/依赖区域空白
 let img;
 if (isLocal) {
   const files = import.meta.glob<ImageMetadata>("../../**", {
@@ -84,6 +89,7 @@ const imageStyle = `object-position: ${position}`;
         widths={widths}
         sizes={sizes}
         quality={quality}
+        format={outputFormat}
         loading={loading}
         decoding={decoding}
         fetchpriority={fetchpriority}

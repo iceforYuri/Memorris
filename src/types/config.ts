@@ -26,7 +26,20 @@ export type SiteConfig = {
   }
 
   favicon: Favicon[]
+
+  /**
+   * 本地图片（astro:assets）输出格式与默认质量。
+   * public/ 与外部 URL 不受此配置影响。
+   */
+  imageOptimization?: {
+    /** avif | webp | both；默认建议 webp（构建更快），both 体积更优但构建更慢 */
+    formats?: 'avif' | 'webp' | 'both'
+    /** 1–100；未在组件上传 quality 时使用 */
+    quality?: number
+  }
 }
+
+export type ImageFormat = 'avif' | 'webp' | 'png' | 'jpg' | 'jpeg' | 'gif'
 
 export type Favicon = {
   src: string
