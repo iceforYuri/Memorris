@@ -2,6 +2,7 @@
 import path from "path";
 import { Image } from "astro:assets";
 import { getFallbackFormat, getImageQuality } from "@/utils/image-utils";
+import { getLqipProps } from "@/utils/lqip-utils";
 import { url } from "../../utils/url-utils";
 
 interface Props {
@@ -19,6 +20,8 @@ interface Props {
   loading?: "eager" | "lazy";
   decoding?: "sync" | "async" | "auto";
   fetchpriority?: "high" | "low" | "auto";
+  /** 是否显示 LQIP 渐变占位（默认 true） */
+  showLqip?: boolean;
 }
 
 const {
@@ -35,9 +38,9 @@ const {
   loading = "lazy",
   decoding = "async",
   fetchpriority,
+  showLqip = true,
 } = Astro.props;
 const className = Astro.props.class;
-// 用 Image + format，避免 Picture 外包 <picture> 导致布局塌陷
 const outputFormat = getFallbackFormat();
 
 const isLocal = !(
@@ -50,7 +53,6 @@ const isPublic = src.startsWith("/");
 
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
-// 保持与改前一致的 glob，避免路径 key 对不上导致图片/依赖区域空白
 let img;
 if (isLocal) {
   const files = import.meta.glob<ImageMetadata>("../../**", {
@@ -68,13 +70,32 @@ if (isLocal) {
   img = await file();
 }
 
-const imageClass = "w-full h-full object-cover";
+const normalizedBasePath =
+  typeof basePath === "string" ? basePath.replace(/\\/g, "/") : basePath;
+const lqipProps = isLocal
+  ? getLqipProps(src, normalizedBasePath)
+  : isPublic
+    ? getLqipProps(src, undefined, true)
+    : getLqipProps(src);
+
+const imageClass = showLqip
+  ? "relative z-[1] w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-out"
+  : "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
 
 <div id={id} class:list={[className, "overflow-hidden relative"]}>
+  {
+    showLqip && (
+      <div
+        class="lqip-placeholder absolute inset-0 pointer-events-none"
+        style={lqipProps.style}
+        aria-hidden="true"
+      />
+    )
+  }
   <div
-    class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
+    class="transition absolute inset-0 z-[2] dark:bg-black/10 bg-opacity-50 pointer-events-none"
   >
   </div>
   {

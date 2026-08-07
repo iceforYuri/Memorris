@@ -239,6 +239,15 @@ const bannerOffset =
 		.navbar-hidden {
 			@apply opacity-0 -translate-y-16;
 		}
+
+		/* LQIP 占位渐变：图片加载后淡出 */
+		.lqip-placeholder {
+			z-index: 0;
+			transition: opacity 0.5s ease-out;
+		}
+		.lqip-placeholder.loaded {
+			opacity: 0;
+		}
 	}
 </style>
 
@@ -675,6 +684,7 @@ function disableAnimation() {
 			refreshFloatingControls();
 			attachSidebarListeners();
 			scrollFunction();
+			initImageLoadFadeIn();
 		});
 		window.swup.hooks.on(
 			"content:replace",
@@ -818,6 +828,40 @@ function disableAnimation() {
 
 	refreshFloatingControls();
 	scrollFunction();
+
+	/** LQIP：图片加载完成后显示图片并淡出占位渐变 */
+	function initImageLoadFadeIn() {
+		const placeholders = document.querySelectorAll<HTMLElement>(
+			".lqip-placeholder",
+		);
+		placeholders.forEach((placeholder) => {
+			const container = placeholder.parentElement;
+			if (!container) return;
+			const img = container.querySelector<HTMLImageElement>("img");
+			if (!img) return;
+
+			const reveal = () => {
+				img.style.opacity = "1";
+				placeholder.classList.add("loaded");
+			};
+
+			if (img.complete && img.naturalWidth > 0) {
+				reveal();
+			} else {
+				img.addEventListener("load", reveal, { once: true });
+				img.addEventListener(
+					"error",
+					() => {
+						placeholder.classList.add("loaded");
+					},
+					{ once: true },
+				);
+			}
+		});
+	}
+
+	initImageLoadFadeIn();
+	document.addEventListener("astro:page-load", initImageLoadFadeIn);
 
 	// (listeners attached via attachSidebarListeners)
 	window.addEventListener("resize", () => {
