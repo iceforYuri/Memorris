@@ -2,16 +2,24 @@
 import { i18n } from '@i18n/translation'
 import I18nKey from '@i18n/i18nKey'
 import { getDefaultHue, getHue, setHue } from '@utils/setting-utils'
-import Icon from '@iconify/svelte'
+import Icon from '@/components/misc/Icon.svelte'
+import { onMount } from 'svelte'
 
-let hue = getHue()
+// SSR 与首屏水合用默认色相；localStorage 只在 onMount 后读，避免 hydration mismatch
+let hue = getDefaultHue()
 const defaultHue = getDefaultHue()
+let hueReady = false
+
+onMount(() => {
+  hue = getHue()
+  hueReady = true
+})
 
 function resetHue() {
   hue = getDefaultHue()
 }
 
-$: if (hue || hue === 0) {
+$: if (hueReady && (hue || hue === 0)) {
   setHue(hue)
 }
 </script>

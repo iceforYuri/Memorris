@@ -4,6 +4,13 @@ import "@fontsource/roboto/latin-400.css";
 import "@fontsource/roboto/latin-500.css";
 import "@fontsource/roboto/latin-700.css";
 
+import "../styles/variables.css";
+import "../styles/main.css";
+import "../styles/markdown.css";
+import "../styles/transition.css";
+import "../styles/markdown-extend.styl";
+import "../styles/scrollbar.css";
+
 import { profileConfig, siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import {
@@ -76,7 +83,6 @@ const bannerOffset =
 <html
 	lang={siteLang}
 	class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
-	data-overlayscrollbars-initialize
 >
 	<head>
 		<title>{pageTitle}</title>
@@ -191,11 +197,9 @@ const bannerOffset =
 		class:list={[
 			{
 				"lg:is-home": isHomePage,
-				"is-home": isHomePage,
 				"enable-banner": enableBanner,
 			},
 		]}
-		data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier />
 		<slot />
@@ -313,79 +317,6 @@ function disableAnimation() {
 */
 
 	const bannerEnabled = !!document.getElementById("banner-wrapper");
-	const homePath = url("/");
-
-	function isHomePath(pathOrUrl: string) {
-		try {
-			const { pathname } = new URL(pathOrUrl, window.location.href);
-			return pathsEqual(pathname, homePath);
-		} catch {
-			return pathsEqual(pathOrUrl, homePath);
-		}
-	}
-
-	function setHomeLayout(isHome: boolean) {
-		document.body.classList.toggle("lg:is-home", isHome);
-		document.body.classList.toggle("is-home", isHome);
-	}
-
-	function syncHomeLayoutFromLocation() {
-		setHomeLayout(isHomePath(window.location.pathname));
-	}
-
-	function installHomeLayoutNavigationHandlers() {
-		const boundKey = "__layoutHomeNavBound";
-		if ((window as any)[boundKey]) return;
-		(window as any)[boundKey] = true;
-
-		// Do not rely on Swup hook timing: toggle layout as soon as an internal link is clicked.
-		document.addEventListener(
-			"click",
-			(event) => {
-				if (event.defaultPrevented) return;
-				if (
-					event.metaKey ||
-					event.ctrlKey ||
-					event.shiftKey ||
-					event.altKey
-				) {
-					return;
-				}
-				if (event.button !== 0) return;
-
-				const target = event.target;
-				if (!(target instanceof Element)) return;
-
-				const anchor = target.closest("a[href]");
-				if (
-					!anchor ||
-					anchor.target === "_blank" ||
-					anchor.hasAttribute("download") ||
-					anchor.closest("[data-no-swup]")
-				) {
-					return;
-				}
-
-				const href = anchor.getAttribute("href");
-				if (!href || href.startsWith("#")) return;
-
-				let parsed: URL;
-				try {
-					parsed = new URL(href, window.location.href);
-				} catch {
-					return;
-				}
-
-				if (parsed.origin !== window.location.origin) return;
-				if (pathsEqual(parsed.pathname, window.location.pathname)) return;
-				setHomeLayout(isHomePath(parsed.pathname));
-			},
-			true,
-		);
-
-		window.addEventListener("popstate", syncHomeLayoutFromLocation);
-		document.addEventListener("astro:page-load", syncHomeLayoutFromLocation);
-	}
 
 	function bindWhenSwupReady(bind: () => void, boundKey: string) {
 		const tryBind = () => {
@@ -411,8 +342,6 @@ function disableAnimation() {
 			}
 		}, 50);
 	}
-
-	installHomeLayoutNavigationHandlers();
 
 	function setClickOutsideToClose(panel: string, ignores: string[]) {
 		const boundKey = `__layoutClickOutsideBound_${panel}`;
@@ -467,27 +396,11 @@ function disableAnimation() {
 	}
 
 	async function initCustomScrollbar() {
-		const bodyElement = document.querySelector("body");
-		if (!bodyElement) return;
+		// 不对 body/html 初始化 OverlayScrollbars：会晚于首屏写入
+		// data-overlayscrollbars / data-overlayscrollbars-viewport，并注入
+		// .os-scrollbar，触发二次布局（硬刷新「双刷」）。Firefly 也无此逻辑。
+		// 仅给代码块、KaTeX 等局部容器加自定义滚动条。
 		const { OverlayScrollbars } = await loadOverlayScrollbars();
-		OverlayScrollbars(
-			// docs say that a initialization to the body element would affect native functionality like window.scrollTo
-			// but just leave it here for now
-			{
-				target: bodyElement,
-				cancel: {
-					nativeScrollbarsOverlaid: true, // don't initialize the overlay scrollbar if there is a native one
-				},
-			},
-			{
-				scrollbars: {
-					theme: "scrollbar-base scrollbar-auto py-1",
-					autoHide: "move",
-					autoHideDelay: 500,
-					autoHideSuspend: false,
-				},
-			},
-		);
 		const preElements = document.querySelectorAll(
 			"pre:not(.expressive-code pre)",
 		);
@@ -521,12 +434,12 @@ function disableAnimation() {
 		if (idle) {
 			idle(() => {
 				void initCustomScrollbar();
-			}, { timeout: 1200 });
+			}, { timeout: 2000 });
 			return;
 		}
 		setTimeout(() => {
 			void initCustomScrollbar();
-		}, 1);
+		}, 100);
 	}
 
 	function showBanner() {
@@ -535,6 +448,8 @@ function disableAnimation() {
 			console.error("Failed to find the banner element");
 			return;
 		}
+		if (banner.dataset.revealed === "1") return;
+		banner.dataset.revealed = "1";
 		banner.classList.remove("opacity-0", "scale-105");
 	}
 
@@ -656,8 +571,13 @@ function disableAnimation() {
 		window.swup.hooks.on(
 			"visit:start",
 			(visit: { to: { url: string } }) => {
-				// change banner height immediately when a link is clicked
-				setHomeLayout(isHomePath(visit.to.url));
+				// 与原版 Fuwari 一致：只切换 lg:is-home，交给 CSS duration-700 插值
+				const bodyElement = document.querySelector("body");
+				if (pathsEqual(visit.to.url, url("/"))) {
+					bodyElement!.classList.add("lg:is-home");
+				} else {
+					bodyElement!.classList.remove("lg:is-home");
+				}
 
 				// increase the page height during page transition to prevent the scrolling animation from jumping
 				const heightExtend =
@@ -679,7 +599,6 @@ function disableAnimation() {
 			if (heightExtend) {
 				heightExtend.classList.remove("hidden");
 			}
-			syncHomeLayoutFromLocation();
 			showBanner();
 			void createPhotoSwipe();
 			refreshFloatingControls();

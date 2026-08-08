@@ -33,9 +33,7 @@ html.is-animating .transition-swup-fade {
 #swup-container {
     outline: none;
 }
-#content-wrapper {
-    animation-delay: var(--content-delay);
-}
+/* 右侧只让卡片/文章块 onload，不给 #content-wrapper 再套一层，避免嵌套双淡入 */
 .footer {
     animation-delay: 250ms;
 }

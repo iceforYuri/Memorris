@@ -4,6 +4,9 @@ declare global {
   interface Window {
     // type from '@swup/astro' is incorrect
     swup: AstroIntegration
+    /** Pagefind 按需加载（由 Navbar 注入，Search 调用） */
+    loadPagefindOnce?: () => Promise<Window['pagefind']>
+    __pagefindLoader?: Promise<Window['pagefind']> | null
     pagefind: {
       search: (query: string) => Promise<{
         results: Array<{

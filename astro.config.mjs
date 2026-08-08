@@ -49,12 +49,15 @@ export default defineConfig({
       containers: ["main", "#toc"],
       smoothScrolling: true,
       cache: true,
-      // 悬停/视口内链接预取 HTML，加速二次导航（对齐 Firefly）
+      // 悬停预取；visible 默认关。布尔 true 在 @swup/astro 里只开 hover
       preload: true,
       accessibility: true,
       updateHead: true,
       updateBodyClass: false,
       globalInstance: true,
+      // 关键加载 Swup（勿 loadOnIdle）：dev 下空闲再动态 import 会触发 Vite
+      // “optimized dependencies changed. reloading”，表现为整页双刷
+      loadOnIdle: false,
     }),
     icon({
       include: {
@@ -173,6 +176,10 @@ export default defineConfig({
     ],
   },
   vite: {
+    // loadOnIdle:false 已改为静态引入 Swup；此处再兜底预构建，减少 dev 整页 reloading
+    optimizeDeps: {
+      include: ["swup"],
+    },
     build: {
       rollupOptions: {
         onwarn(warning, warn) {
