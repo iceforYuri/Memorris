@@ -5,11 +5,16 @@ import BackToTop from '@components/control/BackToTop.astro'
 import SideBar from '@components/widget/SideBar.astro'
 import Layout from './Layout.astro'
 import { Icon } from 'astro-icon/components'
+import {
+  getWallpaperImageSrc,
+  resolveWallpaperModeForBuild,
+  shouldRenderWallpaperWrapper,
+  wallpaper,
+} from '../config/wallpaper'
 import { siteConfig } from '../config'
 import type { MarkdownHeading } from 'astro'
 import TOC from "../components/widget/TOC.astro";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
-import {BANNER_HEIGHT, BANNER_HEIGHT_EXTEND, MAIN_PANEL_OVERLAPS_BANNER_HEIGHT} from "../constants/constants";
 
 interface Props {
   title?: string
@@ -21,11 +26,15 @@ interface Props {
 }
 
 const { title, banner, description, lang, setOGTypeArticle, headings = [] } = Astro.props
+const wallpaperMode = resolveWallpaperModeForBuild()
+const showWallpaperWrapper = shouldRenderWallpaperWrapper(wallpaperMode)
 const hasBannerCredit =
-  siteConfig.banner.enable && siteConfig.banner.credit.enable
-const hasBannerLink = !!siteConfig.banner.credit.url
+  wallpaperMode === 'banner' && wallpaper.banner.credit.enable
+const hasBannerLink = !!wallpaper.banner.credit.url
+const bannerPosition =
+  wallpaper.banner.position ?? 'center'
 
-const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)` : "5.5rem"
+const wallpaperSrc = getWallpaperImageSrc()
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -38,23 +47,33 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
     </div>
 </div>
 
-<!-- Banner -->
-{siteConfig.banner.enable && (
+<!-- Wallpaper (banner mode in Phase 1; wrapper kept when switchable for Phase 2) -->
+{showWallpaperWrapper && (
     <>
-        <div id="banner-wrapper" class="absolute z-10 w-full transition duration-700 overflow-hidden" style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-            <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                          src={siteConfig.banner.src} position={siteConfig.banner.position}
-                          widths={[640, 960, 1280, 1600, 1920]}
-                          sizes="100vw"
-                          quality={72}
-                          loading="eager"
-                          fetchpriority="high"
-                          decoding="async"
-                          showLqip={false}
+        <div
+            id="wallpaper-wrapper"
+            class:list={[
+                "absolute z-10 w-full transition duration-700 overflow-hidden",
+                wallpaperMode === "overlay" && "wallpaper-overlay",
+                wallpaperMode === "fullscreen" && "wallpaper-fullscreen",
+            ]}
+        >
+            <ImageWrapper
+                id="banner"
+                alt="Banner image of the blog"
+                class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+                src={wallpaperSrc}
+                position={bannerPosition}
+                widths={[640, 960, 1280, 1600, 1920]}
+                sizes="100vw"
+                quality={72}
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                showLqip={false}
             >
             </ImageWrapper>
         </div>
-        <!-- Inline reveal: Layout module script may load after paint in dev -->
         <script is:inline>
             function revealBanner() {
                 document.getElementById("banner")?.classList.remove("opacity-0", "scale-105");
@@ -69,19 +88,18 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
 )}
 
 <!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
-    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
+<div id="main-panel" class="absolute w-full z-30 pointer-events-none">
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"
         >
             <!-- Banner image credit -->
-            {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
+            {hasBannerCredit && <a href={wallpaper.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
                                    class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
                                    "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
             >
                 <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
+                <div class="text-white/75 text-xs">{wallpaper.banner.credit.text}</div>
                 <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
                     {"group-hover:opacity-100": hasBannerLink}]}
                       name="fa6-solid:arrow-up-right-from-square">
@@ -93,8 +111,6 @@ const mainPanelTop = siteConfig.banner.enable ? `calc(${BANNER_HEIGHT}vh - ${MAI
 
             <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
                 <div id="content-wrapper" class="onload-animation">
-                    <!-- the overflow-hidden here prevent long text break the layout-->
-                    <!-- make id different from windows.swup global property -->
                     <slot></slot>
                     <div class="footer col-span-2 onload-animation hidden lg:block">
                         <Footer></Footer>

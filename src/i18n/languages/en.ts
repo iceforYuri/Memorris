@@ -26,6 +26,16 @@ export const en: Translation = {
 
   [Key.themeColor]: 'Theme Color',
 
+  [Key.wallpaperMode]: 'Wallpaper',
+  [Key.wallpaperBannerMode]: 'Banner',
+  [Key.wallpaperFullscreenMode]: 'Fullscreen',
+  [Key.wallpaperOverlayMode]: 'Overlay',
+  [Key.wallpaperNoneMode]: 'Solid',
+  [Key.wallpaperOverlaySettings]: 'Overlay',
+  [Key.overlayOpacity]: 'Wallpaper opacity',
+  [Key.overlayBlur]: 'Background blur',
+  [Key.overlayCardOpacity]: 'Card opacity',
+
   [Key.lightMode]: 'Light',
   [Key.darkMode]: 'Dark',
   [Key.systemMode]: 'System',

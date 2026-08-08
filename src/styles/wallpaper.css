@@ -1,0 +1,109 @@
+/**
+ * 壁纸模式布局
+ * 状态：html[data-wallpaper-mode] + body 修饰 class（由 wallpaper-utils 同步）
+ */
+
+/* ── 主内容区顶距（切换模式时无需改 inline style）── */
+html[data-wallpaper-mode="banner"] #main-panel {
+	top: var(--main-panel-top-banner);
+}
+
+html[data-wallpaper-mode="none"] #main-panel,
+html[data-wallpaper-mode="overlay"] #main-panel,
+html[data-wallpaper-mode="fullscreen"] #main-panel {
+	top: 5.5rem;
+}
+
+/* ── banner：壁纸层初始偏移 ── */
+html[data-wallpaper-mode="banner"] #wallpaper-wrapper {
+	top: var(--banner-wrapper-offset);
+}
+
+/* 非 banner 模式禁用 lg:is-home 壳层位移 */
+html[data-wallpaper-mode="overlay"] .enable-banner.lg\:is-home #main-grid,
+html[data-wallpaper-mode="overlay"] .enable-banner.lg\:is-home #wallpaper-wrapper,
+html[data-wallpaper-mode="fullscreen"] .enable-banner.lg\:is-home #main-grid,
+html[data-wallpaper-mode="fullscreen"] .enable-banner.lg\:is-home #wallpaper-wrapper,
+html[data-wallpaper-mode="none"] .enable-banner.lg\:is-home #main-grid,
+html[data-wallpaper-mode="none"] .enable-banner.lg\:is-home #wallpaper-wrapper {
+	transform: none !important;
+	--tw-translate-y: 0 !important;
+}
+
+html[data-wallpaper-mode="overlay"] .enable-banner.lg\:is-home #sidebar-sticky,
+html[data-wallpaper-mode="fullscreen"] .enable-banner.lg\:is-home #sidebar-sticky,
+html[data-wallpaper-mode="none"] .enable-banner.lg\:is-home #sidebar-sticky {
+	top: 1rem !important;
+}
+
+html[data-wallpaper-mode="none"] #wallpaper-wrapper {
+	display: none !important;
+}
+
+/* ── overlay：全屏固定 + 模糊 ── */
+html[data-wallpaper-mode="overlay"] #wallpaper-wrapper,
+html[data-wallpaper-mode="overlay"] #wallpaper-wrapper.wallpaper-overlay {
+	position: fixed !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100vh !important;
+	height: 100dvh !important;
+	z-index: var(--wallpaper-overlay-z-index, -1) !important;
+	opacity: var(--wallpaper-overlay-opacity, 0.85) !important;
+	pointer-events: none !important;
+	overflow: hidden !important;
+	top: 0 !important;
+	transform: none !important;
+	transition: opacity 0.4s ease;
+}
+
+html[data-wallpaper-mode="overlay"] #wallpaper-wrapper img,
+html[data-wallpaper-mode="overlay"] #wallpaper-wrapper #banner {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	filter: blur(var(--wallpaper-overlay-blur, 0px));
+	transform: scale(1.05);
+}
+
+html[data-wallpaper-mode="overlay"] .card-base,
+html[data-wallpaper-mode="overlay"] .btn-card {
+	background-color: color-mix(
+		in oklch,
+		var(--card-bg) calc(var(--wallpaper-card-opacity, 0.72) * 100%),
+		transparent
+	);
+}
+
+/* ── fullscreen：Phase 2 基础可用，Phase 3 再 polish ── */
+html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper,
+html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen {
+	position: relative !important;
+	height: 100vh !important;
+	height: 100dvh !important;
+	min-height: 100vh !important;
+	top: 0 !important;
+	transform: none !important;
+	overflow: hidden !important;
+	opacity: 1 !important;
+}
+
+html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper img,
+html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper #banner {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover !important;
+	filter: none !important;
+	transform: none !important;
+}
+
+html[data-wallpaper-mode="fullscreen"] #main-panel {
+	position: relative !important;
+	top: 0 !important;
+	margin-top: 1rem;
+}
+
+html[data-wallpaper-mode="fullscreen"] #top-row {
+	height: 0 !important;
+	overflow: visible !important;
+}

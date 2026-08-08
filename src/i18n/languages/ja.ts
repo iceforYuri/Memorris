@@ -26,6 +26,16 @@ export const ja: Translation = {
 
   [Key.themeColor]: 'テーマカラー',
 
+  [Key.wallpaperMode]: 'Wallpaper',
+  [Key.wallpaperBannerMode]: 'Banner',
+  [Key.wallpaperFullscreenMode]: 'Fullscreen',
+  [Key.wallpaperOverlayMode]: 'Overlay',
+  [Key.wallpaperNoneMode]: 'Solid',
+  [Key.wallpaperOverlaySettings]: 'Overlay',
+  [Key.overlayOpacity]: 'Wallpaper opacity',
+  [Key.overlayBlur]: 'Background blur',
+  [Key.overlayCardOpacity]: 'Card opacity',
+
   [Key.lightMode]: 'ライト',
   [Key.darkMode]: 'ダーク',
   [Key.systemMode]: 'システム',

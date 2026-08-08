@@ -10,8 +10,16 @@ import "../styles/markdown.css";
 import "../styles/transition.css";
 import "../styles/markdown-extend.styl";
 import "../styles/scrollbar.css";
+import "../styles/wallpaper.css";
 
-import { profileConfig, siteConfig } from "@/config";
+import {
+	profileConfig,
+	siteConfig,
+} from "@/config";
+import {
+	resolveWallpaperModeForBuild,
+	wallpaper,
+} from "@/config/wallpaper";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import {
 	AUTO_MODE,
@@ -21,6 +29,7 @@ import {
 	DARK_MODE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
+	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 	PAGE_WIDTH,
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
@@ -52,7 +61,13 @@ if (!banner || typeof banner !== "string" || banner.trim() === "") {
 // TODO don't use post cover as banner for now
 banner = siteConfig.banner.src;
 
-const enableBanner = siteConfig.banner.enable;
+const wallpaperMode = resolveWallpaperModeForBuild();
+/** 仅 banner 模式启用半屏壳层位移（lg:is-home + duration-700） */
+const enableBanner = wallpaperMode === "banner";
+const noWallpaperLayout =
+	wallpaperMode === "none" ||
+	wallpaperMode === "overlay" ||
+	wallpaperMode === "fullscreen";
 
 let pageTitle: string;
 if (title) {
@@ -76,13 +91,24 @@ const bannerOffsetByPosition = {
 	bottom: "0",
 };
 const bannerOffset =
-	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+	bannerOffsetByPosition[
+		wallpaper.banner.position || siteConfig.banner.position || "center"
+	];
 ---
 
 <!doctype html>
 <html
 	lang={siteLang}
 	class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
+	data-wallpaper-mode={wallpaperMode}
+	style={{
+		"--main-panel-top-banner": `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`,
+		"--banner-wrapper-offset": `-${BANNER_HEIGHT_EXTEND}vh`,
+		"--wallpaper-overlay-opacity": String(wallpaper.overlay.opacity),
+		"--wallpaper-overlay-blur": `${wallpaper.overlay.blur}px`,
+		"--wallpaper-card-opacity": String(wallpaper.overlay.cardOpacity),
+		"--wallpaper-overlay-z-index": String(wallpaper.overlay.zIndex),
+	}}
 >
 	<head>
 		<title>{pageTitle}</title>
@@ -198,9 +224,42 @@ const bannerOffset =
 			{
 				"lg:is-home": isHomePage,
 				"enable-banner": enableBanner,
+				"wallpaper-overlay-active": wallpaperMode === "overlay",
+				"no-wallpaper-layout": noWallpaperLayout,
 			},
 		]}
 	>
+		{
+			wallpaper.switchable && (
+				<script
+					is:inline
+					define:vars={{
+						defaultWallpaperMode: wallpaper.mode,
+						bannerSiteEnabled: siteConfig.banner.enable,
+					}}
+				>
+					{`(function () {
+						var modes = ["banner", "fullscreen", "overlay", "none"];
+						var mode = localStorage.getItem("wallpaperMode") || defaultWallpaperMode;
+						if (modes.indexOf(mode) < 0) mode = defaultWallpaperMode;
+						if (!bannerSiteEnabled) mode = "none";
+						document.documentElement.setAttribute("data-wallpaper-mode", mode);
+						var body = document.body;
+						body.classList.remove("enable-banner", "wallpaper-overlay-active", "no-wallpaper-layout");
+						if (mode === "banner") body.classList.add("enable-banner");
+						else if (mode === "overlay") body.classList.add("wallpaper-overlay-active", "no-wallpaper-layout");
+						else body.classList.add("no-wallpaper-layout");
+						var op = localStorage.getItem("wallpaperOverlayOpacity");
+						var blur = localStorage.getItem("wallpaperOverlayBlur");
+						var card = localStorage.getItem("wallpaperOverlayCardOpacity");
+						var root = document.documentElement;
+						if (op !== null) root.style.setProperty("--wallpaper-overlay-opacity", op);
+						if (blur !== null) root.style.setProperty("--wallpaper-overlay-blur", blur + "px");
+						if (card !== null) root.style.setProperty("--wallpaper-card-opacity", card);
+					})();`}
+				</script>
+			)
+		}
 		<ConfigCarrier />
 		<slot />
 
@@ -219,26 +278,26 @@ const bannerOffset =
 >
 	@tailwind components;
 	@layer components {
-		.enable-banner.is-home #banner-wrapper {
+		html[data-wallpaper-mode="banner"] .enable-banner.lg\:is-home #wallpaper-wrapper {
 			@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)];
 		}
-		.enable-banner #banner-wrapper {
+		html[data-wallpaper-mode="banner"] .enable-banner #wallpaper-wrapper {
 			@apply h-[var(--banner-height-home)];
 		}
 
-		.enable-banner.is-home #banner {
+		html[data-wallpaper-mode="banner"] .enable-banner.lg\:is-home #banner {
 			@apply h-[var(--banner-height-home)] translate-y-0;
 		}
-		.enable-banner #banner {
+		html[data-wallpaper-mode="banner"] .enable-banner #banner {
 			@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)];
 		}
-		.enable-banner.is-home #main-grid {
+		html[data-wallpaper-mode="banner"] .enable-banner.lg\:is-home #main-grid {
 			@apply translate-y-[var(--banner-height-extend)];
 		}
-		.enable-banner #top-row {
+		html[data-wallpaper-mode="banner"] .enable-banner #top-row {
 			@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300;
 		}
-		.enable-banner.is-home #sidebar-sticky {
+		html[data-wallpaper-mode="banner"] .enable-banner.lg\:is-home #sidebar-sticky {
 			@apply top-[calc(1rem_-_var(--banner-height-extend))];
 		}
 		.navbar-hidden {
@@ -264,6 +323,7 @@ const bannerOffset =
 		setTheme,
 	} from "../utils/setting-utils";
 	import { pathsEqual, url } from "../utils/url-utils";
+	import { initWallpaperFromStorage } from "../utils/wallpaper-utils";
 	import {
 		BANNER_HEIGHT,
 		BANNER_HEIGHT_HOME,
@@ -316,7 +376,9 @@ function disableAnimation() {
 }
 */
 
-	const bannerEnabled = !!document.getElementById("banner-wrapper");
+	const bannerEnabled =
+		document.documentElement.getAttribute("data-wallpaper-mode") ===
+			"banner" && !!document.getElementById("wallpaper-wrapper");
 
 	function bindWhenSwupReady(bind: () => void, boundKey: string) {
 		const tryBind = () => {
@@ -458,6 +520,7 @@ function disableAnimation() {
 		loadTheme();
 		loadHue();
 		initCustomScrollbarDeferred();
+		initWallpaperFromStorage();
 		showBanner();
 	}
 
@@ -573,10 +636,16 @@ function disableAnimation() {
 			(visit: { to: { url: string } }) => {
 				// 与原版 Fuwari 一致：只切换 lg:is-home，交给 CSS duration-700 插值
 				const bodyElement = document.querySelector("body");
-				if (pathsEqual(visit.to.url, url("/"))) {
-					bodyElement!.classList.add("lg:is-home");
-				} else {
-					bodyElement!.classList.remove("lg:is-home");
+				const isBannerWallpaper =
+					document.documentElement.getAttribute(
+						"data-wallpaper-mode",
+					) === "banner";
+				if (isBannerWallpaper) {
+					if (pathsEqual(visit.to.url, url("/"))) {
+						bodyElement!.classList.add("lg:is-home");
+					} else {
+						bodyElement!.classList.remove("lg:is-home");
+					}
 				}
 
 				// increase the page height during page transition to prevent the scrolling animation from jumping

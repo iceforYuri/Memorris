@@ -24,6 +24,16 @@ enum I18nKey {
 
   themeColor = 'themeColor',
 
+  wallpaperMode = 'wallpaperMode',
+  wallpaperBannerMode = 'wallpaperBannerMode',
+  wallpaperFullscreenMode = 'wallpaperFullscreenMode',
+  wallpaperOverlayMode = 'wallpaperOverlayMode',
+  wallpaperNoneMode = 'wallpaperNoneMode',
+  wallpaperOverlaySettings = 'wallpaperOverlaySettings',
+  overlayOpacity = 'overlayOpacity',
+  overlayBlur = 'overlayBlur',
+  overlayCardOpacity = 'overlayCardOpacity',
+
   lightMode = 'lightMode',
   darkMode = 'darkMode',
   systemMode = 'systemMode',

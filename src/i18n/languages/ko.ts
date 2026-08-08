@@ -26,6 +26,16 @@ export const ko: Translation = {
 
   [Key.themeColor]: '테마 색상',
 
+  [Key.wallpaperMode]: 'Wallpaper',
+  [Key.wallpaperBannerMode]: 'Banner',
+  [Key.wallpaperFullscreenMode]: 'Fullscreen',
+  [Key.wallpaperOverlayMode]: 'Overlay',
+  [Key.wallpaperNoneMode]: 'Solid',
+  [Key.wallpaperOverlaySettings]: 'Overlay',
+  [Key.overlayOpacity]: 'Wallpaper opacity',
+  [Key.overlayBlur]: 'Background blur',
+  [Key.overlayCardOpacity]: 'Card opacity',
+
   [Key.lightMode]: '밝은 모드',
   [Key.darkMode]: '어두운 모드',
   [Key.systemMode]: '시스템 모드',

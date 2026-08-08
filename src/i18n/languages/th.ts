@@ -26,6 +26,16 @@ export const th: Translation = {
 
   [Key.themeColor]: 'สีของธีม',
 
+  [Key.wallpaperMode]: 'Wallpaper',
+  [Key.wallpaperBannerMode]: 'Banner',
+  [Key.wallpaperFullscreenMode]: 'Fullscreen',
+  [Key.wallpaperOverlayMode]: 'Overlay',
+  [Key.wallpaperNoneMode]: 'Solid',
+  [Key.wallpaperOverlaySettings]: 'Overlay',
+  [Key.overlayOpacity]: 'Wallpaper opacity',
+  [Key.overlayBlur]: 'Background blur',
+  [Key.overlayCardOpacity]: 'Card opacity',
+
   [Key.lightMode]: 'สว่าง',
   [Key.darkMode]: 'มืด',
   [Key.systemMode]: 'ตามระบบ',

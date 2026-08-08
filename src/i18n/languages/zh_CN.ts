@@ -27,6 +27,16 @@ export const zh_CN: Translation = {
 
   [Key.themeColor]: '主题色',
 
+  [Key.wallpaperMode]: '壁纸模式',
+  [Key.wallpaperBannerMode]: '横幅',
+  [Key.wallpaperFullscreenMode]: '全屏',
+  [Key.wallpaperOverlayMode]: '透明覆盖',
+  [Key.wallpaperNoneMode]: '纯色',
+  [Key.wallpaperOverlaySettings]: '透明覆盖',
+  [Key.overlayOpacity]: '壁纸透明度',
+  [Key.overlayBlur]: '背景模糊',
+  [Key.overlayCardOpacity]: '卡片透明度',
+
   [Key.lightMode]: '亮色',
   [Key.darkMode]: '暗色',
   [Key.systemMode]: '跟随系统',
