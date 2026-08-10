@@ -330,8 +330,10 @@ const gradientEnabled = shouldRenderWallpaperGradient();
 		getPathnameFromVisitUrl,
 		handleWallpaperPageView,
 		handleWallpaperVisitStart,
+		handleWallpaperScrollTop,
 		initWallpaperFromStorage,
 		scrollToFullscreenContent,
+		shouldSkipWallpaperVisitScrollToTop,
 		syncFullscreenLayoutOnContentReplace,
 		syncWallpaperLayoutOnResize,
 	} from "../utils/wallpaper-utils";
@@ -621,23 +623,7 @@ function disableAnimation() {
 		window.swup.hooks.replace(
 			"scroll:top",
 			(visit: { to: { url: string } }, args: { options: ScrollIntoViewOptions }) => {
-				// 与 Firefly 一致：fullscreen 非首页滚到 #main-grid（非 scrollY=0）
-				const wallpaperMode =
-					document.documentElement.getAttribute("data-wallpaper-mode");
-				if (
-					wallpaperMode === "fullscreen" &&
-					!pathsEqual(getPathnameFromVisitUrl(visit.to.url), url("/"))
-				) {
-					syncFullscreenLayoutOnContentReplace();
-					const mainGrid = document.getElementById("main-grid");
-					if (mainGrid) {
-						mainGrid.scrollIntoView({
-							behavior: args.options?.behavior || "auto",
-						});
-						return true;
-					}
-				}
-				window.scrollTo({ top: 0, left: 0, ...args.options });
+				handleWallpaperScrollTop(visit.to.url, args.options);
 				return true;
 			},
 		);
@@ -703,15 +689,10 @@ function disableAnimation() {
 				handleWallpaperVisitStart(visit.to.url);
 
 				// Firefly：visit:start 即时回顶，fullscreen 非首页跳过（由 scroll:top 滚到正文）
-				const isHomePage = pathsEqual(
-					getPathnameFromVisitUrl(visit.to.url),
-					url("/"),
-				);
-				const isFullscreenNonHome =
-					document.documentElement.getAttribute(
-						"data-wallpaper-mode",
-					) === "fullscreen" && !isHomePage;
-				if (window.innerWidth >= 768 && !isFullscreenNonHome) {
+				if (
+					window.innerWidth >= 768 &&
+					!shouldSkipWallpaperVisitScrollToTop(visit.to.url)
+				) {
 					window.scrollTo({ top: 0, behavior: "auto" });
 				}
 
