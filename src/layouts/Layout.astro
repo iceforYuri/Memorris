@@ -333,8 +333,6 @@ const gradientEnabled = shouldRenderWallpaperGradient();
 		handleWallpaperScrollTop,
 		initWallpaperFromStorage,
 		scrollToFullscreenContent,
-		shouldSkipWallpaperVisitScrollToTop,
-		syncFullscreenLayoutOnContentReplace,
 		syncWallpaperLayoutOnResize,
 	} from "../utils/wallpaper-utils";
 	import {
@@ -665,8 +663,6 @@ function disableAnimation() {
 			}
 		});
 		window.swup.hooks.on("content:replace", () => {
-			// Firefly：content:replace 内先同步 fullscreen 布局，再交给 scroll:top
-			syncFullscreenLayoutOnContentReplace();
 			initCustomScrollbarDeferred();
 		});
 		window.swup.hooks.on(
@@ -688,13 +684,7 @@ function disableAnimation() {
 
 				handleWallpaperVisitStart(visit.to.url);
 
-				// Firefly：visit:start 即时回顶，fullscreen 非首页跳过（由 scroll:top 滚到正文）
-				if (
-					window.innerWidth >= 768 &&
-					!shouldSkipWallpaperVisitScrollToTop(visit.to.url)
-				) {
-					window.scrollTo({ top: 0, behavior: "auto" });
-				}
+				// fuwari：不在 visit:start 滚动，由 scroll:top + 壳层 700ms 协调对齐
 
 				// increase the page height during page transition to prevent the scrolling animation from jumping
 				const heightExtend =

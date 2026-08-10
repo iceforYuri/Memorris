@@ -24,6 +24,6 @@ export const overlayHandler: WallpaperModeHandler = {
 	},
 
 	shouldSkipVisitScrollToTop() {
-		return false
+		return true
 	},
 }

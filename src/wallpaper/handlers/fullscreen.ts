@@ -17,7 +17,7 @@ function shouldHideFullscreenWallpaper(isHome: boolean): boolean {
 
 /**
  * fullscreen 模式 handler
- * Phase D 禁止事项：勿在未评估 scroll 链前删 onContentReplace inline（待 D-2）
+ * 桌面布局靠 wallpaper.css；滚动一次到位，不写 content:replace inline
  */
 export const fullscreenHandler: WallpaperModeHandler = {
 	mode: 'fullscreen',
@@ -42,6 +42,7 @@ export const fullscreenHandler: WallpaperModeHandler = {
 			wrapper.style.display = ''
 			wrapper.classList.remove('mobile-hide-banner')
 		}
+		mainPanel.classList.remove('mobile-main-no-banner')
 
 		if (animate && ctx.isHome && ctx.isMobile === false) {
 			const computedTop = mainPanel.getBoundingClientRect().top
@@ -73,63 +74,46 @@ export const fullscreenHandler: WallpaperModeHandler = {
 	},
 
 	onVisitStart(ctx) {
+		if (!ctx.isMobile) return
+
 		const mainPanel = getMainPanel()
 		const wrapper = getWallpaperWrapper()
 		if (!mainPanel || !wrapper) return
 
-		if (ctx.isMobile) {
-			mainPanel.style.setProperty('transition', 'none', 'important')
-			if (ctx.isHome) {
-				wrapper.classList.remove('mobile-hide-banner')
-				wrapper.style.display = ''
-				setTimeout(() => {
-					resetWallpaperLayoutInline()
-					syncWallpaperLayoutAfterModeChange(false)
-					mainPanel.style.removeProperty('transition')
-				}, 150)
-			} else {
-				wrapper.classList.add('mobile-hide-banner')
-				wrapper.style.display = 'none'
-				mainPanel.classList.add('mobile-main-no-banner')
-				mainPanel.style.setProperty('top', '5.5rem', 'important')
-			}
-			return
+		mainPanel.style.setProperty('transition', 'none', 'important')
+		if (ctx.isHome) {
+			wrapper.classList.remove('mobile-hide-banner')
+			wrapper.style.display = ''
+			setTimeout(() => {
+				resetWallpaperLayoutInline()
+				syncWallpaperLayoutAfterModeChange(false)
+				mainPanel.style.removeProperty('transition')
+			}, 150)
+		} else {
+			wrapper.classList.add('mobile-hide-banner')
+			wrapper.style.display = 'none'
+			mainPanel.classList.add('mobile-main-no-banner')
+			mainPanel.style.setProperty('top', '5.5rem', 'important')
 		}
-
-		wrapper.style.display = ''
-		wrapper.classList.remove('mobile-hide-banner')
-		mainPanel.classList.remove('mobile-main-no-banner')
 	},
 
-	onPageView() {},
-
-	onContentReplace() {
-		if (typeof document === 'undefined') return
-		if (window.innerWidth < 1024) return
-
-		const mainPanel = getMainPanel()
-		const wrapper = getWallpaperWrapper()
-		if (!mainPanel || !wrapper) return
-
-		mainPanel.classList.remove('mobile-main-no-banner')
-		wrapper.style.display = ''
-		wrapper.classList.remove('mobile-hide-banner')
-		mainPanel.style.setProperty('position', 'relative', 'important')
-		mainPanel.style.setProperty('z-index', '30', 'important')
-		mainPanel.style.setProperty('top', '0', 'important')
-		mainPanel.style.setProperty('margin-top', '1rem', 'important')
+	onPageView(ctx) {
+		if (!ctx.isMobile) return
+		fullscreenHandler.adjustLayout(ctx, false)
 	},
+
+	onContentReplace() {},
 
 	resolveScrollTarget(ctx) {
 		return ctx.isHome ? 'top' : 'main-grid'
 	},
 
-	shouldSkipVisitScrollToTop(ctx) {
-		return !ctx.isHome
+	shouldSkipVisitScrollToTop() {
+		return true
 	},
 }
 
-/** @parity 计算 fullscreen 非首页应滚到的 Y（壁纸底 = 正文顶） */
+/** 计算 fullscreen 非首页应滚到的 Y（壁纸底 = 正文顶） */
 export function getFullscreenContentScrollTop(): number {
 	const wrapper = getWallpaperWrapper()
 	if (
@@ -158,7 +142,7 @@ export function getFullscreenContentScrollTop(): number {
 	return 0
 }
 
-/** @parity 全屏壁纸非首页：滚到 #main-grid（Firefly scroll:top 同款） */
+/** 全屏壁纸非首页：滚到 #main-grid（壁纸底标注线） */
 export function scrollToFullscreenContent(
 	behavior: ScrollBehavior = 'auto',
 ): boolean {

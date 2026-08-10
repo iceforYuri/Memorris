@@ -5,7 +5,7 @@ import type { WallpaperModeHandler } from '../types'
 
 /**
  * banner 模式 handler
- * Phase D 禁止事项：勿在 onVisitStart 删除桌面 inline top（待 D-1 统一处理）
+ * 桌面：Layout toggle `lg:is-home` + CSS translate；scroll:top 回顶（与壳层 700ms 协调）
  */
 export const bannerHandler: WallpaperModeHandler = {
 	mode: 'banner',
@@ -16,54 +16,39 @@ export const bannerHandler: WallpaperModeHandler = {
 		if (!mainPanel) return
 
 		if (wrapper) wrapper.style.display = ''
-		if (!ctx.isHome && ctx.isMobile) {
+
+		if (!ctx.isMobile) return
+
+		if (!ctx.isHome) {
 			mainPanel.classList.add('mobile-main-no-banner')
 			mainPanel.style.setProperty('top', '5.5rem', 'important')
-		} else if (!ctx.isHome && !ctx.isMobile) {
-			mainPanel.style.setProperty(
-				'top',
-				'calc(var(--banner-height) - 3.5rem)',
-				'important',
-			)
+		} else {
+			mainPanel.classList.remove('mobile-main-no-banner')
+			mainPanel.style.removeProperty('top')
 		}
 	},
 
 	onVisitStart(ctx) {
+		if (!ctx.isMobile) return
+
 		const mainPanel = getMainPanel()
 		const wrapper = getWallpaperWrapper()
 		if (!mainPanel || !wrapper) return
 
-		if (ctx.isMobile) {
-			mainPanel.style.setProperty('transition', 'none', 'important')
-			if (ctx.isHome) {
-				wrapper.classList.remove('mobile-hide-banner')
-				wrapper.style.display = ''
-				setTimeout(() => {
-					resetWallpaperLayoutInline()
-					syncWallpaperLayoutAfterModeChange(false)
-					mainPanel.style.removeProperty('transition')
-				}, 150)
-			} else {
-				wrapper.classList.add('mobile-hide-banner')
-				wrapper.style.display = 'none'
-				mainPanel.classList.add('mobile-main-no-banner')
-				mainPanel.style.setProperty('top', '5.5rem', 'important')
-			}
-			return
-		}
-
-		wrapper.style.display = ''
-		wrapper.classList.remove('mobile-hide-banner')
-		mainPanel.classList.remove('mobile-main-no-banner')
-
-		if (!ctx.isHome) {
-			mainPanel.style.setProperty(
-				'top',
-				'calc(var(--banner-height) - 3.5rem)',
-				'important',
-			)
-			mainPanel.style.removeProperty('position')
-			mainPanel.style.removeProperty('margin-top')
+		mainPanel.style.setProperty('transition', 'none', 'important')
+		if (ctx.isHome) {
+			wrapper.classList.remove('mobile-hide-banner')
+			wrapper.style.display = ''
+			setTimeout(() => {
+				resetWallpaperLayoutInline()
+				syncWallpaperLayoutAfterModeChange(false)
+				mainPanel.style.removeProperty('transition')
+			}, 150)
+		} else {
+			wrapper.classList.add('mobile-hide-banner')
+			wrapper.style.display = 'none'
+			mainPanel.classList.add('mobile-main-no-banner')
+			mainPanel.style.setProperty('top', '5.5rem', 'important')
 		}
 	},
 
@@ -76,6 +61,6 @@ export const bannerHandler: WallpaperModeHandler = {
 	},
 
 	shouldSkipVisitScrollToTop() {
-		return false
+		return true
 	},
 }

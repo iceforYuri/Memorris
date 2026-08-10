@@ -1,12 +1,18 @@
-import { buildVisitContext } from './context'
+import { buildVisitContext, buildVisitContextFromPathname } from './context'
 import { getPathnameFromVisitUrl } from './dom'
-import { syncWallpaperLayoutAfterModeChange } from './layout'
+import {
+	getFullscreenContentScrollTop,
+	scrollToFullscreenContent,
+} from './handlers/fullscreen'
 import { getHandler } from './registry'
+import {
+	animateScrollTo,
+	shouldAnimateScrollDelta,
+} from './scroll-animation'
 import { getCurrentWallpaperModeFromDom } from './storage'
-import { resetWallpaperLayoutInline } from './sync'
 import type { ScrollTarget } from './types'
 
-/** @parity Swup visit:start — 页面切换前同步壁纸可见性 */
+/** Swup visit:start — 按模式分发（fuwari：不在 visit 里滚动） */
 export function handleWallpaperVisitStart(toUrl: string): void {
 	if (typeof document === 'undefined') return
 	const mode = getCurrentWallpaperModeFromDom()
@@ -15,18 +21,17 @@ export function handleWallpaperVisitStart(toUrl: string): void {
 	getHandler(mode).onVisitStart(buildVisitContext(toUrl))
 }
 
-/** @parity Swup page:view — 按当前模式重同步布局（不重复写 data 属性） */
+/** Swup page:view — 按模式分发 */
 export function handleWallpaperPageView(): void {
 	if (typeof document === 'undefined') return
-	resetWallpaperLayoutInline()
-	syncWallpaperLayoutAfterModeChange(false)
+	const mode = getCurrentWallpaperModeFromDom()
+	getHandler(mode).onPageView(buildVisitContextFromPathname())
 }
 
-/** @parity 桌面 fullscreen：content:replace 时临时 inline，供 scroll:top 计算位置 */
 export function syncFullscreenLayoutOnContentReplace(): void {
 	if (typeof document === 'undefined') return
 	const mode = getCurrentWallpaperModeFromDom()
-	getHandler(mode).onContentReplace(buildVisitContext(window.location.pathname))
+	getHandler(mode).onContentReplace(buildVisitContextFromPathname())
 }
 
 export function resolveWallpaperScrollTarget(toUrl: string): ScrollTarget {
@@ -34,9 +39,46 @@ export function resolveWallpaperScrollTarget(toUrl: string): ScrollTarget {
 	return getHandler(mode).resolveScrollTarget(buildVisitContext(toUrl))
 }
 
-export function shouldSkipWallpaperVisitScrollToTop(toUrl: string): boolean {
-	const mode = getCurrentWallpaperModeFromDom()
-	return getHandler(mode).shouldSkipVisitScrollToTop(buildVisitContext(toUrl))
+/** fuwari 不在 visit:start 滚动；各模式在 scroll:top 对齐标注线 */
+export function shouldSkipWallpaperVisitScrollToTop(_toUrl: string): boolean {
+	return true
+}
+
+function scrollToTopWithCoordination(behavior: ScrollBehavior): void {
+	const targetY = 0
+	if (shouldAnimateScrollDelta(window.scrollY - targetY)) {
+		animateScrollTo(targetY)
+		return
+	}
+	window.scrollTo({ top: targetY, left: 0, behavior })
+}
+
+function scrollToFullscreenAnchorWithCoordination(
+	behavior: ScrollBehavior,
+): void {
+	const run = () => {
+		const mainGrid = document.getElementById('main-grid')
+		const targetY = mainGrid
+			? Math.round(
+					mainGrid.getBoundingClientRect().top + window.scrollY,
+				)
+			: getFullscreenContentScrollTop()
+
+		if (targetY <= 0) {
+			scrollToFullscreenContent(behavior)
+			return
+		}
+
+		if (shouldAnimateScrollDelta(window.scrollY - targetY)) {
+			animateScrollTo(targetY)
+			return
+		}
+
+		scrollToFullscreenContent(behavior)
+	}
+
+	// content:replace 后等一帧布局稳定再算标注线
+	requestAnimationFrame(() => requestAnimationFrame(run))
 }
 
 export function handleWallpaperScrollTop(
@@ -46,16 +88,16 @@ export function handleWallpaperScrollTop(
 	const target = resolveWallpaperScrollTarget(toUrl)
 	const behavior = scrollOptions?.behavior || 'auto'
 
-	if (target === 'main-grid') {
-		syncFullscreenLayoutOnContentReplace()
-		const mainGrid = document.getElementById('main-grid')
-		if (mainGrid) {
-			mainGrid.scrollIntoView({ behavior, block: 'start' })
-			return true
-		}
+	if (target === 'skip') {
+		return true
 	}
 
-	window.scrollTo({ top: 0, left: 0, behavior })
+	if (target === 'main-grid') {
+		scrollToFullscreenAnchorWithCoordination(behavior)
+		return true
+	}
+
+	scrollToTopWithCoordination(behavior)
 	return true
 }
 

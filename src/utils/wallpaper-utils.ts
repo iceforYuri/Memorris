@@ -28,6 +28,5 @@ export {
 	handleWallpaperPageView,
 	handleWallpaperVisitStart,
 	handleWallpaperScrollTop,
-	shouldSkipWallpaperVisitScrollToTop,
 	syncFullscreenLayoutOnContentReplace,
 } from '@/wallpaper/swup'

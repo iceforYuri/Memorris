@@ -24,6 +24,6 @@ export const noneHandler: WallpaperModeHandler = {
 	},
 
 	shouldSkipVisitScrollToTop() {
-		return false
+		return true
 	},
 }
