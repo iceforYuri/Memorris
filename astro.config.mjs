@@ -47,7 +47,7 @@ export default defineConfig({
       // the default value `transition-` cause transition delay
       // when the Tailwind class `transition-all` is used
       containers: ["main", "#toc"],
-      smoothScrolling: true,
+      smoothScrolling: false,
       cache: true,
       // 悬停预取；visible 默认关。布尔 true 在 @swup/astro 里只开 hover
       preload: true,

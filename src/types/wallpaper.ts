@@ -29,4 +29,14 @@ export type WallpaperConfig = {
 		position?: string
 		hideOnNonHome?: boolean
 	}
+	/** 壁纸通用效果（对齐 Firefly common） */
+	common?: {
+		gradient?: {
+			enable?: boolean | { desktop?: boolean; mobile?: boolean }
+			/** 底部渐变高度（壁纸 → 页面背景） */
+			height?: string
+			/** 顶部渐变高度（页面背景 → 壁纸，图片高度不足时消顶留白） */
+			topHeight?: string
+		}
+	}
 }

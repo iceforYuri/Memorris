@@ -26,7 +26,37 @@ export const wallpaper: WallpaperConfig = {
 	},
 	fullscreen: {
 		position: 'center',
+		/** 桌面端内页是否隐藏全屏壁纸（默认 false，壁纸始终可见） */
+		hideOnNonHome: false,
 	},
+	common: {
+		gradient: {
+			enable: {
+				desktop: true,
+				mobile: true,
+			},
+			height: '10%',
+			topHeight: '18vh',
+		},
+	},
+}
+
+export function resolveGradientEnable(
+	device: 'desktop' | 'mobile',
+): boolean {
+	const cfg = wallpaper.common?.gradient?.enable
+	if (typeof cfg === 'object') {
+		return device === 'desktop'
+			? (cfg.desktop ?? true)
+			: (cfg.mobile ?? true)
+	}
+	return cfg ?? true
+}
+
+export function shouldRenderWallpaperGradient(): boolean {
+	return (
+		resolveGradientEnable('desktop') || resolveGradientEnable('mobile')
+	)
 }
 
 /** 构建期 / SSR：legacy banner.enable 为 false 时强制 none */

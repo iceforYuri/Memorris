@@ -7,7 +7,9 @@ import Layout from './Layout.astro'
 import { Icon } from 'astro-icon/components'
 import {
   getWallpaperImageSrc,
+  resolveGradientEnable,
   resolveWallpaperModeForBuild,
+  shouldRenderWallpaperGradient,
   shouldRenderWallpaperWrapper,
   wallpaper,
 } from '../config/wallpaper'
@@ -35,6 +37,15 @@ const bannerPosition =
   wallpaper.banner.position ?? 'center'
 
 const wallpaperSrc = getWallpaperImageSrc()
+const gradientEnabledOnDesktop = resolveGradientEnable('desktop')
+const gradientEnabledOnMobile = resolveGradientEnable('mobile')
+const shouldRenderGradient = shouldRenderWallpaperGradient()
+const gradientHeight = wallpaper.common?.gradient?.height ?? '10%'
+const gradientTopHeight = wallpaper.common?.gradient?.topHeight ?? '18vh'
+const wallpaperImagePosition =
+  wallpaperMode === 'fullscreen'
+    ? (wallpaper.fullscreen.position ?? 'center')
+    : bannerPosition
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -58,21 +69,47 @@ const wallpaperSrc = getWallpaperImageSrc()
                 wallpaperMode === "fullscreen" && "wallpaper-fullscreen",
             ]}
         >
-            <ImageWrapper
-                id="banner"
-                alt="Banner image of the blog"
-                class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                src={wallpaperSrc}
-                position={bannerPosition}
-                widths={[640, 960, 1280, 1600, 1920]}
-                sizes="100vw"
-                quality={72}
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                showLqip={false}
-            >
-            </ImageWrapper>
+            <div class="relative h-full w-full" id="banner-images-container">
+                <ImageWrapper
+                    id="banner"
+                    alt="Banner image of the blog"
+                    class:list={["object-cover h-full w-full transition duration-700 opacity-0 scale-105"]}
+                    src={wallpaperSrc}
+                    position={wallpaperImagePosition}
+                    widths={[640, 960, 1280, 1600, 1920]}
+                    sizes="100vw"
+                    quality={72}
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    showLqip={false}
+                >
+                </ImageWrapper>
+            </div>
+            {shouldRenderGradient && (
+                <>
+                    <div
+                        id="wallpaper-gradient-top"
+                        class:list={[
+                            'wallpaper-gradient-top absolute top-0 left-0 w-full pointer-events-none',
+                            !gradientEnabledOnMobile && 'hidden',
+                            !gradientEnabledOnDesktop && 'md:hidden',
+                            gradientEnabledOnDesktop && 'md:block',
+                        ]}
+                        style={`height: ${gradientTopHeight}; background: linear-gradient(to bottom, var(--page-bg), transparent);`}
+                    />
+                    <div
+                        id="wallpaper-gradient"
+                        class:list={[
+                            'wallpaper-gradient absolute bottom-0 left-0 w-full pointer-events-none',
+                            !gradientEnabledOnMobile && 'hidden',
+                            !gradientEnabledOnDesktop && 'md:hidden',
+                            gradientEnabledOnDesktop && 'md:block',
+                        ]}
+                        style={`height: ${gradientHeight}; background: linear-gradient(to bottom, transparent, var(--page-bg));`}
+                    />
+                </>
+            )}
         </div>
         <script is:inline>
             function revealBanner() {
@@ -87,8 +124,8 @@ const wallpaperSrc = getWallpaperImageSrc()
     </>
 )}
 
-<!-- Main content -->
-<div id="main-panel" class="absolute w-full z-30 pointer-events-none">
+<!-- Main content：position 由 wallpaper.css 按模式控制，勿加 Tailwind absolute -->
+<div id="main-panel" class="w-full z-30 pointer-events-none">
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"

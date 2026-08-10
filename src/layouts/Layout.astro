@@ -18,6 +18,7 @@ import {
 } from "@/config";
 import {
 	resolveWallpaperModeForBuild,
+	shouldRenderWallpaperGradient,
 	wallpaper,
 } from "@/config/wallpaper";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
@@ -94,6 +95,7 @@ const bannerOffset =
 	bannerOffsetByPosition[
 		wallpaper.banner.position || siteConfig.banner.position || "center"
 	];
+const gradientEnabled = shouldRenderWallpaperGradient();
 ---
 
 <!doctype html>
@@ -101,6 +103,7 @@ const bannerOffset =
 	lang={siteLang}
 	class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
 	data-wallpaper-mode={wallpaperMode}
+	data-gradient-enabled={gradientEnabled ? "true" : "false"}
 	style={{
 		"--main-panel-top-banner": `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`,
 		"--banner-wrapper-offset": `-${BANNER_HEIGHT_EXTEND}vh`,
@@ -323,7 +326,15 @@ const bannerOffset =
 		setTheme,
 	} from "../utils/setting-utils";
 	import { pathsEqual, url } from "../utils/url-utils";
-	import { initWallpaperFromStorage } from "../utils/wallpaper-utils";
+	import {
+		getPathnameFromVisitUrl,
+		handleWallpaperPageView,
+		handleWallpaperVisitStart,
+		initWallpaperFromStorage,
+		scrollToFullscreenContent,
+		syncFullscreenLayoutOnContentReplace,
+		syncWallpaperLayoutOnResize,
+	} from "../utils/wallpaper-utils";
 	import {
 		BANNER_HEIGHT,
 		BANNER_HEIGHT_HOME,
@@ -376,9 +387,12 @@ function disableAnimation() {
 }
 */
 
-	const bannerEnabled =
-		document.documentElement.getAttribute("data-wallpaper-mode") ===
-			"banner" && !!document.getElementById("wallpaper-wrapper");
+	function isBannerWallpaperMode() {
+		return (
+			document.documentElement.getAttribute("data-wallpaper-mode") ===
+				"banner" && !!document.getElementById("wallpaper-wrapper")
+		);
+	}
 
 	function bindWhenSwupReady(bind: () => void, boundKey: string) {
 		const tryBind = () => {
@@ -521,6 +535,14 @@ function disableAnimation() {
 		loadHue();
 		initCustomScrollbarDeferred();
 		initWallpaperFromStorage();
+		// 直接打开 fullscreen 非首页时滚到正文（Swup 未参与）
+		const mode = document.documentElement.getAttribute("data-wallpaper-mode");
+		if (
+			mode === "fullscreen" &&
+			!pathsEqual(window.location.pathname, url("/"))
+		) {
+			requestAnimationFrame(() => scrollToFullscreenContent("auto"));
+		}
 		showBanner();
 	}
 
@@ -594,6 +616,32 @@ function disableAnimation() {
 	}
 
 	const setup = () => {
+		// 全屏壁纸模式：替换 swup 默认回顶（Firefly 同款）
+		// 首页回顶，其他页滚到 #main-panel / #main-grid
+		window.swup.hooks.replace(
+			"scroll:top",
+			(visit: { to: { url: string } }, args: { options: ScrollIntoViewOptions }) => {
+				// 与 Firefly 一致：fullscreen 非首页滚到 #main-grid（非 scrollY=0）
+				const wallpaperMode =
+					document.documentElement.getAttribute("data-wallpaper-mode");
+				if (
+					wallpaperMode === "fullscreen" &&
+					!pathsEqual(getPathnameFromVisitUrl(visit.to.url), url("/"))
+				) {
+					syncFullscreenLayoutOnContentReplace();
+					const mainGrid = document.getElementById("main-grid");
+					if (mainGrid) {
+						mainGrid.scrollIntoView({
+							behavior: args.options?.behavior || "auto",
+						});
+						return true;
+					}
+				}
+				window.scrollTo({ top: 0, left: 0, ...args.options });
+				return true;
+			},
+		);
+
 		// TODO: temp solution to change the height of the banner
 		/*
 	window.swup.hooks.on('animation:out:start', () => {
@@ -614,7 +662,7 @@ function disableAnimation() {
 			);
 
 			// prevent elements from overlapping the navbar
-			if (!bannerEnabled) {
+			if (!isBannerWallpaperMode()) {
 				return;
 			}
 			let threshold =
@@ -630,7 +678,11 @@ function disableAnimation() {
 				navbar.classList.add("navbar-hidden");
 			}
 		});
-		window.swup.hooks.on("content:replace", initCustomScrollbarDeferred);
+		window.swup.hooks.on("content:replace", () => {
+			// Firefly：content:replace 内先同步 fullscreen 布局，再交给 scroll:top
+			syncFullscreenLayoutOnContentReplace();
+			initCustomScrollbarDeferred();
+		});
 		window.swup.hooks.on(
 			"visit:start",
 			(visit: { to: { url: string } }) => {
@@ -648,6 +700,21 @@ function disableAnimation() {
 					}
 				}
 
+				handleWallpaperVisitStart(visit.to.url);
+
+				// Firefly：visit:start 即时回顶，fullscreen 非首页跳过（由 scroll:top 滚到正文）
+				const isHomePage = pathsEqual(
+					getPathnameFromVisitUrl(visit.to.url),
+					url("/"),
+				);
+				const isFullscreenNonHome =
+					document.documentElement.getAttribute(
+						"data-wallpaper-mode",
+					) === "fullscreen" && !isHomePage;
+				if (window.innerWidth >= 768 && !isFullscreenNonHome) {
+					window.scrollTo({ top: 0, behavior: "auto" });
+				}
+
 				// increase the page height during page transition to prevent the scrolling animation from jumping
 				const heightExtend =
 					document.getElementById("page-height-extend");
@@ -663,6 +730,8 @@ function disableAnimation() {
 			},
 		);
 		window.swup.hooks.on("page:view", () => {
+			handleWallpaperPageView();
+
 			// hide the temp high element when the transition is done
 			const heightExtend = document.getElementById("page-height-extend");
 			if (heightExtend) {
@@ -746,7 +815,7 @@ function disableAnimation() {
 			}
 		}
 
-		if (!bannerEnabled) return;
+		if (!isBannerWallpaperMode()) return;
 		if (navbar) {
 			const NAVBAR_HEIGHT = 72;
 			const MAIN_PANEL_EXCESS_HEIGHT =
@@ -863,5 +932,6 @@ function disableAnimation() {
 			"--banner-height-extend",
 			`${offset}px`,
 		);
+		syncWallpaperLayoutOnResize();
 	});
 </script>
