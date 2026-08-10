@@ -129,28 +129,23 @@ html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.mobile-hide-banner {
 	scroll-margin-top: 5.5rem;
 }
 
-/* ── 渐变过渡（对齐 Firefly common.gradient，默认开启；overlay/none 隐藏）── */
-html[data-gradient-enabled="false"] #wallpaper-gradient,
-html[data-gradient-enabled="false"] #wallpaper-gradient-top {
+/* ── 底部渐变（壁纸 → 页面背景；overlay/none 隐藏）── */
+html[data-gradient-enabled="false"] #wallpaper-gradient {
 	display: none !important;
 }
 
-html[data-gradient-enabled="true"] #wallpaper-gradient,
-html[data-gradient-enabled="true"] #wallpaper-gradient-top {
+html[data-gradient-enabled="true"] #wallpaper-gradient {
 	display: block !important;
 }
 
-#wallpaper-gradient,
-#wallpaper-gradient-top {
+#wallpaper-gradient {
 	z-index: 12;
 	pointer-events: none;
 	transition: opacity 0.3s ease;
 }
 
 html[data-wallpaper-mode="overlay"] #wallpaper-gradient,
-html[data-wallpaper-mode="overlay"] #wallpaper-gradient-top,
-html[data-wallpaper-mode="none"] #wallpaper-gradient,
-html[data-wallpaper-mode="none"] #wallpaper-gradient-top {
+html[data-wallpaper-mode="none"] #wallpaper-gradient {
 	display: none !important;
 }
 

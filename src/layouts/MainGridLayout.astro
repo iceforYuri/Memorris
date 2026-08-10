@@ -41,7 +41,6 @@ const gradientEnabledOnDesktop = resolveGradientEnable('desktop')
 const gradientEnabledOnMobile = resolveGradientEnable('mobile')
 const shouldRenderGradient = shouldRenderWallpaperGradient()
 const gradientHeight = wallpaper.common?.gradient?.height ?? '10%'
-const gradientTopHeight = wallpaper.common?.gradient?.topHeight ?? '18vh'
 const wallpaperImagePosition =
   wallpaperMode === 'fullscreen'
     ? (wallpaper.fullscreen.position ?? 'center')
@@ -87,28 +86,16 @@ const wallpaperImagePosition =
                 </ImageWrapper>
             </div>
             {shouldRenderGradient && (
-                <>
-                    <div
-                        id="wallpaper-gradient-top"
-                        class:list={[
-                            'wallpaper-gradient-top absolute top-0 left-0 w-full pointer-events-none',
-                            !gradientEnabledOnMobile && 'hidden',
-                            !gradientEnabledOnDesktop && 'md:hidden',
-                            gradientEnabledOnDesktop && 'md:block',
-                        ]}
-                        style={`height: ${gradientTopHeight}; background: linear-gradient(to bottom, var(--page-bg), transparent);`}
-                    />
-                    <div
-                        id="wallpaper-gradient"
-                        class:list={[
-                            'wallpaper-gradient absolute bottom-0 left-0 w-full pointer-events-none',
-                            !gradientEnabledOnMobile && 'hidden',
-                            !gradientEnabledOnDesktop && 'md:hidden',
-                            gradientEnabledOnDesktop && 'md:block',
-                        ]}
-                        style={`height: ${gradientHeight}; background: linear-gradient(to bottom, transparent, var(--page-bg));`}
-                    />
-                </>
+                <div
+                    id="wallpaper-gradient"
+                    class:list={[
+                        'wallpaper-gradient absolute bottom-0 left-0 w-full pointer-events-none',
+                        !gradientEnabledOnMobile && 'hidden',
+                        !gradientEnabledOnDesktop && 'md:hidden',
+                        gradientEnabledOnDesktop && 'md:block',
+                    ]}
+                    style={`height: ${gradientHeight}; background: linear-gradient(to bottom, transparent, var(--page-bg));`}
+                />
             )}
         </div>
         <script is:inline>

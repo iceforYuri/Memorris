@@ -35,8 +35,6 @@ export type WallpaperConfig = {
 			enable?: boolean | { desktop?: boolean; mobile?: boolean }
 			/** 底部渐变高度（壁纸 → 页面背景） */
 			height?: string
-			/** 顶部渐变高度（页面背景 → 壁纸，图片高度不足时消顶留白） */
-			topHeight?: string
 		}
 	}
 }

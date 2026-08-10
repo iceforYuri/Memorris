@@ -36,7 +36,6 @@ export const wallpaper: WallpaperConfig = {
 				mobile: true,
 			},
 			height: '10%',
-			topHeight: '18vh',
 		},
 	},
 }
