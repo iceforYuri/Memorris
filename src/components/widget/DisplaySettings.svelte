@@ -1,4 +1,5 @@
 <script lang="ts">
+import '@/styles/display-settings.css'
 import { i18n } from '@i18n/translation'
 import I18nKey from '@i18n/i18nKey'
 import { wallpaper } from '@/config/wallpaper'
@@ -19,7 +20,7 @@ import {
   setWallpaperMode,
 } from '@utils/wallpaper-utils'
 import Icon from '@/components/misc/Icon.svelte'
-import { onMount } from 'svelte'
+import { onMount, tick } from 'svelte'
 
 let hue = getDefaultHue()
 const defaultHue = getDefaultHue()
@@ -38,9 +39,42 @@ const defaultOverlayCardOpacity = getDefaultOverlayCardOpacity()
 
 const showWallpaperControls = wallpaper.switchable
 
+function updateRangeProgress(input: HTMLInputElement) {
+  const min = Number(input.min || 0)
+  const max = Number(input.max || 100)
+  const value = Number(input.value || 0)
+  const progress = ((value - min) * 100) / (max - min || 1)
+  input.style.setProperty(
+    '--range-progress',
+    `${Math.min(100, Math.max(0, progress))}%`,
+  )
+}
+
+function refreshAllRangeProgress() {
+  const panel = document.getElementById('display-setting')
+  if (!panel) return
+
+  panel.querySelectorAll('input[type="range"]').forEach((node) => {
+    if (node instanceof HTMLInputElement) {
+      updateRangeProgress(node)
+    }
+  })
+}
+
+function handleRangeInput(event: Event) {
+  const target = event.target
+  if (target instanceof HTMLInputElement && target.type === 'range') {
+    updateRangeProgress(target)
+  }
+}
+
 onMount(() => {
   hue = getHue()
   hueReady = true
+
+  const panel = document.getElementById('display-setting')
+  refreshAllRangeProgress()
+  panel?.addEventListener('input', handleRangeInput)
 
   if (showWallpaperControls) {
     wallpaperMode = getStoredWallpaperMode()
@@ -53,7 +87,15 @@ onMount(() => {
       if (detail?.mode) wallpaperMode = detail.mode
     }
     window.addEventListener('wallpaperModeChange', onModeChange)
-    return () => window.removeEventListener('wallpaperModeChange', onModeChange)
+
+    return () => {
+      panel?.removeEventListener('input', handleRangeInput)
+      window.removeEventListener('wallpaperModeChange', onModeChange)
+    }
+  }
+
+  return () => {
+    panel?.removeEventListener('input', handleRangeInput)
   }
 })
 
@@ -78,10 +120,15 @@ function resetOverlaySettings() {
   setOverlayOpacity(overlayOpacity)
   setOverlayBlur(overlayBlur)
   setOverlayCardOpacity(overlayCardOpacity)
+  tick().then(refreshAllRangeProgress)
 }
 
 $: if (hueReady && (hue || hue === 0)) {
   setHue(hue)
+}
+
+$: if (wallpaperMode === 'overlay') {
+  tick().then(refreshAllRangeProgress)
 }
 </script>
 
@@ -106,7 +153,7 @@ $: if (hueReady && (hue || hue === 0)) {
             </div>
         </div>
     </div>
-    <div class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none mb-4">
+    <div class="hue-slider-shell w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded-md select-none mb-4">
         <input aria-label={i18n(I18nKey.themeColor)} type="range" min="0" max="360" bind:value={hue}
                class="slider" id="colorSlider" step="5" style="width: 100%">
     </div>
@@ -183,77 +230,44 @@ $: if (hueReady && (hue || hue === 0)) {
                     </button>
                 </div>
 
-                <label class="block text-sm mb-1 text-neutral-700 dark:text-neutral-300">
-                    {i18n(I18nKey.overlayOpacity)} · {Math.round(overlayOpacity * 100)}%
-                </label>
-                <input type="range" min="0.2" max="1" step="0.05"
-                       bind:value={overlayOpacity}
-                       on:input={() => setOverlayOpacity(overlayOpacity)}
-                       class="slider w-full mb-3" />
+                <div class="space-y-2">
+                    <div class="rounded-md bg-[var(--btn-regular-bg)] p-2">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-medium text-[var(--btn-content)] opacity-80">{i18n(I18nKey.overlayOpacity)}</span>
+                            <span class="text-xs text-[var(--btn-content)]">{Math.round(overlayOpacity * 100)}%</span>
+                        </div>
+                        <input type="range" min="0.2" max="1" step="0.05"
+                               bind:value={overlayOpacity}
+                               on:input={() => setOverlayOpacity(overlayOpacity)}
+                               aria-label={i18n(I18nKey.overlayOpacity)}
+                               class="slider w-full overlay-slider" />
+                    </div>
 
-                <label class="block text-sm mb-1 text-neutral-700 dark:text-neutral-300">
-                    {i18n(I18nKey.overlayBlur)} · {overlayBlur}px
-                </label>
-                <input type="range" min="0" max="24" step="1"
-                       bind:value={overlayBlur}
-                       on:input={() => setOverlayBlur(overlayBlur)}
-                       class="slider w-full mb-3" />
+                    <div class="rounded-md bg-[var(--btn-regular-bg)] p-2">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-medium text-[var(--btn-content)] opacity-80">{i18n(I18nKey.overlayBlur)}</span>
+                            <span class="text-xs text-[var(--btn-content)]">{overlayBlur}px</span>
+                        </div>
+                        <input type="range" min="0" max="24" step="1"
+                               bind:value={overlayBlur}
+                               on:input={() => setOverlayBlur(overlayBlur)}
+                               aria-label={i18n(I18nKey.overlayBlur)}
+                               class="slider w-full overlay-slider" />
+                    </div>
 
-                <label class="block text-sm mb-1 text-neutral-700 dark:text-neutral-300">
-                    {i18n(I18nKey.overlayCardOpacity)} · {Math.round(overlayCardOpacity * 100)}%
-                </label>
-                <input type="range" min="0.3" max="1" step="0.05"
-                       bind:value={overlayCardOpacity}
-                       on:input={() => setOverlayCardOpacity(overlayCardOpacity)}
-                       class="slider w-full" />
+                    <div class="rounded-md bg-[var(--btn-regular-bg)] p-2">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-medium text-[var(--btn-content)] opacity-80">{i18n(I18nKey.overlayCardOpacity)}</span>
+                            <span class="text-xs text-[var(--btn-content)]">{Math.round(overlayCardOpacity * 100)}%</span>
+                        </div>
+                        <input type="range" min="0.3" max="1" step="0.05"
+                               bind:value={overlayCardOpacity}
+                               on:input={() => setOverlayCardOpacity(overlayCardOpacity)}
+                               aria-label={i18n(I18nKey.overlayCardOpacity)}
+                               class="slider w-full overlay-slider" />
+                    </div>
+                </div>
             </div>
         {/if}
     {/if}
 </div>
-
-<style lang="stylus">
-    #display-setting
-      input[type="range"]
-        -webkit-appearance none
-        height 1.5rem
-        background-image var(--color-selection-bar)
-        transition background-image 0.15s ease-in-out
-
-        &::-webkit-slider-thumb
-          -webkit-appearance none
-          height 1rem
-          width 0.5rem
-          border-radius 0.125rem
-          background rgba(255, 255, 255, 0.7)
-          box-shadow none
-          &:hover
-            background rgba(255, 255, 255, 0.8)
-          &:active
-            background rgba(255, 255, 255, 0.6)
-
-        &::-moz-range-thumb
-          -webkit-appearance none
-          height 1rem
-          width 0.5rem
-          border-radius 0.125rem
-          border-width 0
-          background rgba(255, 255, 255, 0.7)
-          box-shadow none
-          &:hover
-            background rgba(255, 255, 255, 0.8)
-          &:active
-            background rgba(255, 255, 255, 0.6)
-
-        &::-ms-thumb
-          -webkit-appearance none
-          height 1rem
-          width 0.5rem
-          border-radius 0.125rem
-          background rgba(255, 255, 255, 0.7)
-          box-shadow none
-          &:hover
-            background rgba(255, 255, 255, 0.8)
-          &:active
-            background rgba(255, 255, 255, 0.6)
-
-</style>

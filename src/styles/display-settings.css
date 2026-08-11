@@ -1,0 +1,106 @@
+/* 显示设置面板 — 主题色滑块与 overlay 滑块分轨（对齐 Firefly） */
+
+#display-setting input[type="range"] {
+	-webkit-appearance: none;
+	height: 1.5rem;
+	border-radius: 999px;
+	background-image: linear-gradient(
+		90deg,
+		var(--primary) 0 var(--range-progress, 50%),
+		hsla(var(--hue), 22%, 28%, 0.18) var(--range-progress, 50%) 100%
+	);
+	transition: background-image 0.15s ease-in-out;
+}
+
+#display-setting input[type="range"].overlay-slider {
+	height: 1rem;
+	border-radius: 0.125rem;
+	background-image: linear-gradient(
+		90deg,
+		var(--primary) 0 var(--range-progress, 50%),
+		hsla(var(--hue), 22%, 28%, 0.18) var(--range-progress, 50%) 100%
+	);
+}
+
+#display-setting input[type="range"].overlay-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 1rem;
+	width: 0.5rem;
+	border-radius: 0.125rem;
+	background: white;
+	box-shadow: none;
+}
+
+#display-setting input[type="range"].overlay-slider::-webkit-slider-thumb:hover {
+	background: rgba(255, 255, 255, 0.9);
+}
+
+#display-setting input[type="range"].overlay-slider::-webkit-slider-thumb:active {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+#display-setting input[type="range"].overlay-slider::-moz-range-thumb {
+	height: 1rem;
+	width: 0.5rem;
+	border-radius: 0.125rem;
+	border-width: 0;
+	background: white;
+	box-shadow: none;
+}
+
+#display-setting input[type="range"].overlay-slider::-moz-range-thumb:hover {
+	background: rgba(255, 255, 255, 0.9);
+}
+
+#display-setting input[type="range"].overlay-slider::-moz-range-thumb:active {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+#display-setting #colorSlider {
+	border-radius: inherit;
+	background-image: var(--color-selection-bar);
+	transition: background-image 0.15s ease-in-out;
+}
+
+#display-setting .hue-slider-shell > input:focus-visible {
+	outline: none;
+}
+
+#display-setting .hue-slider-shell:has(> input:focus-visible) {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+
+#display-setting #colorSlider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 1rem;
+	width: 0.5rem;
+	border-radius: 0.125rem;
+	background: rgba(255, 255, 255, 0.7);
+	box-shadow: none;
+}
+
+#display-setting #colorSlider::-webkit-slider-thumb:hover {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+#display-setting #colorSlider::-webkit-slider-thumb:active {
+	background: rgba(255, 255, 255, 0.6);
+}
+
+#display-setting #colorSlider::-moz-range-thumb {
+	height: 1rem;
+	width: 0.5rem;
+	border-radius: 0.125rem;
+	border-width: 0;
+	background: rgba(255, 255, 255, 0.7);
+	box-shadow: none;
+}
+
+#display-setting #colorSlider::-moz-range-thumb:hover {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+#display-setting #colorSlider::-moz-range-thumb:active {
+	background: rgba(255, 255, 255, 0.6);
+}
