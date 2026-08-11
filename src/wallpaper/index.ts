@@ -2,8 +2,18 @@ import { siteConfig } from '@/config'
 import type { WallpaperMode } from '@/types/wallpaper'
 import { pathsEqual, url } from '@/utils/url-utils'
 import { buildVisitContextFromPathname } from './context'
-import { getPathnameFromVisitUrl } from './dom'
+import { getMainPanel, getPathnameFromVisitUrl } from './dom'
 import { syncWallpaperLayoutAfterModeChange } from './layout'
+import {
+	animateMainPanelTransition,
+	captureMainPanelLayoutTop,
+	getPanelTransitionDurationMs,
+	lockMainPanelAtTop,
+	MAIN_PANEL_TRANSITION_MS,
+	resolveTargetTopPx,
+	shouldRunPanelTransition,
+	unlockMainGridAfterPanelTransition,
+} from './panel-transition'
 import { applyOverlayCssVars } from './overlay-vars'
 import { getHandler } from './registry'
 import {
@@ -15,7 +25,11 @@ import {
 	persistOverlayOpacity,
 	persistWallpaperMode,
 } from './storage'
-import { resetWallpaperLayoutInline } from './sync'
+import {
+	isWallpaperModeSwitchable,
+	resetWallpaperLayoutInline,
+	resetWallpaperWrapperInline,
+} from './sync'
 
 export {
 	getDefaultOverlayBlur,
@@ -63,7 +77,6 @@ export function setOverlayCardOpacity(value: number): void {
 
 export { applyOverlayCssVars } from './overlay-vars'
 
-/** @parity 按壁纸模式调整 #main-panel 与 wrapper 布局 */
 export function adjustMainPanelForMode(
 	mode: WallpaperMode,
 	animate = false,
@@ -74,7 +87,83 @@ export function adjustMainPanelForMode(
 	getHandler(mode).adjustLayout(ctx, animate)
 }
 
-/** @parity 切换壁纸模式：data 属性 + class + CSS 变量；切换前先清 inline */
+function finalizePanelTransition(
+	mode: WallpaperMode,
+	pathname: string | undefined,
+	onComplete: () => void,
+): void {
+	const mainPanel = getMainPanel()
+	mainPanel?.classList.remove('wallpaper-panel-animating')
+
+	resetWallpaperLayoutInline()
+	syncWallpaperLayoutAfterModeChange(false, pathname)
+	unlockMainGridAfterPanelTransition()
+	onComplete()
+}
+
+function applyWallpaperModeInstant(
+	mode: WallpaperMode,
+	pathname?: string,
+): void {
+	document.documentElement.classList.add('is-wallpaper-transitioning')
+	document.documentElement.setAttribute('data-wallpaper-mode', mode)
+	requestAnimationFrame(() => {
+		resetWallpaperLayoutInline()
+		syncWallpaperLayoutAfterModeChange(false, pathname)
+		requestAnimationFrame(() => {
+			document.documentElement.classList.remove('is-wallpaper-transitioning')
+		})
+	})
+}
+
+function applyWallpaperModeAnimated(
+	fromMode: WallpaperMode,
+	toMode: WallpaperMode,
+	fromTop: number,
+	pathname?: string,
+): void {
+	const mainPanel = getMainPanel()
+	if (!mainPanel) {
+		applyWallpaperModeInstant(toMode, pathname)
+		return
+	}
+
+	const ctx = buildVisitContextFromPathname(pathname)
+	const toTop = resolveTargetTopPx(toMode, ctx)
+	const transitionMs = getPanelTransitionDurationMs()
+
+	document.documentElement.classList.add('is-wallpaper-transitioning')
+	lockMainPanelAtTop(mainPanel, fromTop, fromMode, toMode, ctx)
+	document.documentElement.setAttribute('data-wallpaper-mode', toMode)
+
+	requestAnimationFrame(() => {
+		resetWallpaperWrapperInline()
+		syncWallpaperLayoutAfterModeChange(false, pathname, {
+			skipMainPanel: true,
+		})
+
+		animateMainPanelTransition(
+			mainPanel,
+			toTop,
+			fromMode,
+			toMode,
+			ctx,
+			() => {
+				finalizePanelTransition(toMode, pathname, () => {
+					document.documentElement.classList.remove(
+						'is-wallpaper-transitioning',
+					)
+				})
+			},
+		)
+
+		// 兜底：防止 finalize 链未触发时保护类残留
+		setTimeout(() => {
+			document.documentElement.classList.remove('is-wallpaper-transitioning')
+		}, transitionMs + 100)
+	})
+}
+
 export function applyWallpaperMode(
 	mode: WallpaperMode,
 	options?: { animate?: boolean },
@@ -83,9 +172,34 @@ export function applyWallpaperMode(
 	if (!siteConfig.banner.enable && mode !== 'none') {
 		mode = 'none'
 	}
-	resetWallpaperLayoutInline()
-	document.documentElement.setAttribute('data-wallpaper-mode', mode)
-	syncWallpaperLayoutAfterModeChange(options?.animate ?? false)
+
+	const fromMode = getCurrentWallpaperModeFromDom()
+	const animate = options?.animate ?? false
+	const pathname =
+		typeof window !== 'undefined' ? window.location.pathname : undefined
+
+	if (!isWallpaperModeSwitchable()) {
+		if (fromMode === mode) {
+			syncWallpaperLayoutAfterModeChange(false, pathname)
+		}
+		return
+	}
+
+	if (fromMode === mode) {
+		syncWallpaperLayoutAfterModeChange(false, pathname)
+		return
+	}
+
+	if (animate) {
+		const ctx = buildVisitContextFromPathname(pathname)
+		const fromTop = captureMainPanelLayoutTop()
+		if (shouldRunPanelTransition(fromMode, mode, ctx, fromTop)) {
+			applyWallpaperModeAnimated(fromMode, mode, fromTop, pathname)
+			return
+		}
+	}
+
+	applyWallpaperModeInstant(mode, pathname)
 }
 
 export function initWallpaperFromStorage(): void {
@@ -104,3 +218,5 @@ export function shouldScrollMainGridOnFullscreen(toUrl: string): boolean {
 		!pathsEqual(getPathnameFromVisitUrl(toUrl), url('/'))
 	)
 }
+
+export { MAIN_PANEL_TRANSITION_MS } from './panel-transition'

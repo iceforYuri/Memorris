@@ -3,6 +3,29 @@
  * 状态：html[data-wallpaper-mode] + body 修饰 class（由 wallpaper-utils 同步）
  */
 
+/* @parity Firefly：模式切换期间禁止导航栏边框/阴影过渡闪现 */
+.is-wallpaper-transitioning #navbar > div {
+	border-color: transparent !important;
+	box-shadow: none !important;
+	transition: none !important;
+}
+
+/* 切换期间暂停 wrapper / 壳层 / 壁纸图 700ms 过渡（方案 C：主内容先动，背景后 settle） */
+.is-wallpaper-transitioning #wallpaper-wrapper,
+.is-wallpaper-transitioning #main-grid,
+.is-wallpaper-transitioning #top-row,
+.is-wallpaper-transitioning #wallpaper-wrapper #banner {
+	transition: none !important;
+}
+
+/* 动画期间由 JS 控制 #main-panel top，屏蔽模式 CSS */
+html[data-wallpaper-mode] #main-panel.wallpaper-panel-animating {
+	position: absolute !important;
+	top: auto;
+	margin-top: 0 !important;
+	min-height: auto !important;
+}
+
 /* ── 主内容区定位（按模式；勿依赖 Tailwind absolute）── */
 html[data-wallpaper-mode="banner"] #main-panel {
 	position: absolute;
@@ -15,14 +38,20 @@ html[data-wallpaper-mode="overlay"] #main-panel {
 	top: 5.5rem;
 }
 
-html[data-wallpaper-mode="fullscreen"] #main-panel {
-	position: relative !important;
-	top: 0 !important;
+/* fullscreen 常态：relative 进文档流；动画期间由 .wallpaper-panel-animating 走 absolute */
+html[data-wallpaper-mode="fullscreen"] #main-panel:not(.wallpaper-panel-animating) {
+	position: relative;
+	top: 0;
 	margin-top: 1rem;
 	min-height: calc(100vh - 0.5rem);
 }
 
-/* ── banner：壁纸层初始偏移 ── */
+html[data-wallpaper-mode="fullscreen"] #main-panel.wallpaper-panel-animating {
+	position: absolute !important;
+	top: auto;
+	margin-top: 0 !important;
+	min-height: auto !important;
+}
 html[data-wallpaper-mode="banner"] #wallpaper-wrapper {
 	top: var(--banner-wrapper-offset);
 }
@@ -75,7 +104,9 @@ html[data-wallpaper-mode="overlay"] #wallpaper-wrapper #banner {
 }
 
 html[data-wallpaper-mode="overlay"] .card-base,
-html[data-wallpaper-mode="overlay"] .btn-card {
+html[data-wallpaper-mode="overlay"] .btn-card,
+body.wallpaper-transparent .card-base,
+body.wallpaper-transparent .btn-card {
 	background-color: color-mix(
 		in oklch,
 		var(--card-bg) calc(var(--wallpaper-card-opacity, 0.72) * 100%),

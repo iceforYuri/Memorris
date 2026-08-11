@@ -227,7 +227,9 @@ const gradientEnabled = shouldRenderWallpaperGradient();
 			{
 				"lg:is-home": isHomePage,
 				"enable-banner": enableBanner,
+				"wallpaper-transparent": wallpaperMode === "overlay",
 				"wallpaper-overlay-active": wallpaperMode === "overlay",
+				"no-banner-layout": noWallpaperLayout,
 				"no-wallpaper-layout": noWallpaperLayout,
 			},
 		]}
@@ -248,10 +250,10 @@ const gradientEnabled = shouldRenderWallpaperGradient();
 						if (!bannerSiteEnabled) mode = "none";
 						document.documentElement.setAttribute("data-wallpaper-mode", mode);
 						var body = document.body;
-						body.classList.remove("enable-banner", "wallpaper-overlay-active", "no-wallpaper-layout");
+						body.classList.remove("enable-banner", "wallpaper-transparent", "wallpaper-overlay-active", "no-banner-layout", "no-wallpaper-layout");
 						if (mode === "banner") body.classList.add("enable-banner");
-						else if (mode === "overlay") body.classList.add("wallpaper-overlay-active", "no-wallpaper-layout");
-						else body.classList.add("no-wallpaper-layout");
+						else if (mode === "overlay") body.classList.add("wallpaper-transparent", "wallpaper-overlay-active", "no-banner-layout", "no-wallpaper-layout");
+						else body.classList.add("no-banner-layout", "no-wallpaper-layout");
 						var op = localStorage.getItem("wallpaperOverlayOpacity");
 						var blur = localStorage.getItem("wallpaperOverlayBlur");
 						var card = localStorage.getItem("wallpaperOverlayCardOpacity");
